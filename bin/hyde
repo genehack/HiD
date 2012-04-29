@@ -1,0 +1,14 @@
+#! /opt/perl/bin/perl
+# PODNAME: hype
+# ABSTRACT: cool site, bro. 
+
+use strict;
+use warnings;
+use 5.010;
+
+use FindBin;
+use lib "$FindBin::RealBin/../lib";
+use Hyde;
+Hyde->run;
+
+

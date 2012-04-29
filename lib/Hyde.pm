@@ -1,8 +1,13 @@
 package Hyde;
 # ABSTRACT: Static website generation system
+use Mouse;
+extends 'MouseX::App::Cmd';
 
-use strict;
-use warnings;
-use 5.010;
+=head1 SYNOPSIS
 
+See C<perldoc hyde> for usage information.
+
+=cut
+
+__PACKAGE__->meta->make_immutable;
 1;
