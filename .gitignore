@@ -1,0 +1,3 @@
+.build
+Hyde-*
+!releases/*.tar.gz
