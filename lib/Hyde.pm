@@ -15,6 +15,7 @@ use autodie            qw/ :all /;
 use Class::Load        qw/ :all /;
 use File::Find::Rule;
 use Hyde::Layout;
+use Hyde::Page;
 use Hyde::Post;
 use Hyde::Types;
 use YAML::XS           qw/ LoadFile /;
@@ -44,7 +45,8 @@ has files => (
   default => sub {{}} ,
   traits  => ['Hash'],
   handles => {
-    add_file => 'set' ,
+    add_file  => 'set' ,
+    seen_file => 'exists' ,
   },
 );
 
@@ -99,7 +101,38 @@ sub _build_layouts {
   return \%layouts;
 }
 
-has pages => ( is => 'ro' );
+has page_file_regex => (
+  is      => 'ro' ,
+  isa     => 'RegexpRef',
+  default => sub { qr/\.(mk|mkd|mkdn|markdown|html)$/ } ,
+);
+
+has pages => (
+  is      => 'ro',
+  isa     => 'Maybe[ArrayRef[Hyde::Page]]',
+  lazy    => 1 ,
+  builder => '_build_pages' ,
+);
+
+sub _build_pages {
+  my $self = shift;
+
+  # build posts before pages
+  $self->posts;
+
+  my @potential_pages = File::Find::Rule->file->nonempty
+    ->name( $self->page_file_regex )->in( '.' );
+
+  my @pages = grep { $_ } map {
+    if ($self->seen_file( $_ )) { 0 }
+    else {
+      $self->add_file( $_ => 'page' );
+      Hyde::Page->new( filename => $_ , hyde => $self );
+    }
+  } @potential_pages;
+
+  return \@pages;
+}
 
 has post_file_regex => (
   is      => 'ro' ,
