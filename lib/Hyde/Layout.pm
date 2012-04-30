@@ -35,7 +35,7 @@ has extension => (
 
 has filename => (
   is       => 'ro' ,
-  isa      => 'File' ,
+  isa      => 'Hyde::File' ,
   required => 1 ,
 );
 

@@ -11,11 +11,13 @@ See C<perldoc hyde> for usage information.
 
 use namespace::autoclean;
 
-use autodie       qw/ :all /;
-use Class::Load   qw/ :all /;
+use autodie            qw/ :all /;
+use Class::Load        qw/ :all /;
+use File::Find::Rule;
 use Hyde::Layout;
+use Hyde::Post;
 use Hyde::Types;
-use YAML::XS      qw/ LoadFile /;
+use YAML::XS           qw/ LoadFile /;
 
 has config => (
   is      => 'ro' ,
@@ -36,9 +38,19 @@ has config_file => (
   default => '_config.yml' ,
 );
 
+has files => (
+  is      => 'ro' ,
+  isa     => 'HashRef',
+  default => sub {{}} ,
+  traits  => ['Hash'],
+  handles => {
+    add_file => 'set' ,
+  },
+);
+
 has layout_dir => (
   is      => 'ro' ,
-  isa     => 'Str' ,
+  isa     => 'Hyde::Dir' ,
   default => '_layouts' ,
 );
 
@@ -46,7 +58,11 @@ has layouts => (
   is      => 'ro' ,
   isa     => 'HashRef[Hyde::Layout]',
   lazy    => 1 ,
-  builder => '_build_layouts'
+  builder => '_build_layouts',
+  traits  => ['Hash'] ,
+  handles => {
+    get_layout_by_name => 'get' ,
+  },
 );
 
 sub _build_layouts {
@@ -59,6 +75,8 @@ sub _build_layouts {
   while ( my $layout_file = readdir $layout_dh ) {
     next if $layout_file =~ /^\./;
     next if -d $layout_file;
+
+    $self->add_file( $self->layout_dir . "/$layout_file" => 'layout' );
 
     my( $layout_name ) = $layout_file =~ /^(.*)\.[^.]+$/;
 
@@ -83,7 +101,39 @@ sub _build_layouts {
 
 has pages => ( is => 'ro' );
 
-has posts => ( is => 'ro' );
+has post_file_regex => (
+  is      => 'ro' ,
+  isa     => 'RegexpRef' ,
+  default => sub { qr/^[0-9]{4}-[0-9]{2}-[0-9]{2}-(?:.+?)\.(?:mk|mkd|mkdn|markdown)$/ },
+);
+
+has posts_dir => (
+  is      => 'ro' ,
+  isa     => 'Hyde::Dir' ,
+  default => '_posts' ,
+);
+
+has posts => (
+  is      => 'ro' ,
+  isa     => 'Maybe[ArrayRef[Hyde::Post]]' ,
+  lazy    => 1 ,
+  builder => '_build_posts' ,
+);
+
+sub _build_posts {
+  my $self = shift;
+
+  # build layouts before posts
+  $self->layouts;
+
+  my @potential_posts = File::Find::Rule->file->nonempty
+    ->name( $self->post_file_regex )->in( $self->posts_dir );
+
+  my @posts = map { my $post = Hyde::Post->new( filename => $_ , hyde => $self );
+                    $self->add_file( $_ => 'post' ); $post } @potential_posts;
+
+  return \@posts;
+}
 
 has processor => (
   is      => 'ro' ,

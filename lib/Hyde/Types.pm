@@ -3,7 +3,11 @@ use strict;
 
 use Mouse::Util::TypeConstraints;
 
-subtype 'File'
+subtype 'Hyde::Dir'
+  => as 'Str'
+  => where { -d $_ };
+
+subtype 'Hyde::File'
   => as 'Str'
   => where { -f $_ };
 
