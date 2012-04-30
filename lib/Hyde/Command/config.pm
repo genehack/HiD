@@ -7,10 +7,10 @@ extends 'Hyde::Command';
 sub execute {
   my( $self , $opts , $args ) = @_;
 
-  my $subsubcmd = $args->[0] // 'config';
+  $args = [ 'config' ] unless $args->[0];
 
   use DDP;
-  p $self->hyde->$subsubcmd;
+  p $self->hyde->$_ foreach @$args;
 }
 
 __PACKAGE__->meta->make_immutable;
