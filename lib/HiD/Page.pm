@@ -1,11 +1,11 @@
-package Hyde::Page;
+package HiD::Page;
 use Mouse;
 
-use Hyde::Types;
+use HiD::Types;
 
 has filename => (
   is       => 'ro' ,
-  isa      => 'Hyde::File' ,
+  isa      => 'HiD::File' ,
   required => 1 ,
 );
 

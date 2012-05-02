@@ -1,6 +1,6 @@
 # NAME
 
-Hyde - Static website generation system
+HīD - Static website generation system
 
 # VERSION
 
@@ -8,7 +8,7 @@ version 0.1
 
 # SYNOPSIS
 
-See `perldoc hyde` for usage information.
+See `perldoc hid` for usage information.
 
 # AUTHOR
 

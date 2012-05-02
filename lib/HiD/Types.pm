@@ -1,13 +1,13 @@
-package Hyde::Types;
+package HiD::Types;
 use strict;
 
 use Mouse::Util::TypeConstraints;
 
-subtype 'Hyde::Dir'
+subtype 'HiD::Dir'
   => as 'Str'
   => where { -d $_ };
 
-subtype 'Hyde::File'
+subtype 'HiD::File'
   => as 'Str'
   => where { -f $_ };
 

@@ -6,10 +6,10 @@ use warnings;
 use Test::More;
 
 use App::Cmd::Tester;
-use Hyde;
+use HiD;
 
 {
-  my $result = test_app( 'Hyde' => [ 'help' ]);
+  my $result = test_app( 'HiD' => [ 'help' ]);
 
   like $result->stdout , qr/^Available commands:/ , 'expected STDOUT';
   is   $result->stderr , '' , 'empty STDERR';

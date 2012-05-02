@@ -1,7 +1,7 @@
-package Hyde::Command::publish;
+package HiD::Command::publish;
 use 5.010;
 use Mouse;
-extends 'Hyde::Command';
+extends 'HiD::Command';
 
 sub execute {
   my $self = shift;

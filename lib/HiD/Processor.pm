@@ -1,5 +1,5 @@
-package Hyde::Processor;
-# ABSTRACT: Base class for Hyde Processor objects
+package HiD::Processor;
+# ABSTRACT: Base class for HiD Processor objects
 use Mouse;
 
 ### FIXME figure out whether this makes more sense as a role that would make

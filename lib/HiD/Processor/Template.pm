@@ -1,6 +1,6 @@
-package Hyde::Processor::Template;
+package HiD::Processor::Template;
 use Mouse;
-extends 'Hyde::Processor';
+extends 'HiD::Processor';
 
 use Template;
 

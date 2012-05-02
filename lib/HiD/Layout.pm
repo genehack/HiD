@@ -1,11 +1,11 @@
-package Hyde::Layout;
+package HiD::Layout;
 # ABSTRACT: Class representing a particular layout
 use Mouse;
 
 use namespace::autoclean;
 
 use File::Slurp qw/ read_file / ;
-use Hyde::Types;
+use HiD::Types;
 use Mouse::Util::TypeConstraints;
 use YAML::XS;
 
@@ -35,7 +35,7 @@ has extension => (
 
 has filename => (
   is       => 'ro' ,
-  isa      => 'Hyde::File' ,
+  isa      => 'HiD::File' ,
   required => 1 ,
 );
 

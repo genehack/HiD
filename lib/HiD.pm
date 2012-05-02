@@ -1,11 +1,11 @@
-package Hyde;
+package HiD;
 # ABSTRACT: Static website generation system
 use Mouse;
 extends 'MouseX::App::Cmd';
 
 =head1 SYNOPSIS
 
-See C<perldoc hyde> for usage information.
+See C<perldoc hid> for usage information.
 
 =cut
 
@@ -14,10 +14,10 @@ use namespace::autoclean;
 use autodie            qw/ :all /;
 use Class::Load        qw/ :all /;
 use File::Find::Rule;
-use Hyde::Layout;
-use Hyde::Page;
-use Hyde::Post;
-use Hyde::Types;
+use HiD::Layout;
+use HiD::Page;
+use HiD::Post;
+use HiD::Types;
 use YAML::XS           qw/ LoadFile /;
 
 has config => (
@@ -52,13 +52,13 @@ has files => (
 
 has layout_dir => (
   is      => 'ro' ,
-  isa     => 'Hyde::Dir' ,
+  isa     => 'HiD::Dir' ,
   default => '_layouts' ,
 );
 
 has layouts => (
   is      => 'ro' ,
-  isa     => 'HashRef[Hyde::Layout]',
+  isa     => 'HashRef[HiD::Layout]',
   lazy    => 1 ,
   builder => '_build_layouts',
   traits  => ['Hash'] ,
@@ -82,7 +82,7 @@ sub _build_layouts {
 
     my( $layout_name ) = $layout_file =~ /^(.*)\.[^.]+$/;
 
-    $layouts{$layout_name} = Hyde::Layout->new({
+    $layouts{$layout_name} = HiD::Layout->new({
       filename => $self->layout_dir . "/$layout_file"
     });
   }
@@ -109,7 +109,7 @@ has page_file_regex => (
 
 has pages => (
   is      => 'ro',
-  isa     => 'Maybe[ArrayRef[Hyde::Page]]',
+  isa     => 'Maybe[ArrayRef[HiD::Page]]',
   lazy    => 1 ,
   builder => '_build_pages' ,
 );
@@ -127,7 +127,7 @@ sub _build_pages {
     if ($self->seen_file( $_ )) { 0 }
     else {
       $self->add_file( $_ => 'page' );
-      Hyde::Page->new( filename => $_ , hyde => $self );
+      HiD::Page->new( filename => $_ , hid => $self );
     }
   } @potential_pages;
 
@@ -142,13 +142,13 @@ has post_file_regex => (
 
 has posts_dir => (
   is      => 'ro' ,
-  isa     => 'Hyde::Dir' ,
+  isa     => 'HiD::Dir' ,
   default => '_posts' ,
 );
 
 has posts => (
   is      => 'ro' ,
-  isa     => 'Maybe[ArrayRef[Hyde::Post]]' ,
+  isa     => 'Maybe[ArrayRef[HiD::Post]]' ,
   lazy    => 1 ,
   builder => '_build_posts' ,
 );
@@ -162,7 +162,7 @@ sub _build_posts {
   my @potential_posts = File::Find::Rule->file->nonempty
     ->name( $self->post_file_regex )->in( $self->posts_dir );
 
-  my @posts = map { my $post = Hyde::Post->new( filename => $_ , hyde => $self );
+  my @posts = map { my $post = HiD::Post->new( filename => $_ , hid => $self );
                     $self->add_file( $_ => 'post' ); $post } @potential_posts;
 
   return \@posts;
@@ -170,7 +170,7 @@ sub _build_posts {
 
 has processor => (
   is      => 'ro' ,
-  isa     => 'Hyde::Processor' ,
+  isa     => 'HiD::Processor' ,
   lazy    => 1 ,
   builder => '_build_processor' ,
 );
@@ -181,7 +181,7 @@ sub _build_processor {
   my $processor_name  = $self->config->{processor_name} // 'Template';
 
   my $processor_class = ( $processor_name =~ /^\+/ ) ? $processor_name
-    : "Hyde::Processor::$processor_name";
+    : "HiD::Processor::$processor_name";
 
   try_load_clas( $processor_class );
 

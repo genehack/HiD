@@ -1,10 +1,10 @@
-package Hyde::Post;
+package HiD::Post;
 use Mouse;
 use namespace::autoclean;
 
 use autodie;
 use DateTime;
-use Hyde::Types;
+use HiD::Types;
 use YAML::XS;
 
 has categories => (
@@ -27,13 +27,13 @@ has date => (
 
 has filename =>(
   is       => 'ro' ,
-  isa      => 'Hyde::File',
+  isa      => 'HiD::File',
   required => 1 ,
 );
 
 has layout => (
   is      => 'ro' ,
-  isa     => 'Hyde::Layout' ,
+  isa     => 'HiD::Layout' ,
   default => sub { "FIXME fetch layouts by name" }
 );
 
@@ -106,7 +106,7 @@ sub BUILDARGS {
     : $args{metadata}{title}  // 'NO TITLE';
 
   my $layout_name = $args{metadata}{layout} // 'post';
-  $args{layout} = $args{hyde}->get_layout_by_name( $layout_name );
+  $args{layout} = $args{hid}->get_layout_by_name( $layout_name );
 
   if ( my $new_date = $args{metadata}{date} ) {
     my( $year , $month , $day ) = $new_date =~ /^([0-9]{4})-([0-9]{2})-([0-9]{2})/;

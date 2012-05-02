@@ -1,9 +1,9 @@
-package Hyde::Command;
-# ABSTRACT: Base class for Hyde commands
+package HiD::Command;
+# ABSTRACT: Base class for HiD commands
 use Mouse;
 extends 'MouseX::App::Cmd::Command';
 
-use Hyde;
+use HiD;
 
 has config_file => (
   is          => 'ro' ,
@@ -12,18 +12,18 @@ has config_file => (
   traits      => [ qw/ Getopt / ] ,
 );
 
-has hyde => (
+has hid => (
   is       => 'ro' ,
-  isa      => 'Hyde' ,
+  isa      => 'HiD' ,
   lazy     => 1 ,
   init_arg => undef ,
-  builder  => '_build_hyde' ,
+  builder  => '_build_hid' ,
   handles  => [
     'config' ,
   ] ,
 );
 
-sub _build_hyde { return Hyde->new }
+sub _build_hid { return HiD->new }
 
 __PACKAGE__->meta->make_immutable;
 1;
