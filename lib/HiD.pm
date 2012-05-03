@@ -13,12 +13,19 @@ use namespace::autoclean;
 
 use autodie            qw/ :all /;
 use Class::Load        qw/ :all /;
+use File::Basename;
 use File::Find::Rule;
 use HiD::Layout;
 use HiD::Page;
 use HiD::Post;
+use HiD::RegularFile;
 use HiD::Types;
+use Try::Tiny;
 use YAML::XS           qw/ LoadFile /;
+
+=attr config
+
+=cut
 
 has config => (
   is      => 'ro' ,
@@ -33,11 +40,19 @@ sub _build_config {
   return -e -f -r $file ? LoadFile $file : {};
 }
 
+=attr config_file
+
+=cut
+
 has config_file => (
   is      => 'ro' ,
   isa     => 'Str' ,
   default => '_config.yml' ,
 );
+
+=attr files
+
+=cut
 
 has files => (
   is      => 'ro' ,
@@ -50,11 +65,34 @@ has files => (
   },
 );
 
+=attr include_dir
+
+=cut
+
+has include_dir => (
+  is      => 'ro' ,
+  isa     => 'Maybe[HiD_DirPath]' ,
+  lazy    => 1,
+  default => sub {
+    my $self = shift;
+    $self->config->{include_dir} //
+      ( -e -d '_includes' ) ? '_includes' : undef;
+  } ,
+);
+
+=attr layout_dir
+
+=cut
+
 has layout_dir => (
   is      => 'ro' ,
-  isa     => 'HiD::Dir' ,
+  isa     => 'HiD_DirPath' ,
   default => '_layouts' ,
 );
+
+=attr layouts
+
+=cut
 
 has layouts => (
   is      => 'ro' ,
@@ -70,42 +108,52 @@ has layouts => (
 sub _build_layouts {
   my $self = shift;
 
+  my @layout_files = File::Find::Rule->file
+    ->in( $self->layout_dir );
+
   my %layouts;
+  foreach my $layout_file ( @layout_files ) {
+    my $dir = $self->layout_dir;
 
-  opendir( my $layout_dh , $self->layout_dir );
-  ### FIXME deal with recursion...
-  while ( my $layout_file = readdir $layout_dh ) {
-    next if $layout_file =~ /^\./;
-    next if -d $layout_file;
-
-    $self->add_file( $self->layout_dir . "/$layout_file" => 'layout' );
-
-    my( $layout_name ) = $layout_file =~ /^(.*)\.[^.]+$/;
+    my( $layout_name , $extension ) = $layout_file
+      =~ m|^$dir/(.*)\.([^.]+)$|;
 
     $layouts{$layout_name} = HiD::Layout->new({
-      filename => $self->layout_dir . "/$layout_file"
+      filename => $layout_file
     });
+
+    $self->add_file( $layout_file => 'layout' );
   }
 
   foreach my $layout_name ( keys %layouts ) {
     my $metadata = $layouts{$layout_name}->metadata;
 
     if ( my $embedded_layout = $metadata->{layout} ) {
-      die "FIXME embedded layout fail"
+      die "FIXME embedded layout fail $embedded_layout"
         unless $layouts{$embedded_layout};
 
-      $layouts{$layout_name}->set_layout( $layouts{$embedded_layout} );
+      $layouts{$layout_name}->set_layout(
+        $layouts{$embedded_layout}
+      );
     }
   }
 
   return \%layouts;
 }
 
+=attr page_file_regex
+
+=cut
+
 has page_file_regex => (
   is      => 'ro' ,
   isa     => 'RegexpRef',
   default => sub { qr/\.(mk|mkd|mkdn|markdown|html)$/ } ,
 );
+
+=attr pages
+
+=cut
 
 has pages => (
   is      => 'ro',
@@ -120,19 +168,29 @@ sub _build_pages {
   # build posts before pages
   $self->posts;
 
-  my @potential_pages = File::Find::Rule->file->nonempty
-    ->name( $self->page_file_regex )->in( '.' );
+  my @potential_pages = File::Find::Rule->file->
+    name( $self->page_file_regex )->in( '.' );
 
   my @pages = grep { $_ } map {
     if ($self->seen_file( $_ )) { 0 }
     else {
-      $self->add_file( $_ => 'page' );
-      HiD::Page->new( filename => $_ , hid => $self );
+      my $page;
+      try {
+        # if this file lacks yaml front matter, HiD::Page->new() will throw an
+        # exception, and then we won't add it to the list.
+        $page = HiD::Page->new( filename => $_ , hid => $self );
+        $self->add_file( $_ => 'page' );
+      };
+      $page;
     }
   } @potential_pages;
 
   return \@pages;
 }
+
+=attr post_file_regex
+
+=cut
 
 has post_file_regex => (
   is      => 'ro' ,
@@ -140,11 +198,19 @@ has post_file_regex => (
   default => sub { qr/^[0-9]{4}-[0-9]{2}-[0-9]{2}-(?:.+?)\.(?:mk|mkd|mkdn|markdown)$/ },
 );
 
+=attr posts_dir
+
+=cut
+
 has posts_dir => (
   is      => 'ro' ,
-  isa     => 'HiD::Dir' ,
+  isa     => 'HiD_DirPath' ,
   default => '_posts' ,
 );
+
+=attr posts
+
+=cut
 
 has posts => (
   is      => 'ro' ,
@@ -159,7 +225,7 @@ sub _build_posts {
   # build layouts before posts
   $self->layouts;
 
-  my @potential_posts = File::Find::Rule->file->nonempty
+  my @potential_posts = File::Find::Rule->file
     ->name( $self->post_file_regex )->in( $self->posts_dir );
 
   my @posts = map { my $post = HiD::Post->new( filename => $_ , hid => $self );
@@ -168,10 +234,15 @@ sub _build_posts {
   return \@posts;
 }
 
+=attr processor
+
+=cut
+
 has processor => (
   is      => 'ro' ,
   isa     => 'HiD::Processor' ,
   lazy    => 1 ,
+  handles => [ qw/ process / ] ,
   builder => '_build_processor' ,
 );
 
@@ -183,10 +254,81 @@ sub _build_processor {
   my $processor_class = ( $processor_name =~ /^\+/ ) ? $processor_name
     : "HiD::Processor::$processor_name";
 
-  try_load_clas( $processor_class );
+  try_load_class( $processor_class );
 
-  return $processor_class->new( $self->config->{processor_args} );
+  return $processor_class->new( $self->processor_args );
 }
+
+=attr processor_args
+
+=cut
+
+has processor_args => (
+  is      => 'ro' ,
+  isa     => 'ArrayRef|HashRef' ,
+  lazy    => 1 ,
+  default => sub {
+    my $self = shift;
+
+    return $self->config->{processor_args} if
+      defined $self->config->{processor_args};
+
+    my $include_path = $self->layout_dir;
+    $include_path   .= ':' . $self->include_dir
+      if defined $self->include_dir;
+
+    return {
+      INCLUDE_PATH => $include_path ,
+      OUTPUT_PATH  => $self->site_dir ,
+      DEFAULT      => $self->get_layout_by_name( 'default' )->filename ,
+    };
+  },
+);
+
+=attr regular_files
+
+=cut
+
+has regular_files => (
+  is      => 'ro',
+  isa     => 'Maybe[ArrayRef[HiD::RegularFile]]',
+  lazy    => 1 ,
+  builder => '_build_regular_files' ,
+);
+
+sub _build_regular_files {
+  my $self = shift;
+
+  # build pages before regular files
+  $self->pages;
+
+  my @potential_files = File::Find::Rule->file->in( '.' );
+
+  my @files = grep { $_ } map {
+    if ($self->seen_file( $_ )) { 0 }
+    elsif ( $_ =~ /^_/ ) { 0 }
+    else {
+      my $file = HiD::RegularFile->new({ filename => $_ , site => $self->site_dir });
+      $self->add_file( $_ => 'file' );
+      $file;
+    }
+  } @potential_files;
+
+  return \@files;
+}
+
+=attr site_dir
+
+=cut
+
+has site_dir => (
+  is      => 'ro' ,
+  isa     => 'HiD_DirPath' ,
+  lazy    => 1 ,
+  builder => '_build_site_dir' ,
+);
+
+sub _build_site_dir { return shift->config->{site_dir} // '_site' }
 
 __PACKAGE__->meta->make_immutable;
 1;

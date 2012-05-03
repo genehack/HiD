@@ -7,11 +7,19 @@ use DateTime;
 use HiD::Types;
 use YAML::XS;
 
+=attr categories
+
+=cut
+
 has categories => (
   is      => 'ro' ,
   isa     => 'ArrayRef' ,
   default => sub {[]} ,
 );
+
+=attr content
+
+=cut
 
 has content => (
   is       => 'ro',
@@ -19,17 +27,39 @@ has content => (
   required => 1 ,
 );
 
+=attr date
+
+=cut
+
 has date => (
   is       => 'ro' ,
   isa      => 'DateTime' ,
   required => 1,
 );
 
-has filename =>(
+=attr extension
+
+=cut
+
+has extension => (
   is       => 'ro' ,
-  isa      => 'HiD::File',
+  isa      => 'HiD_FileExtension' ,
   required => 1 ,
 );
+
+=attr filename
+
+=cut
+
+has filename =>(
+  is       => 'ro' ,
+  isa      => 'HiD_FilePath',
+  required => 1 ,
+);
+
+=attr layout
+
+=cut
 
 has layout => (
   is      => 'ro' ,
@@ -37,11 +67,19 @@ has layout => (
   default => sub { "FIXME fetch layouts by name" }
 );
 
+=attr metadata
+
+=cut
+
 has metadata => (
   is      => 'ro' ,
   isa     => 'HashRef' ,
   default => sub {{}} ,
 );
+
+=attr permalink
+
+=cut
 
 has permalink => (
   is      => 'ro',
@@ -50,6 +88,10 @@ has permalink => (
   builder => '_build_permalink' ,
 );
 
+=attr processed_content
+
+=cut
+
 has processed_content => (
   is      => 'ro' ,
   isa     => 'Str' ,
@@ -57,11 +99,19 @@ has processed_content => (
   builder => 'process_content' ,
 );
 
+=attr tags
+
+=cut
+
 has tags => (
   is      => 'ro' ,
   isa     => 'ArrayRef',
   default => sub {[]} ,
 );
+
+=attr title
+
+=cut
 
 has title => (
   is       => 'ro' ,

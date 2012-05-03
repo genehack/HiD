@@ -25,7 +25,7 @@ has content => (
 
 has extension => (
   is       => 'ro'  ,
-  isa      => 'Str' ,
+  isa      => 'HiD_FileExtension' ,
   required => 1 ,
 );
 
@@ -35,7 +35,7 @@ has extension => (
 
 has filename => (
   is       => 'ro' ,
-  isa      => 'HiD::File' ,
+  isa      => 'HiD_FilePath' ,
   required => 1 ,
 );
 
@@ -45,7 +45,7 @@ has filename => (
 
 has layout => (
   is     => 'rw' ,
-  isa    => 'Maybe[Object]' ,
+  isa    => 'Maybe[HiD::Layout]' ,
   writer => 'set_layout' ,
 );
 
