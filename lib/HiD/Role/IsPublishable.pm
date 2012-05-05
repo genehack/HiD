@@ -28,7 +28,7 @@ sub _build_destination {
     $filename = $permalink;
     $filename .= 'index.html' if ( $filename =~ m|/$| );
   }
-  elsif ( $self->does( 'HiD::Role::IsProcessed' ) and $self->extension ne 'html' ) {
+  elsif ( $self->extension ne 'html' && $self->does( 'HiD::Role::IsProcessed' )) {
     my $ext = $self->extension;
     $filename =~ s/$ext$/html/;
   }

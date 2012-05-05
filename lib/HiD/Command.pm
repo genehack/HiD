@@ -15,6 +15,7 @@ has config_file => (
 has hid => (
   is       => 'ro' ,
   isa      => 'HiD::Config' ,
+  traits   => [ qw/ NoGetopt/ ] ,
   lazy     => 1 ,
   init_arg => undef ,
   builder  => '_build_hid' ,
@@ -26,6 +27,17 @@ has hid => (
 );
 
 sub _build_hid { return HiD::Config->new }
+
+sub execute {
+  my( $self , $opts , $args ) = @_;
+
+  if ( $opts->{help_flag} ) {
+    print $self->usage->text;
+    exit;
+  }
+
+  $self->_run( $opts , $args );
+}
 
 __PACKAGE__->meta->make_immutable;
 1;

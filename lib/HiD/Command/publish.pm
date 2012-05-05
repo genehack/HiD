@@ -1,4 +1,5 @@
 package HiD::Command::publish;
+# ABSTRACT: HiD 'publish' sub-command
 use 5.010;
 use Mouse;
 extends 'HiD::Command';
@@ -9,7 +10,7 @@ use Path::Class  qw/ file /;
 has written_files => (
   is      => 'ro' ,
   isa     => 'HashRef' ,
-  traits  => [ 'Hash' ] ,
+  traits  => [ qw/ Hash NoGetopt / ] ,
   default => sub {{}},
   handles => {
     add_written_file  => 'set' ,
@@ -19,8 +20,8 @@ has written_files => (
   },
 );
 
-sub execute {
-  my $self = shift;
+sub _run {
+  my( $self , $opts , $args ) = @_;
 
   # bootstrap data structures -- FIXME should have a more explicit way to do this
   $self->hid->regular_files;
@@ -28,14 +29,12 @@ sub execute {
   $self->add_written_file( $self->site_dir => '_sitedir' );
 
   foreach my $file ( $self->all_objects ) {
-    if ( $file->does( 'HiD::Role::IsPublishable' )) {
-      $file->publish;
+    $file->publish;
 
-      my $path;
-      foreach my $part ( split '/' , $file->destination ) {
-        $path = file( $path , $part )->stringify;
-        $self->add_written_file( $path => 1 );
-      }
+    my $path;
+    foreach my $part ( split '/' , $file->destination ) {
+      $path = file( $path , $part )->stringify;
+      $self->add_written_file( $path => 1 );
     }
   }
 

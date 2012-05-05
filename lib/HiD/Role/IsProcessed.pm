@@ -3,10 +3,10 @@ use Mouse::Role;
 
 use namespace::autoclean;
 
-use HiD::Types;
-
+use autodie;
 use Carp;
 use Class::Load  qw/ :all /;
+use HiD::Types;
 use Path::Class  qw/ file /;
 use YAML::XS     qw/ Load /;
 
@@ -24,7 +24,7 @@ has content => (
 sub _build_content {
   my $self = shift;
 
-  open( my $IN , '<' , $self->filename ) or die $!;
+  open( my $IN , '<' , $self->filename );
 
   my( $content , $metadata );
 
@@ -143,8 +143,10 @@ sub processing_data {
     metadata => $self->metadata ,
   };
 
-  $return->{title} =  $self->title
-    if $self->can('title');
+  foreach my $method( qw/ title url / ) {
+    $return->{$method} = $self->$method
+      if $self->can( $method );
+  }
 
   return $return;
 }
