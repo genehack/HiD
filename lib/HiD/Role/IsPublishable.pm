@@ -6,6 +6,8 @@ use namespace::autoclean;
 use HiD::Types;
 use Path::Class qw/ file / ;
 
+requires 'publish';
+
 =attr destination
 
 =cut
@@ -69,22 +71,13 @@ has filename => (
 
 has hid => (
   is       => 'ro' ,
-  isa      => 'HiD',
+  isa      => 'HiD::Config',
   required => 1 ,
   handles  => {
     get_layout_by_name => 'get_layout_by_name' ,
+    process            => 'process' ,
+    site_dir           => 'site_dir' ,
   } ,
-);
-
-=attr site_dir
-
-=cut
-
-has site_dir => (
-  is      => 'ro' ,
-  isa     => 'HiD_DirPath' ,
-  lazy    => 1 ,
-  default => sub { shift->hid->site_dir }
 );
 
 =attr url

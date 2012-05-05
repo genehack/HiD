@@ -3,7 +3,7 @@ package HiD::Command;
 use Mouse;
 extends 'MouseX::App::Cmd::Command';
 
-use HiD;
+use HiD::Config;
 
 has config_file => (
   is          => 'ro' ,
@@ -14,16 +14,18 @@ has config_file => (
 
 has hid => (
   is       => 'ro' ,
-  isa      => 'HiD' ,
+  isa      => 'HiD::Config' ,
   lazy     => 1 ,
   init_arg => undef ,
   builder  => '_build_hid' ,
   handles  => [
+    'all_objects' ,
     'config' ,
+    'site_dir' ,
   ] ,
 );
 
-sub _build_hid { return HiD->new }
+sub _build_hid { return HiD::Config->new }
 
 __PACKAGE__->meta->make_immutable;
 1;
