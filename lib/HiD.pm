@@ -172,16 +172,15 @@ sub _build_pages {
     name( $self->page_file_regex )->in( '.' );
 
   my @pages = grep { $_ } map {
-    if ($self->seen_file( $_ )) { 0 }
+    if ($self->seen_file( $_ ) or $_ =~ /^_/ ) { 0 }
     else {
-      my $page;
       try {
-        # if this file lacks yaml front matter, HiD::Page->new() will throw an
-        # exception, and then we won't add it to the list.
-        $page = HiD::Page->new( filename => $_ , hid => $self );
-        $self->add_file( $_ => 'page' );
-      };
-      $page;
+        my $page = HiD::Page->new( filename => $_ , hid => $self );
+        $page->content;
+        $self->add_file( $_ );
+        $page;
+      }
+      catch { 0 };
     }
   } @potential_pages;
 
@@ -228,8 +227,13 @@ sub _build_posts {
   my @potential_posts = File::Find::Rule->file
     ->name( $self->post_file_regex )->in( $self->posts_dir );
 
-  my @posts = map { my $post = HiD::Post->new( filename => $_ , hid => $self );
-                    $self->add_file( $_ => 'post' ); $post } @potential_posts;
+  my @posts = grep { $_ } map {
+    try {
+      my $post = HiD::Post->new( filename => $_ , hid => $self );
+      $self->add_file( $_ => 'post' );
+      $post
+    };
+  } @potential_posts;
 
   return \@posts;
 }
@@ -279,7 +283,6 @@ has processor_args => (
 
     return {
       INCLUDE_PATH => $include_path ,
-      OUTPUT_PATH  => $self->site_dir ,
       DEFAULT      => $self->get_layout_by_name( 'default' )->filename ,
     };
   },
@@ -305,10 +308,9 @@ sub _build_regular_files {
   my @potential_files = File::Find::Rule->file->in( '.' );
 
   my @files = grep { $_ } map {
-    if ($self->seen_file( $_ )) { 0 }
-    elsif ( $_ =~ /^_/ ) { 0 }
+    if ($self->seen_file( $_ ) or $_ =~ /^_/ ) { 0 }
     else {
-      my $file = HiD::RegularFile->new({ filename => $_ , site => $self->site_dir });
+      my $file = HiD::RegularFile->new({ filename => $_ , hid => $self });
       $self->add_file( $_ => 'file' );
       $file;
     }

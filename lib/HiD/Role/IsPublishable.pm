@@ -1,0 +1,104 @@
+package HiD::Role::IsPublishable;
+use Mouse::Role;
+
+use namespace::autoclean;
+
+use HiD::Types;
+use Path::Class qw/ file / ;
+
+=attr destination
+
+=cut
+
+has destination => (
+  is      => 'ro' ,
+  isa     => 'Str' ,
+  lazy    => 1 ,
+  builder => '_build_destination'  ,
+);
+
+sub _build_destination {
+  my $self = shift;
+
+  my $filename = $self->filename;
+
+  if ( $self->does( 'HiD::Role::IsProcessed' ) and $self->extension ne 'html' ) {
+    my $ext = $self->extension;
+    $filename =~ s/$ext$/html/;
+  }
+  return file( $self->site_dir , $filename )->stringify;
+}
+
+=attr extension
+
+=cut
+
+has extension => (
+  is      => 'ro' ,
+  isa     => 'HiD_FileExtension' ,
+  lazy    => 1 ,
+  builder => '_build_extension' ,
+);
+
+sub _build_extension {
+  my $self = shift;
+
+  my( $extension ) = $self->filename =~ m|\.([^.]+)$|;
+
+  return $extension;
+}
+
+=attr filename
+
+=cut
+
+has filename => (
+  is       => 'ro' ,
+  isa      => 'HiD_FilePath' ,
+  required => 1 ,
+);
+
+=attr hid
+
+=cut
+
+has hid => (
+  is       => 'ro' ,
+  isa      => 'HiD',
+  required => 1 ,
+  handles  => {
+    get_layout_by_name => 'get_layout_by_name' ,
+  } ,
+);
+
+=attr site_dir
+
+=cut
+
+has site_dir => (
+  is      => 'ro' ,
+  isa     => 'HiD_DirPath' ,
+  lazy    => 1 ,
+  default => sub { shift->hid->site_dir }
+);
+
+=attr url
+
+=cut
+
+has url => (
+  is      => 'ro' ,
+  isa     => 'HiD_FilePath' ,
+  lazy    => 1 ,
+  builder => '_build_url' ,
+);
+
+sub _build_url {
+  my $self = shift;
+  my $url = $self->filename;
+  $url =~ s|/index.html$||;
+  return $url;
+}
+
+no Mouse::Role;
+1;
