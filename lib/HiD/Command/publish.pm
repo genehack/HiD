@@ -22,12 +22,13 @@ has written_files => (
 sub execute {
   my $self = shift;
 
-  _publish_posts( $self );
-  _publish_pages( $self );
   _publish_regular_files( $self );
+  _publish_pages(         $self );
+  _publish_posts(         $self );
 
-  foreach ( File::Find::Rule->file->in( $self->hid->site_dir )) {
-    unlink $_ unless defined $self->written_file($_)
+  foreach ( File::Find::Rule->in( $self->hid->site_dir )) {
+    next if defined $self->written_file($_);
+    -d $_ ? rmdir $_ : unlink $_;
   }
 }
 

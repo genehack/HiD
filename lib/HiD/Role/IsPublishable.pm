@@ -22,10 +22,15 @@ sub _build_destination {
 
   my $filename = $self->filename;
 
-  if ( $self->does( 'HiD::Role::IsProcessed' ) and $self->extension ne 'html' ) {
+  if ( $self->can( 'permalink') and my $permalink = $self->permalink ) {
+    $filename = $permalink;
+    $filename .= 'index.html' if ( $filename =~ m|/$| );
+  }
+  elsif ( $self->does( 'HiD::Role::IsProcessed' ) and $self->extension ne 'html' ) {
     my $ext = $self->extension;
     $filename =~ s/$ext$/html/;
   }
+
   return file( $self->site_dir , $filename )->stringify;
 }
 

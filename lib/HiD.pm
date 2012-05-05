@@ -87,6 +87,7 @@ has include_dir => (
 has layout_dir => (
   is      => 'ro' ,
   isa     => 'HiD_DirPath' ,
+  lazy    => 1 ,
   default => '_layouts' ,
 );
 
@@ -204,6 +205,7 @@ has post_file_regex => (
 has posts_dir => (
   is      => 'ro' ,
   isa     => 'HiD_DirPath' ,
+  lazy    => 1 ,
   default => '_posts' ,
 );
 

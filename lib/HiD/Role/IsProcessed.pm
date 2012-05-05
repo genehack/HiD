@@ -8,6 +8,7 @@ use HiD::Types;
 
 use Carp;
 use Class::Load  qw/ :all /;
+use Path::Class  qw/ file /;
 use YAML::XS     qw/ Load /;
 
 =attr content
@@ -89,6 +90,22 @@ has metadata => (
     get_metadata => 'get',
   },
 );
+
+=attr permalink
+
+=cut
+
+has permalink => (
+  is      => 'ro' ,
+  isa     => 'Maybe[Str]' ,
+  lazy    => 1 ,
+  builder => '_build_permalink' ,
+);
+
+sub _build_permalink {
+  my $self = shift;
+  return $self->get_metadata( 'permalink' );
+}
 
 =attr processed_content
 
