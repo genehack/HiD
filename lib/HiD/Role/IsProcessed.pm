@@ -1,6 +1,5 @@
 package HiD::Role::IsProcessed;
 use Mouse::Role;
-with 'HiD::Role::IsPublishable';
 
 use namespace::autoclean;
 

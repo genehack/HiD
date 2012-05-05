@@ -1,10 +1,8 @@
 package HiD::Role::IsPost;
 use Mouse::Role;
-with 'HiD::Role::IsProcessed';
 
 use DateTime;
 use HiD::Types;
-use String::Errf qw/ errf /;
 use YAML::XS;
 
 =attr categories
@@ -76,40 +74,6 @@ has filename_title => (
   isa    => 'Str' ,
   writer => '_set_filename_title' ,
 );
-
-# override
-sub _build_permalink {
-  my $self = shift;
-
-  my %formats = (
-    date   => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s.html' ,
-    pretty => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s/' ,
-    none   => '/%{categories}s/%{title}s.html' ,
-  );
-
-  my $permalink_format = $self->get_metadata( 'permalink' ) //
-    $self->hid->config->{permalink} // 'date';
-
-  unless ( $permalink_format =~ /%\{.*?\}/ ) {
-    if ( exists $formats{$permalink_format} ) {
-      $permalink_format = $formats{$permalink_format};
-    }
-  }
-
-  my $categories = join '/' , @{ $self->categories } || '';
-  my $day        = $self->strftime( '%d' , $self->day   ),
-  my $month      = $self->strftime( '%m' , $self->month );
-
-  return errf $permalink_format , {
-    categories => $categories ,
-    day        => $day ,
-    i_day      => $self->day,
-    i_month    => $self->month,
-    month      => $month ,
-    title      => $self->filename_title ,
-    year       => $self->year ,
-  };
-}
 
 =attr tags
 

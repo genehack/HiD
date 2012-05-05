@@ -18,3 +18,5 @@ sub BUILDARGS {
 
   return { tt => Template->new( %args ) };
 }
+
+1;

@@ -2,14 +2,13 @@ package HiD;
 # ABSTRACT: Static website generation system
 use Mouse;
 extends 'MouseX::App::Cmd';
+use namespace::autoclean;
 
 =head1 SYNOPSIS
 
 See C<perldoc hid> for usage information.
 
 =cut
-
-use namespace::autoclean;
 
 use autodie            qw/ :all /;
 use Class::Load        qw/ :all /;
