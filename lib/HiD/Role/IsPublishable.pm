@@ -86,15 +86,17 @@ has hid => (
 
 has url => (
   is      => 'ro' ,
-  isa     => 'HiD_FilePath' ,
+  isa     => 'Str' ,
   lazy    => 1 ,
   builder => '_build_url' ,
 );
 
 sub _build_url {
   my $self = shift;
-  my $url = $self->filename;
-  $url =~ s|/index.html$||;
+  my $url = $self->destination;
+  my $site_dir = $self->site_dir;
+  $url =~ s|^$site_dir||;
+  $url =~ s|index.html$||;
   return $url;
 }
 

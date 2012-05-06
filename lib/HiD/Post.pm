@@ -7,6 +7,15 @@ with 'HiD::Role::IsPost';
 use String::Errf qw/ errf /;
 
 # override
+sub _build_layout {
+  my $self = shift;
+
+  my $layout_name = $self->get_metadata( 'layout' ) // 'post';
+
+  return $self->get_layout_by_name( $layout_name );
+}
+
+# override
 sub _build_permalink {
   my $self = shift;
 
@@ -19,15 +28,12 @@ sub _build_permalink {
   my $permalink_format = $self->get_metadata( 'permalink' ) //
     $self->hid->config->{permalink} // 'date';
 
-  unless ( $permalink_format =~ /%\{.*?\}/ ) {
-    if ( exists $formats{$permalink_format} ) {
-      $permalink_format = $formats{$permalink_format};
-    }
-  }
+  $permalink_format = $formats{$permalink_format}
+    if exists $formats{$permalink_format};
 
   my $categories = join '/' , @{ $self->categories } || '';
-  my $day        = $self->strftime( '%d' , $self->day   ),
-    my $month      = $self->strftime( '%m' , $self->month );
+  my $day        = $self->strftime( '%d' , $self->day   );
+  my $month      = $self->strftime( '%m' , $self->month );
 
   return errf $permalink_format , {
     categories => $categories ,
@@ -43,10 +49,21 @@ sub _build_permalink {
 sub publish {
   my $self = shift;
 
+  my $content;
+  my $data = $self->processing_data;
+
+  $self->process(
+    \$self->content ,
+    $data ,
+    \$content,
+  ) or die $self->hid->processor->tt->error;
+
+  $data->{content} = $content;
+
   $self->process(
     ### FIXME just ... gross.
     $self->layout->name . '.' . $self->layout->extension,
-    $self->processing_data ,
+    $data ,
     $self->destination ,
     ### FIXME also nasty...
   ) or die $self->hid->processor->tt->error;

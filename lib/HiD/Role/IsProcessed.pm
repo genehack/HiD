@@ -26,31 +26,22 @@ sub _build_content {
 
   open( my $IN , '<' , $self->filename );
 
-  my( $content , $metadata );
-
   my $first = <$IN>;
 
-  confess "no front matter" . $self->filename unless $first =~ /^---$/;
+  confess "no front matter" . $self->filename
+    unless $first =~ /^---$/;
 
-  if ( $first =~ /^---$/ ) {
-    my $line = <$IN>;
-    while ( $line !~ /^---$/ ) {
-      $metadata .= $line;
-      $line = <$IN>;
-    }
-    $self->_set_metadata( Load($metadata));
-  }
-  else {
-    $content = $first ;
-    $self->_set_metadata( {} );
-  }
-
+  my $file_content;
   {
     local $/;
-    $content .= <$IN>;
+    $file_content .= <$IN>;
   }
-
   close( $IN );
+
+  my( $metadata , $content ) = split /---\n/ , $file_content;
+
+  $metadata = Load( $metadata ) // {};
+  $self->_set_metadata( $metadata );
 
   return $content;
 }
@@ -140,11 +131,11 @@ sub processing_data {
 
   my $return = {
     content  => $self->processed_content ,
-    metadata => $self->metadata ,
+    page     => $self->metadata ,
   };
 
   foreach my $method( qw/ title url / ) {
-    $return->{$method} = $self->$method
+    $return->{page}{$method} = $self->$method
       if $self->can( $method );
   }
 
