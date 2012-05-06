@@ -1,9 +1,9 @@
-package HiD::Command;
+package HiD::App::Command;
 # ABSTRACT: Base class for HiD commands
 use Mouse;
 extends 'MouseX::App::Cmd::Command';
 
-use HiD::Config;
+use HiD;
 
 has config_file => (
   is          => 'ro' ,
@@ -14,7 +14,7 @@ has config_file => (
 
 has hid => (
   is       => 'ro' ,
-  isa      => 'HiD::Config' ,
+  isa      => 'HiD' ,
   traits   => [ qw/ NoGetopt/ ] ,
   lazy     => 1 ,
   init_arg => undef ,
@@ -26,7 +26,7 @@ has hid => (
   ] ,
 );
 
-sub _build_hid { return HiD::Config->new }
+sub _build_hid { return HiD->new }
 
 sub execute {
   my( $self , $opts , $args ) = @_;

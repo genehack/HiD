@@ -1,8 +1,8 @@
-package HiD::Command::config;
+package HiD::App::Command::config;
 # ABSTRACT: HiD 'config' subcmd
 use 5.010;
 use Mouse;
-extends 'HiD::Command';
+extends 'HiD::App::Command';
 
 sub _run {
   my( $self , $opts , $args ) = @_;

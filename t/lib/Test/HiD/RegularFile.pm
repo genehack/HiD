@@ -5,7 +5,7 @@ with 'Test::HiD::Role::IsPublishable';
 use namespace::autoclean;
 
 use File::Temp qw/ tempfile tempdir /;
-use HiD::Config;
+use HiD;
 use HiD::RegularFile;
 
 sub build_object_to_test {
@@ -14,7 +14,7 @@ sub build_object_to_test {
 
   return HiD::RegularFile->new({
     filename => $name,
-    hid      => HiD::Config->new({
+    hid      => HiD->new({
       site_dir => $tempdir,
     }),
   });

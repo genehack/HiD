@@ -8,14 +8,14 @@ use Test::More;
 
 use App::Cmd::Tester;
 use File::Temp          qw/ tempdir /;
-use HiD;
+use HiD::App;
 use YAML::XS            qw/ LoadFile /;
 
 {
   my $dir = tempdir();
   chdir $dir or BAIL_OUT( "Couldn't get into tempdir" );
 
-  my $result = test_app( 'HiD' => [ 'init' ]);
+  my $result = test_app( 'HiD::App' => [ 'init' ]);
 
   like $result->stdout , qr/Enjoy/ , 'expected STDOUT';
   is   $result->stderr , '' , 'empty STDERR';
@@ -31,7 +31,7 @@ use YAML::XS            qw/ LoadFile /;
   my $dir = tempdir();
   chdir $dir or BAIL_OUT( "Couldn't get into tempdir" );
 
-  my $result = test_app( 'HiD' => [ 'init' , '--title' , 'My Site' ]);
+  my $result = test_app( 'HiD::App' => [ 'init' , '--title' , 'My Site' ]);
 
   like $result->stdout , qr/Enjoy/ , 'expected STDOUT';
   is   $result->stderr , '' , 'empty STDERR';
@@ -49,7 +49,7 @@ use YAML::XS            qw/ LoadFile /;
   my $dir = tempdir();
   chdir $dir or BAIL_OUT( "Couldn't get into tempdir" );
 
-  my $result = test_app( 'HiD' => [ 'init' , '--blog' ]);
+  my $result = test_app( 'HiD::App' => [ 'init' , '--blog' ]);
 
   like $result->stdout , qr/Enjoy/ , 'expected STDOUT';
   is   $result->stderr , '' , 'empty STDERR';
@@ -72,7 +72,7 @@ TODO:
   my $dir = tempdir();
   chdir $dir or BAIL_OUT( "Couldn't get into tempdir" );
 
-  my $result = test_app( 'HiD' => [ 'init' , '--github' ]);
+  my $result = test_app( 'HiD::App' => [ 'init' , '--github' ]);
   is $result->exit_code , 0 , 'success';
 }
 

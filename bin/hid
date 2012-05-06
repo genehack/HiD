@@ -8,5 +8,5 @@ use 5.010;
 
 use FindBin;
 use lib "$FindBin::RealBin/../lib";
-use HiD;
-HiD->run;
+use HiD::App;
+HiD::App->run;

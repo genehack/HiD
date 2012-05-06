@@ -1,8 +1,8 @@
-package HiD::Command::publish;
+package HiD::App::Command::publish;
 # ABSTRACT: HiD 'publish' sub-command
 use 5.010;
 use Mouse;
-extends 'HiD::Command';
+extends 'HiD::App::Command';
 
 use File::Remove qw/ remove /;
 use Path::Class  qw/ file /;

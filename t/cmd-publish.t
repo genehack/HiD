@@ -13,7 +13,7 @@ use Cwd;
 use File::Temp  qw/ tempfile tempdir /;
 use YAML        qw/ DumpFile /;
 
-use HiD;
+use HiD::App;
 
 my $start_dir = cwd;
 my $test_dir  = tempdir();
@@ -337,7 +337,7 @@ chdir $start_dir;
 done_testing;
 
 sub _assert_good_run {
-  my $result = test_app( 'HiD' => [ 'publish' ]);
+  my $result = test_app( 'HiD::App' => [ 'publish' ]);
 
   is $result->stdout    , '' , 'expected STDOUT';
   is $result->stderr    , '' , 'empty STDERR';

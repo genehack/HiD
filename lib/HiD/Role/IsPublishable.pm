@@ -71,7 +71,7 @@ has filename => (
 
 has hid => (
   is       => 'ro' ,
-  isa      => 'HiD::Config',
+  isa      => 'HiD',
   required => 1 ,
   handles  => {
     get_layout_by_name => 'get_layout_by_name' ,
