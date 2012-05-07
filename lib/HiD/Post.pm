@@ -1,10 +1,13 @@
 package HiD::Post;
 use Mouse;
-with 'HiD::Role::IsPublished';
-with 'HiD::Role::IsProcessed';
+with 'HiD::Role::IsConverted';
 with 'HiD::Role::IsPost';
+with 'HiD::Role::IsPublished';
 
 use String::Errf qw/ errf /;
+
+### FIXME
+sub output_filename {}
 
 # override
 sub _build_layout {

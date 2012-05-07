@@ -55,7 +55,7 @@ has layout => (
 
 has metadata => (
   is  => 'ro' ,
-  isa => 'Maybe[HashRef]'
+  isa => 'HashRef'
 );
 
 =attr name
@@ -83,15 +83,17 @@ sub BUILDARGS {
   ( $args{name} , $args{extension} ) = $args{filename}
     =~ m|^.*/(.+)\.([^.]+)$|;
 
-  my $content = read_file( $args{filename} );
+  my $content  = read_file( $args{filename} );
+  my $metadata = {};
 
-  my $meta;
   if ( $content =~ /^---\n/s ) {
+    my $meta;
     ( $meta , $content ) = ( $content )
       =~ m|^---\n(.*?)---\n(.*)$|s;
+    $metadata = Load( $meta ) if $meta;
   }
 
-  $args{metadata} = Load( $meta ) if $meta;
+  $args{metadata} = $metadata;
   $args{content}  = $content;
 
   return \%args;

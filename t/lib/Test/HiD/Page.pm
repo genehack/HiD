@@ -1,33 +1,36 @@
-package Test::HiD::Page;
-use Moose;
-with 'Test::HiD::Role::IsPublishable';
+use strict;
+use warnings;
 
+package Test::HiD::Page;
+use Test::Routine;
+use Test::More;
+use Test::File;
 use namespace::autoclean;
 
 use File::Temp qw/ tempfile tempdir /;
-use HiD;
 use HiD::Page;
 
-sub build_page {
-  my( $fh , $name ) = tempfile( SUFFIX => '.html' );
-  print $fh "---\nlayout: default\n---\nPAGE\n";
+has subject => (
+  is  => 'ro' ,
+  isa => 'HiD::Page' ,
+);
 
-  my $destination = tempdir();
-  my $layout_dir  = tempdir();
+test "output filename" => sub {
+  my $test    = shift;
+  my $subject = $test->subject;
 
-  {
-    open( my $fh , '>' , "$layout_dir/default.html" ) or die $!;
-    print $fh "[% content %]\n";
-    close( $fh );
-  }
+  like( $subject->output_filename , qr|.html$| , 'ends in html' );
+};
 
-  return HiD::Page->new({
-    filename => $name,
-    hid      => HiD->new({ config => {
-      layout_dir  => $layout_dir,
-      destination => $destination,
-    }}),
-  });
-}
+test "publish" => sub {
+  my $test = shift;
+  my $subject = $test->subject;
+
+  my $output = $subject->output_filename;
+
+  file_not_exists_ok( $output , 'no output yet' );
+  $subject->publish;
+  file_exists_ok( $output , 'and now output' );
+};
 
 1;

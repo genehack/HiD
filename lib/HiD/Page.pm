@@ -1,7 +1,30 @@
 package HiD::Page;
+# ABSTRACT: Pages that are converted during the output process
 use Mouse;
+with 'HiD::Role::IsConverted';
 with 'HiD::Role::IsPublished';
-with 'HiD::Role::IsProcessed';
+
+use Path::Class     qw/ file / ;
+
+=head1 NOTE
+
+Also consumes L<HiD::Role::IsConverted> and L<HiD::Role::IsPublished>; see
+documentation for that role as well if you're trying to figure out how an
+object from this class works.
+
+=method output_filename
+
+=cut
+
+sub output_filename {
+  my $self = shift;
+
+  return file( $self->dest_dir , $self->basename . '.html' )->stringify;
+}
+
+=method publish
+
+=cut
 
 sub publish {
   my $self = shift;
