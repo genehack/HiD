@@ -1,5 +1,5 @@
 package HiD::Role::IsPost;
-use Mouse::Role;
+use Moose::Role;
 
 use DateTime;
 use HiD::Types;
@@ -107,5 +107,5 @@ sub _build_title {
   return ( ref $title ) ? $$title : $title;
 }
 
-no Mouse::Role;
+no Moose::Role;
 1;

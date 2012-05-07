@@ -1,6 +1,6 @@
 package HiD::Page;
 # ABSTRACT: Pages that are converted during the output process
-use Mouse;
+use Moose;
 with 'HiD::Role::IsConverted';
 with 'HiD::Role::IsPublished';
 

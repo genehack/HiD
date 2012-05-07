@@ -1,6 +1,6 @@
 package HiD::File;
 # ABSTRACT: Regular files that are only copied, not processed (e.g., CSS, JS, etc.)
-use Mouse;
+use Moose;
 with 'HiD::Role::IsPublished';
 
 use File::Basename  qw/ fileparse /;

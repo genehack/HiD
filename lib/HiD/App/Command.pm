@@ -1,7 +1,7 @@
 package HiD::App::Command;
 # ABSTRACT: Base class for HiD commands
-use Mouse;
-extends 'MouseX::App::Cmd::Command';
+use Moose;
+extends 'MooseX::App::Cmd::Command';
 
 use HiD;
 

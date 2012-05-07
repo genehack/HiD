@@ -1,6 +1,6 @@
 package HiD;
 # ABSTRACT: Static website publishing framework
-use Mouse;
+use Moose;
 use namespace::autoclean;
 
 use Class::Load        qw/ :all /;

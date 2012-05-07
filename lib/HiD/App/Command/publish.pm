@@ -1,7 +1,7 @@
 package HiD::App::Command::publish;
 # ABSTRACT: HiD 'publish' sub-command
 use 5.010;
-use Mouse;
+use Moose;
 extends 'HiD::App::Command';
 
 use File::Remove qw/ remove /;

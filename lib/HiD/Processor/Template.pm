@@ -1,5 +1,5 @@
 package HiD::Processor::Template;
-use Mouse;
+use Moose;
 extends 'HiD::Processor';
 
 use Template;

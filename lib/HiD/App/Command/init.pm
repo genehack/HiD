@@ -1,6 +1,6 @@
 package HiD::App::Command::init;
 # ABSTRACT: HiD 'init' subcmd - initialize a new site
-use Mouse;
+use Moose;
 extends 'HiD::App::Command';
 
 use 5.010;

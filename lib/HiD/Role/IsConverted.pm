@@ -1,5 +1,5 @@
 package HiD::Role::IsConverted;
-use Mouse::Role;
+use Moose::Role;
 
 use namespace::autoclean;
 
@@ -151,5 +151,5 @@ sub template_data {
   return $data;
 }
 
-no Mouse::Role;
+no Moose::Role;
 1;

@@ -1,7 +1,7 @@
 package HiD::App;
 # ABSTRACT: Static website generation system
-use Mouse;
-extends 'MouseX::App::Cmd';
+use Moose;
+extends 'MooseX::App::Cmd';
 use namespace::autoclean;
 
 =head1 SYNOPSIS

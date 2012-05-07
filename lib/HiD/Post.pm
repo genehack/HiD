@@ -1,5 +1,5 @@
 package HiD::Post;
-use Mouse;
+use Moose;
 with 'HiD::Role::IsConverted';
 with 'HiD::Role::IsPost';
 with 'HiD::Role::IsPublished';

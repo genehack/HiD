@@ -1,12 +1,11 @@
 package HiD::Layout;
 # ABSTRACT: Class representing a particular layout
-use Mouse;
+use Moose;
 
 use namespace::autoclean;
 
 use File::Slurp qw/ read_file / ;
 use HiD::Types;
-use Mouse::Util::TypeConstraints;
 use YAML::XS;
 
 =attr content

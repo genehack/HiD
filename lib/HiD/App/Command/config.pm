@@ -1,7 +1,7 @@
 package HiD::App::Command::config;
 # ABSTRACT: HiD 'config' subcmd
 use 5.010;
-use Mouse;
+use Moose;
 extends 'HiD::App::Command';
 
 sub _run {

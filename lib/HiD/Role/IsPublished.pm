@@ -1,6 +1,6 @@
 package HiD::Role::IsPublished;
 # ABSTRACT: Role to be consumed by classes that are published during processing
-use Mouse::Role;
+use Moose::Role;
 use namespace::autoclean;
 
 use File::Basename  qw/ fileparse /;
@@ -86,5 +86,5 @@ has url => (
 );
 
 
-no Mouse::Role;
+no Moose::Role;
 1;

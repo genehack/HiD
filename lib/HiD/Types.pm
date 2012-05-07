@@ -3,7 +3,7 @@ package HiD::Types;
 use strict;
 use warnings;
 
-use Mouse::Util::TypeConstraints;
+use Moose::Util::TypeConstraints;
 
 subtype 'HiD_DirPath'
   => as 'Str'
@@ -19,5 +19,5 @@ subtype 'HiD_FilePath'
   => as 'Str'
   => where { -f $_ };
 
-no Mouse::Util::TypeConstraints;
+no Moose::Util::TypeConstraints;
 1;
