@@ -1,6 +1,6 @@
 package HiD::Post;
 use Mouse;
-with 'HiD::Role::IsPublishable';
+with 'HiD::Role::IsPublished';
 with 'HiD::Role::IsProcessed';
 with 'HiD::Role::IsPost';
 

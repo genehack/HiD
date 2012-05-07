@@ -1,6 +1,6 @@
 package HiD::Page;
 use Mouse;
-with 'HiD::Role::IsPublishable';
+with 'HiD::Role::IsPublished';
 with 'HiD::Role::IsProcessed';
 
 sub publish {

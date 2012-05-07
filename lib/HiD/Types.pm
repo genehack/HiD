@@ -1,5 +1,7 @@
 package HiD::Types;
+# ABSTRACT: HiD type constraints
 use strict;
+use warnings;
 
 use Mouse::Util::TypeConstraints;
 
@@ -10,6 +12,7 @@ subtype 'HiD_DirPath'
 # TODO make this a bit more useful?
 subtype 'HiD_FileExtension'
   => as 'Str' ,
+  #=> where { what, exactly? }
   ;
 
 subtype 'HiD_FilePath'
