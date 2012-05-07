@@ -29,13 +29,13 @@ sub output_filename {
 sub publish {
   my $self = shift;
 
-  $self->process(
-    ### FIXME just ... gross.
-    $self->layout->name . '.' . $self->layout->extension,
-    $self->processing_data ,
-    $self->output_filename ,
-    ### FIXME also nasty...
-  ) or die $self->hid->processor->tt->error;
+  my $layout_name = $self->get_metadata( 'layout' ) // 'default';
+
+  my $layout = $self->layouts->{$layout_name};
+
+  $layout->process(
+    $self->template_data , $self->output_filename ,
+  );
 }
 
 __PACKAGE__->meta->make_immutable;

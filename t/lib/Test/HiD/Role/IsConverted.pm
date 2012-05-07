@@ -7,10 +7,9 @@ use Test::More;
 use namespace::autoclean;
 
 has converted_content => (
-  is      => 'ro' ,
-  isa     => 'Str' ,
-  lazy    => 1,
-  default => sub { shift->subject->content } ,
+  is       => 'ro' ,
+  isa      => 'Str' ,
+  required => 1 ,
 );
 
 test "has converted content" => sub {

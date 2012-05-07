@@ -133,7 +133,8 @@ sub _build_layouts {
       =~ m|^$dir/(.*)\.([^.]+)$|;
 
     $layouts{$layout_name} = HiD::Layout->new({
-      filename => $layout_file
+      filename  => $layout_file,
+      processor => $self->processor ,
     });
 
     $self->add_input( $layout_file => 'layout' );
@@ -278,22 +279,19 @@ has processor => (
   is      => 'ro' ,
   isa     => 'HiD::Processor' ,
   lazy    => 1 ,
-  handles => [ qw/ process / ] ,
-  builder => '_build_processor' ,
+  default => sub {
+    my $self = shift;
+
+    my $processor_name  = $self->get_config( 'processor_name' ) // 'Template';
+
+    my $processor_class = ( $processor_name =~ /^\+/ ) ? $processor_name
+      : "HiD::Processor::$processor_name";
+
+    try_load_class( $processor_class );
+
+    return $processor_class->new( $self->processor_args );
+  },
 );
-
-sub _build_processor {
-  my $self = shift;
-
-  my $processor_name  = $self->get_config( 'processor_name' ) // 'Template';
-
-  my $processor_class = ( $processor_name =~ /^\+/ ) ? $processor_name
-    : "HiD::Processor::$processor_name";
-
-  try_load_class( $processor_class );
-
-  return $processor_class->new( $self->processor_args );
-}
 
 has processor_args => (
   is      => 'ro' ,

@@ -71,7 +71,11 @@ has name => (
 
 =cut
 
-has processor => ( is => 'ro' );
+has processor => (
+  is       => 'ro',
+  isa      => 'Object' ,
+  required => 1 ,
+);
 
 
 sub BUILDARGS {
@@ -96,6 +100,16 @@ sub BUILDARGS {
   $args{content}  = $content;
 
   return \%args;
+}
+
+sub process {
+  my( $self , $data , $output ) = @_;
+
+  $self->processor->process(
+    $self->filename ,
+    $data ,
+    $output ,
+  ) or die $self->processor->error;
 }
 
 

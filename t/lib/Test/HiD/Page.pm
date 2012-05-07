@@ -10,9 +10,16 @@ use namespace::autoclean;
 use File::Temp qw/ tempfile tempdir /;
 use HiD::Page;
 
+has output_regexp => (
+  is       => 'ro' ,
+  isa      => 'RegexpRef' ,
+  required => 1 ,
+);
+
 has subject => (
-  is  => 'ro' ,
-  isa => 'HiD::Page' ,
+  is       => 'ro' ,
+  isa      => 'HiD::Page' ,
+  required => 1 ,
 );
 
 test "output filename" => sub {
@@ -31,6 +38,8 @@ test "publish" => sub {
   file_not_exists_ok( $output , 'no output yet' );
   $subject->publish;
   file_exists_ok( $output , 'and now output' );
+
+  file_contains_like( $output , $test->output_regexp );
 };
 
 1;
