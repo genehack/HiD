@@ -97,6 +97,29 @@ has permalink => (
 
 sub _build_permalink { shift->get_metadata( 'permalink' ) }
 
+=attr rendered_content
+
+Content after any layouts have been applied
+
+=cut
+
+has rendered_content => (
+  is      => 'ro' ,
+  isa     => 'Str' ,
+  lazy    => 1 ,
+  default => sub {
+    my $self = shift;
+
+    my $layout_name = $self->get_metadata( 'layout' ) // 'default';
+
+    my $layout = $self->layouts->{$layout_name};
+
+    my $output = $layout->render( $self->template_data );
+
+    return $output;
+  }
+);
+
 sub BUILDARGS {}
 
 around 'BUILDARGS' => sub {

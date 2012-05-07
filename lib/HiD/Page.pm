@@ -4,6 +4,8 @@ use Moose;
 with 'HiD::Role::IsConverted';
 with 'HiD::Role::IsPublished';
 
+use File::Basename  qw/ fileparse /;
+use File::Path      qw/ make_path /;
 use Path::Class     qw/ file / ;
 
 =head1 NOTE
@@ -29,13 +31,13 @@ sub output_filename {
 sub publish {
   my $self = shift;
 
-  my $layout_name = $self->get_metadata( 'layout' ) // 'default';
+  my( undef , $dir ) = fileparse( $self->output_filename );
 
-  my $layout = $self->layouts->{$layout_name};
+  make_path $dir unless -d $dir;
 
-  $layout->process(
-    $self->template_data , $self->output_filename ,
-  );
+  open( my $out , '>' , $self->output_filename ) or die $!;
+  print $out $self->rendered_content;
+  close( $out );
 }
 
 __PACKAGE__->meta->make_immutable;

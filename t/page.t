@@ -34,6 +34,17 @@ title: this is a page with markdown
 EOF
 close( $MOUT );
 
+my $textile_file = join '/' , $input_dir , 'textile.textile';
+open( my $TOUT , '>' , $textile_file ) or die $!;
+print $TOUT <<EOF;
+---
+title: this is a page with textile
+---
+h1. this should be h1
+
+EOF
+close( $TOUT );
+
 my( $layout_fh , $layout_file) = tempfile( SUFFIX => '.html' );
 print $layout_fh <<EOF;
 PAGE: [% content %]
@@ -41,7 +52,6 @@ EOF
 close( $layout_fh );
 
 my $dest_dir = tempdir();
-diag "Output in $dest_dir";
 
 run_tests(
   "basic page test" ,
@@ -51,8 +61,9 @@ run_tests(
     'Test::HiD::Page' ,
   ] ,
   {
-    converted_content => "this is some page content.\n",
-    output_regexp     => qr/PAGE: this is some page content/ ,
+    converted_content_regexp => qr/this is some page content./,
+    output_regexp            => qr/PAGE: this is some page content/ ,
+    rendered_content_regexp  => qr/PAGE: this is some page content/ ,
     subject => HiD::Page->new({
       dest_dir       => $dest_dir,
       input_filename => $input_file ,
@@ -74,8 +85,9 @@ run_tests(
     'Test::HiD::Page' ,
   ] ,
   {
-    converted_content => "<h1>this should be h1</h1>\n",
-    output_regexp     => qr|PAGE: <h1>this should be h1</h1>| ,
+    converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    output_regexp            => qr|PAGE: <h1>this should be h1</h1>| ,
+    rendered_content_regexp  => qr|PAGE: <h1>this should be h1</h1>| ,
     subject => HiD::Page->new({
       dest_dir       => $dest_dir,
       input_filename => $mdown_file ,
@@ -89,5 +101,27 @@ run_tests(
   },
 );
 
-
+run_tests(
+  "textile conversion test" ,
+  [
+    'Test::HiD::Role::IsConverted' ,
+    'Test::HiD::Role::IsPublished' ,
+    'Test::HiD::Page' ,
+  ] ,
+  {
+    converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    output_regexp            => qr|PAGE: <h1>this should be h1</h1>| ,
+    rendered_content_regexp  => qr|PAGE: <h1>this should be h1</h1>| ,
+    subject => HiD::Page->new({
+      dest_dir       => $dest_dir,
+      input_filename => $textile_file ,
+      layouts        => {
+        default => HiD::Layout->new({
+          filename  => $layout_file ,
+          processor => Template->new( ABSOLUTE => 1 ) ,
+        }) ,
+      },
+    }),
+  },
+);
 done_testing;

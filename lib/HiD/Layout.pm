@@ -18,14 +18,13 @@ has content => (
   required => 1 ,
 );
 
-=attr extension
+=attr ext
 
 =cut
 
-has extension => (
+has ext => (
   is       => 'ro'  ,
   isa      => 'HiD_FileExtension' ,
-  required => 1 ,
 );
 
 =attr filename
@@ -35,7 +34,6 @@ has extension => (
 has filename => (
   is       => 'ro' ,
   isa      => 'HiD_FilePath' ,
-  required => 1 ,
 );
 
 =attr layout
@@ -53,8 +51,10 @@ has layout => (
 =cut
 
 has metadata => (
-  is  => 'ro' ,
-  isa => 'HashRef'
+  is      => 'ro' ,
+  isa     => 'HashRef',
+  lazy    => 1 ,
+  default => sub {{}}
 );
 
 =attr name
@@ -83,35 +83,61 @@ sub BUILDARGS {
 
   my %args = ( ref $_[0] and ref $_[0] eq 'HASH' ) ? %{ $_[0] } : @_;
 
-  ( $args{name} , $args{extension} ) = $args{filename}
-    =~ m|^.*/(.+)\.([^.]+)$|;
+  unless ( $args{content} ) {
+    ( $args{name} , $args{ext} ) = $args{filename}
+      =~ m|^.*/(.+)\.([^.]+)$|;
 
-  my $content  = read_file( $args{filename} );
-  my $metadata = {};
+    my $content  = read_file( $args{filename} );
+    my $metadata = {};
 
-  if ( $content =~ /^---\n/s ) {
-    my $meta;
-    ( $meta , $content ) = ( $content )
-      =~ m|^---\n(.*?)---\n(.*)$|s;
-    $metadata = Load( $meta ) if $meta;
+    if ( $content =~ /^---\n/s ) {
+      my $meta;
+      ( $meta , $content ) = ( $content )
+        =~ m|^---\n(.*?)---\n(.*)$|s;
+      $metadata = Load( $meta ) if $meta;
+    }
+
+    $args{metadata} = $metadata;
+    $args{content}  = $content;
   }
-
-  $args{metadata} = $metadata;
-  $args{content}  = $content;
 
   return \%args;
 }
 
-sub process {
-  my( $self , $data , $output ) = @_;
+=method render
+
+Pass in a hash of data, apply the layout using that hash as input, and return
+the resulting output string.
+
+Will recurse into embedded layouts as needed.
+
+=cut
+
+sub render {
+  my( $self , $data ) = @_;
+
+  my $page_data = $data->{page} // {};
+
+  %{ $data->{page} } = (
+    %{ $self->metadata } ,
+    %{ $page_data },
+  );
+
+  my $output;
 
   $self->processor->process(
-    $self->filename ,
+    \$self->content ,
     $data ,
-    $output ,
+    \$output ,
   ) or die $self->processor->error;
-}
 
+  if ( my $embedded_layout = $self->layout ) {
+    $data->{content} = $output;
+    $output = $embedded_layout->render( $data );
+  }
+
+  return $output;
+}
 
 __PACKAGE__->meta->make_immutable;
 1;
