@@ -26,19 +26,19 @@ sub _run {
   # bootstrap data structures -- FIXME should have a more explicit way to do this
   $self->hid->regular_files;
 
-  $self->add_written_file( $self->site_dir => '_sitedir' );
+  $self->add_written_file( $self->destination => '_site_dir' );
 
   foreach my $file ( $self->all_objects ) {
     $file->publish;
 
     my $path;
-    foreach my $part ( split '/' , $file->destination ) {
+    foreach my $part ( split '/' , $file->output_filename ) {
       $path = file( $path , $part )->stringify;
       $self->add_written_file( $path => 1 );
     }
   }
 
-  foreach ( File::Find::Rule->in( $self->site_dir )) {
+  foreach ( File::Find::Rule->in( $self->destination )) {
     $self->wrote_file($_) or remove \1 , $_;
   }
 }

@@ -3,6 +3,6 @@ use Test::More;
 
 use lib 't/lib';
 
-run_tests( "regular file" => 'Test::HiD::RegularFile' );
+run_tests( "file" => 'Test::HiD::File' );
 
 done_testing;

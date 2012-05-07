@@ -64,7 +64,7 @@ sub publish {
     ### FIXME just ... gross.
     $self->layout->name . '.' . $self->layout->extension,
     $data ,
-    $self->destination ,
+    $self->output_filename ,
     ### FIXME also nasty...
   ) or die $self->hid->processor->tt->error;
 }

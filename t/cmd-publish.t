@@ -36,8 +36,16 @@ EOHTML
   close( $fh );
 }
 
-{ # running publish without anything there and no config should still work
-  _assert_good_run();
+{ # running publish without anything there and no config should still work,
+  # albeit with a warning
+  my $result = test_app( 'HiD::App' => [ 'publish' ]);
+
+  is   $result->stdout    , '' , 'expected STDOUT';
+  is   $result->exit_code , 0  , 'exit=success';
+
+  like $result->stderr ,
+    qr/^WARNING: Could not read configuration/ ,
+    'warning on STDERR';
 }
 
 DumpFile( '_config.yml' , { source => '.' } );
@@ -327,7 +335,7 @@ EOL
 
 ## tests to write
 # setting 'processor' in config (use '+$MODULE' to bypass wrapper, etc.)
-# setting 'site_dir' in config
+# setting 'destination' in config
 # setting 'permalink' in config (and then still overriding in specific post)
 # setting fully custom permalink format
 # permalink with categories

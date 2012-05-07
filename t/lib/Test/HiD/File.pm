@@ -1,4 +1,4 @@
-package Test::HiD::RegularFile;
+package Test::HiD::File;
 use Moose;
 with 'Test::HiD::Role::IsPublishable';
 
@@ -6,16 +6,16 @@ use namespace::autoclean;
 
 use File::Temp qw/ tempfile tempdir /;
 use HiD;
-use HiD::RegularFile;
+use HiD::File;
 
 sub build_object_to_test {
   my( undef , $name ) = tempfile();
   my $tempdir = tempdir();
 
-  return HiD::RegularFile->new({
+  return HiD::File->new({
     filename => $name,
     hid      => HiD->new({
-      site_dir => $tempdir,
+      destination => $tempdir,
     }),
   });
 }

@@ -22,7 +22,7 @@ has hid => (
   handles  => [
     'all_objects' ,
     'config' ,
-    'site_dir' ,
+    'destination' ,
   ] ,
 );
 

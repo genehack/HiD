@@ -8,12 +8,12 @@ use File::Temp qw/ tempfile tempdir /;
 use HiD;
 use HiD::Page;
 
-sub build_object_to_test {
+sub build_page {
   my( $fh , $name ) = tempfile( SUFFIX => '.html' );
   print $fh "---\nlayout: default\n---\nPAGE\n";
 
-  my $site_dir   = tempdir();
-  my $layout_dir = tempdir();
+  my $destination = tempdir();
+  my $layout_dir  = tempdir();
 
   {
     open( my $fh , '>' , "$layout_dir/default.html" ) or die $!;
@@ -23,10 +23,10 @@ sub build_object_to_test {
 
   return HiD::Page->new({
     filename => $name,
-    hid      => HiD->new({
-      layout_dir => $layout_dir,
-      site_dir   => $site_dir,
-    }),
+    hid      => HiD->new({ config => {
+      layout_dir  => $layout_dir,
+      destination => $destination,
+    }}),
   });
 }
 

@@ -8,34 +8,6 @@ use Path::Class qw/ file / ;
 
 requires 'publish';
 
-=attr destination
-
-=cut
-
-has destination => (
-  is      => 'ro' ,
-  isa     => 'Str' ,
-  lazy    => 1 ,
-  builder => '_build_destination'  ,
-);
-
-sub _build_destination {
-  my $self = shift;
-
-  my $filename = $self->filename;
-
-  if ( $self->can( 'permalink') and my $permalink = $self->permalink ) {
-    $filename = $permalink;
-    $filename .= 'index.html' if ( $filename =~ m|/$| );
-  }
-  elsif ( $self->extension ne 'html' && $self->does( 'HiD::Role::IsProcessed' )) {
-    my $ext = $self->extension;
-    $filename =~ s/$ext$/html/;
-  }
-
-  return file( $self->site_dir , $filename )->stringify;
-}
-
 =attr extension
 
 =cut
@@ -74,11 +46,35 @@ has hid => (
   isa      => 'HiD',
   required => 1 ,
   handles  => {
+    destination        => 'destination' ,
     get_layout_by_name => 'get_layout_by_name' ,
     process            => 'process' ,
-    site_dir           => 'site_dir' ,
   } ,
 );
+
+has output_filename => (
+  is      => 'ro' ,
+  isa     => 'Str' ,
+  lazy    => 1 ,
+  builder => '_build_output_filename'  ,
+);
+
+sub _build_output_filename {
+  my $self = shift;
+
+  my $filename = $self->filename;
+
+  if ( $self->can( 'permalink' ) and my $permalink = $self->permalink ) {
+    $filename = $permalink;
+    $filename .= 'index.html' if ( $filename =~ m|/$| );
+  }
+  elsif ( $self->extension ne 'html' && $self->does( 'HiD::Role::IsProcessed' )) {
+    my $ext = $self->extension;
+    $filename =~ s/$ext$/html/;
+  }
+
+  return file( $self->destination , $filename )->stringify;
+}
 
 =attr url
 
@@ -93,9 +89,9 @@ has url => (
 
 sub _build_url {
   my $self = shift;
-  my $url = $self->destination;
-  my $site_dir = $self->site_dir;
-  $url =~ s|^$site_dir||;
+  my $url  = $self->output_filename;
+  my $destination = $self->destination;
+  $url =~ s|^$destination||;
   $url =~ s|index.html$||;
   return $url;
 }

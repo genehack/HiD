@@ -10,7 +10,7 @@ sub publish {
     ### FIXME just ... gross.
     $self->layout->name . '.' . $self->layout->extension,
     $self->processing_data ,
-    $self->destination ,
+    $self->output_filename ,
     ### FIXME also nasty...
   ) or die $self->hid->processor->tt->error;
 }

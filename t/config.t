@@ -50,7 +50,7 @@ DumpFile( '_config.yml' , {} );
 }
 
 # write out config file with option
-DumpFile( '_config.yml' , { site_dir => '_new_site' } );
+DumpFile( '_config.yml' , { destination => '_new_site' } );
 
 {
   my $hid = HiD->new({});
@@ -58,7 +58,7 @@ DumpFile( '_config.yml' , { site_dir => '_new_site' } );
   my $config;
   warning_is { $config = $hid->config } undef ,
     'no warning with config file';
-  is_deeply( $config , { site_dir => '_new_site' } , 'expected config' );
+  is_deeply( $config , { destination => '_new_site' } , 'expected config' );
 }
 
 # write out a bad config file

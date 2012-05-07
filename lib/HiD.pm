@@ -6,10 +6,10 @@ use namespace::autoclean;
 use Class::Load        qw/ :all /;
 use File::Basename;
 use File::Find::Rule;
+use HiD::File;
 use HiD::Layout;
 use HiD::Page;
 use HiD::Post;
-use HiD::RegularFile;
 use HiD::Types;
 use Try::Tiny;
 use YAML::XS           qw/ LoadFile /;
@@ -21,8 +21,12 @@ use YAML::XS           qw/ LoadFile /;
 has config => (
   is      => 'ro' ,
   isa     => 'HashRef' ,
+  traits  => [ 'Hash' ],
   lazy    => 1 ,
   builder => '_build_config' ,
+  handles => {
+    get_config => 'get' ,
+  }
 );
 
 sub _build_config {
@@ -48,21 +52,15 @@ has config_file => (
   default => '_config.yml' ,
 );
 
-=attr files
+=attr destination
 
 =cut
 
-has files => (
+has destination => (
   is      => 'ro' ,
-  isa     => 'HashRef',
-  default => sub {{}} ,
-  traits  => ['Hash'],
-  handles => {
-    add_file      => 'set' ,
-    seen_file     => 'exists' ,
-    get_file_type => 'get' ,
-    all_files     => 'keys' ,
-  },
+  isa     => 'HiD_DirPath' ,
+  lazy    => 1 ,
+  default => sub { return shift->get_config( 'destination' ) // '_site' },
 );
 
 =attr include_dir
@@ -75,9 +73,24 @@ has include_dir => (
   lazy    => 1,
   default => sub {
     my $self = shift;
-    $self->config->{include_dir} //
+    $self->get_config( 'include_dir' ) //
       ( -e -d '_includes' ) ? '_includes' : undef;
   } ,
+);
+
+=attr inputs
+
+=cut
+
+has inputs => (
+  is      => 'ro' ,
+  isa     => 'HashRef',
+  default => sub {{}} ,
+  traits  => ['Hash'],
+  handles => {
+    add_input  => 'set' ,
+    seen_input => 'exists' ,
+  },
 );
 
 =attr layout_dir
@@ -88,7 +101,7 @@ has layout_dir => (
   is      => 'ro' ,
   isa     => 'HiD_DirPath' ,
   lazy    => 1 ,
-  default => '_layouts' ,
+  default => sub { shift->get_config( 'layout_dir' ) // '_layouts' } ,
 );
 
 =attr layouts
@@ -123,7 +136,7 @@ sub _build_layouts {
       filename => $layout_file
     });
 
-    $self->add_file( $layout_file => 'layout' );
+    $self->add_input( $layout_file => 'layout' );
   }
 
   foreach my $layout_name ( keys %layouts ) {
@@ -188,12 +201,12 @@ sub _build_pages {
     name( $self->page_file_regex )->in( '.' );
 
   my @pages = grep { $_ } map {
-    if ($self->seen_file( $_ ) or $_ =~ /^_/ ) { 0 }
+    if ($self->seen_input( $_ ) or $_ =~ /^_/ ) { 0 }
     else {
       try {
         my $page = HiD::Page->new( filename => $_ , hid => $self );
         $page->content;
-        $self->add_file( $_ => 'page' );
+        $self->add_input( $_ => 'page' );
         $self->add_object( $page );
         $page;
       }
@@ -248,7 +261,7 @@ sub _build_posts {
   my @posts = grep { $_ } map {
     try {
       my $post = HiD::Post->new( filename => $_ , hid => $self );
-      $self->add_file( $_ => 'post' );
+      $self->add_input( $_ => 'post' );
       $self->add_object( $post );
       $post
     };
@@ -272,7 +285,7 @@ has processor => (
 sub _build_processor {
   my $self = shift;
 
-  my $processor_name  = $self->config->{processor_name} // 'Template';
+  my $processor_name  = $self->get_config( 'processor_name' ) // 'Template';
 
   my $processor_class = ( $processor_name =~ /^\+/ ) ? $processor_name
     : "HiD::Processor::$processor_name";
@@ -289,8 +302,8 @@ has processor_args => (
   default => sub {
     my $self = shift;
 
-    return $self->config->{processor_args} if
-      defined $self->config->{processor_args};
+    return $self->get_config( 'processor_args' ) if
+      defined $self->get_config( 'processor_args' );
 
     my $include_path = $self->layout_dir;
     $include_path   .= ':' . $self->include_dir
@@ -309,7 +322,7 @@ has processor_args => (
 
 has regular_files => (
   is      => 'ro',
-  isa     => 'Maybe[ArrayRef[HiD::RegularFile]]',
+  isa     => 'Maybe[ArrayRef[HiD::File]]',
   lazy    => 1 ,
   builder => '_build_regular_files' ,
 );
@@ -323,10 +336,10 @@ sub _build_regular_files {
   my @potential_files = File::Find::Rule->file->in( '.' );
 
   my @files = grep { $_ } map {
-    if ($self->seen_file( $_ ) or $_ =~ /^_/ ) { 0 }
+    if ($self->seen_input( $_ ) or $_ =~ /^_/ ) { 0 }
     else {
-      my $file = HiD::RegularFile->new({ filename => $_ , hid => $self });
-      $self->add_file( $_ => 'file' );
+      my $file = HiD::File->new({ filename => $_ , hid => $self });
+      $self->add_input( $_ => 'file' );
       $self->add_object( $file );
       $file;
     }
@@ -335,18 +348,21 @@ sub _build_regular_files {
   return \@files;
 }
 
-=attr site_dir
+=attr source
 
 =cut
 
-has site_dir => (
+has source => (
   is      => 'ro' ,
   isa     => 'HiD_DirPath' ,
   lazy    => 1 ,
-  builder => '_build_site_dir' ,
+  default => sub {
+    my $self   = shift;
+    my $source = $self->get_config( 'source') // '.';
+    chdir $source or die $!;
+    return $source;
+  },
 );
-
-sub _build_site_dir { return shift->config->{site_dir} // '_site' }
 
 __PACKAGE__->meta->make_immutable;
 1;
