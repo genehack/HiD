@@ -55,7 +55,7 @@ has date => (
     }
     else {
       ( $year , $month , $day ) = $self->input_filename
-        =~ m|^_posts/$date_regex-|;
+        =~ m|^.*?/$date_regex-|;
     }
 
     return DateTime->new(
@@ -93,7 +93,7 @@ sub _build_title {
 
   my $title = $self->get_metadata( 'title' );
 
-  return 'NO TITLE!' unless defined $title;
+  return $self->basename unless defined $title;
 
   return ( ref $title ) ? $$title : $title;
 }

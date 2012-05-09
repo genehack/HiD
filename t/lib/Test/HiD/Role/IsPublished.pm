@@ -19,6 +19,9 @@ test "parsing input filename into parts" => sub {
   my $file = pop @parts;
   my $dir  = join '/' , @parts;
   my( $base , $ext ) = $file =~ /^(.*?)\.([^.]+)$/;
+  if ( $base =~ m|[0-9]{4}-[0-9]{2}-[0-9]{2}-| ) {
+    $base =~ s|[0-9]{4}-[0-9]{2}-[0-9]{2}-||;
+  }
   is( $subject->basename   , $base   , 'expected basename');
   is( $subject->ext        , $ext    , 'expected ext');
   is( $subject->input_path , "$dir/" , 'expected dir');
@@ -29,6 +32,7 @@ test "has url" => sub {
   my $subject = $test->subject;
   my $url = $subject->url;
   like( $url , qr|^/|, 'starts with /' );
+  is( $url , $test->expected_url , 'expected url' );
 };
 
 1;

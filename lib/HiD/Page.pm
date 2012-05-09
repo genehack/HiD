@@ -46,8 +46,8 @@ sub _build_url {
   my $url;
   given( $format ) {
     when( 'none'   ) { $url = $self->input_path . $self->basename . '.html' }
-    when( 'pretty' ) { $url = $self->input_path     }
-    default          { $url = $format               }
+    when( 'pretty' ) { $url = $self->input_path . $self->basename . '/'     }
+    default          { $url = $format                                       }
   }
 
   return "/$url";

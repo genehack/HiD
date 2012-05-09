@@ -19,7 +19,7 @@ run_tests(
   "basic file test" ,
   [ 'Test::HiD::Role::IsPublished' , 'Test::HiD::File' ] ,
   {
-    expected_url => "/$input_file" ,
+    expected_url => "$input_file" ,
     subject      => HiD::File->new({
       dest_dir       => tempdir() ,
       input_filename => $input_file ,
@@ -38,7 +38,7 @@ run_tests(
   "nested file test" ,
   [ 'Test::HiD::Role::IsPublished' , 'Test::HiD::File' ] ,
   {
-    expected_url => "/$nested_file" ,
+    expected_url => "$nested_file" ,
     subject      => HiD::File->new({
       dest_dir       => tempdir ,
       input_filename => $nested_file ,
