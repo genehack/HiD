@@ -6,9 +6,6 @@ with 'HiD::Role::IsPublished';
 
 use String::Errf qw/ errf /;
 
-### FIXME
-sub output_filename {}
-
 # override
 sub _build_layout {
   my $self = shift;

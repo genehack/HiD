@@ -5,8 +5,8 @@ use namespace::autoclean;
 
 use File::Basename  qw/ fileparse /;
 use HiD::Types;
+use Path::Class     qw/ file /;
 
-requires 'output_filename';
 requires 'publish';
 
 =attr basename ( ro / isa = Str / lazily built from input_filename
@@ -65,6 +65,41 @@ has input_filename => (
   required => 1 ,
 );
 
+=attr input_path ( ro / isa = HiD_DirPath / lazily built from input_filename )
+
+=cut
+
+has input_path => (
+  is      => 'ro' ,
+  isa     => 'HiD_DirPath' ,
+  lazy    => 1 ,
+  default => sub {
+    my $self = shift;
+    my( undef , $path ) = fileparse( $self->input_filename );
+    return $path;
+  },
+);
+
+=attr output_filename
+
+Path to the file that will be created when the C<write> method is called.
+
+=cut
+
+has output_filename => (
+  is      => 'ro' ,
+  isa     => 'Str' ,
+  lazy    => 1 ,
+  default => sub {
+    my $self = shift;
+
+    my $url = $self->url;
+    $url .= 'index.html' if $url =~ m|/$|;
+
+    return file( $self->dest_dir , $url )->stringify;
+  },
+);
+
 =attr url ( ro / isa = Str / lazily built from output_filename and dest_dir )
 
 The URL to the output path for the written file.
@@ -75,16 +110,8 @@ has url => (
   is      => 'ro' ,
   isa     => 'Str' ,
   lazy    => 1 ,
-  default => sub {
-    my $self = shift;
-    my $url  = $self->output_filename;
-    my $dest_dir = $self->dest_dir;
-    $url =~ s|^$dest_dir||;
-    $url =~ s|index.html$||;
-    return $url;
-  },
+  builder => '_build_url' ,
 );
-
 
 no Moose::Role;
 1;

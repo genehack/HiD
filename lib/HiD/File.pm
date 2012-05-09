@@ -13,19 +13,6 @@ use Path::Class     qw/ file / ;
 Also consumes L<HiD::Role::IsPublished>; see documentation for that role as
 well if you're trying to figure out how an object from this class works.
 
-=method output_filename
-
-Returns the path to the file that will be created when this object's C<write>
-method is called.
-
-=cut
-
-sub output_filename {
-  my $self = shift;
-
-  return file( $self->dest_dir , $self->input_filename )->stringify;
-}
-
 =method publish
 
 Publishes (in this case, copies) the input file to the output file.
@@ -42,6 +29,13 @@ sub publish {
   copy( $self->input_filename , $self->output_filename ) or die $!;
 }
 
+# used to populate the 'url' attr in Role::IsPublished
+sub _build_url {
+  my $self = shift;
+
+  return ( $self->input_filename =~ m|/index.html$| )
+    ? $self->input_path : $self->input_filename;
+}
 
 __PACKAGE__->meta->make_immutable;
 1;

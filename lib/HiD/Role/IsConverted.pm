@@ -6,7 +6,6 @@ use namespace::autoclean;
 use Carp;
 use Class::Load  qw/ :all /;
 use HiD::Types;
-use Path::Class  qw/ file /;
 use YAML::XS     qw/ Load /;
 
 =attr content ( ro / Str / required )
@@ -81,22 +80,6 @@ has metadata => (
   },
 );
 
-=attr permalink
-
-Format strung to build permalink
-
-=cut
-
-has permalink => (
-  is      => 'ro' ,
-  isa     => 'Maybe[Str]' ,
-  lazy    => 1 ,
-  # do this as a builder so we can override it
-  builder => '_build_permalink' ,
-);
-
-sub _build_permalink { shift->get_metadata( 'permalink' ) }
-
 =attr rendered_content
 
 Content after any layouts have been applied
@@ -120,6 +103,33 @@ has rendered_content => (
   }
 );
 
+=attr template_data
+
+Data for passing to template processing function.
+
+=cut
+
+has template_data => (
+  is     => 'ro' ,
+  isa     => 'HashRef' ,
+  lazy    => 1 ,
+  default => sub {
+    my $self = shift;
+
+    my $data = {
+      content  => $self->converted_content ,
+      page     => $self->metadata ,
+    };
+
+    foreach my $method ( qw/ title url / ) {
+      $data->{page}{$method} = $self->$method
+        if $self->can( $method );
+    }
+
+    return $data;
+  },
+);
+
 sub BUILDARGS {}
 
 around 'BUILDARGS' => sub {
@@ -129,7 +139,8 @@ around 'BUILDARGS' => sub {
   my %args = ( ref $_[0] and ref $_[0] eq 'HASH' ) ? %{ $_[0] } : @_;
 
   unless ( $args{content} and $args{metadata} ) {
-    open( my $IN , '<' , $args{input_filename} ) or die $!;
+    open( my $IN , '<' , $args{input_filename} )
+      or confess "$! $args{input_filename}";
 
     my $first = <$IN>;
 
@@ -151,28 +162,6 @@ around 'BUILDARGS' => sub {
 
   return \%args;
 };
-
-=method template_data
-
-Hashref of data suitable for passing to template processing function.
-
-=cut
-
-sub template_data {
-  my $self = shift;
-
-  my $data = {
-    content  => $self->converted_content ,
-    page     => $self->metadata ,
-  };
-
-  foreach my $method( qw/ title url / ) {
-    $data->{page}{$method} = $self->$method
-      if $self->can( $method );
-  }
-
-  return $data;
-}
 
 no Moose::Role;
 1;

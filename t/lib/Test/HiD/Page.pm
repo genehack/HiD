@@ -26,7 +26,14 @@ test "output filename" => sub {
   my $test    = shift;
   my $subject = $test->subject;
 
-  like( $subject->output_filename , qr|.html$| , 'ends in html' );
+  my $permalink = $subject->get_metadata( 'permalink' ) // 'none';
+
+ SKIP:{
+      skip "invalid if permalink" , 1
+        unless ( $permalink eq 'none' or $permalink eq 'pretty' );
+
+      like( $subject->output_filename , qr|.html$| , 'ends in html' );
+    };
 };
 
 test "publish" => sub {

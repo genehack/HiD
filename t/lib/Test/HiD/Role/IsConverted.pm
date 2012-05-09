@@ -35,10 +35,8 @@ test "has metadata" => sub {
   ok( exists $metadata->{title}  );
 };
 
-test "has permalink" => sub { ok(1) };
-
 test "has rendered content" => sub {
-  my $test = shift;
+  my $test    = shift;
   my $subject = $test->subject;
 
   like( $subject->rendered_content , $test->rendered_content_regexp );

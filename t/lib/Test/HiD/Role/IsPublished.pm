@@ -6,22 +6,22 @@ use Test::Routine;
 use Test::More;
 use namespace::autoclean;
 
-test "has basename" => sub {
-  my $test = shift;
-  my $subject = $test->subject;
-  my @parts = split '/' , $subject->input_filename;
-  my $file = $parts[-1];
-  my( $base ) = $file =~ /^(.*?)\.[^.]+$/;
-  is( $subject->basename , $base , 'expected basename');
-};
+has expected_url => (
+  is       => 'ro' ,
+  isa      => 'Str' ,
+  required => 1 ,
+);
 
-test "has ext" => sub {
+test "parsing input filename into parts" => sub {
   my $test = shift;
   my $subject = $test->subject;
   my @parts = split '/' , $subject->input_filename;
-  my $file = $parts[-1];
-  my( $ext ) = $file =~ /^.*?\.([^.]+)$/;
-  is( $subject->ext , $ext , 'expected extension');
+  my $file = pop @parts;
+  my $dir  = join '/' , @parts;
+  my( $base , $ext ) = $file =~ /^(.*?)\.([^.]+)$/;
+  is( $subject->basename   , $base   , 'expected basename');
+  is( $subject->ext        , $ext    , 'expected ext');
+  is( $subject->input_path , "$dir/" , 'expected dir');
 };
 
 test "has url" => sub {

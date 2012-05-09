@@ -205,7 +205,10 @@ sub _build_pages {
     if ($self->seen_input( $_ ) or $_ =~ /^_/ ) { 0 }
     else {
       try {
-        my $page = HiD::Page->new( filename => $_ , hid => $self );
+        my $page = HiD::Page->new({
+          dest_dir       => $self->destination,
+          input_filename => $_ ,
+        });
         $page->content;
         $self->add_input( $_ => 'page' );
         $self->add_object( $page );
@@ -261,7 +264,10 @@ sub _build_posts {
 
   my @posts = grep { $_ } map {
     try {
-      my $post = HiD::Post->new( filename => $_ , hid => $self );
+      my $post = HiD::Post->new({
+        dest_dir       => $self->destination,
+        input_filename => $_ ,
+      });
       $self->add_input( $_ => 'post' );
       $self->add_object( $post );
       $post
@@ -309,7 +315,6 @@ has processor_args => (
 
     return {
       INCLUDE_PATH => $include_path ,
-      DEFAULT      => $self->get_layout_by_name( 'default' )->filename ,
     };
   },
 );
@@ -336,7 +341,10 @@ sub _build_regular_files {
   my @files = grep { $_ } map {
     if ($self->seen_input( $_ ) or $_ =~ /^_/ ) { 0 }
     else {
-      my $file = HiD::File->new({ filename => $_ , hid => $self });
+      my $file = HiD::File->new({
+        dest_dir       => $self->destination,
+        input_filename => $_ ,
+      });
       $self->add_input( $_ => 'file' );
       $self->add_object( $file );
       $file;

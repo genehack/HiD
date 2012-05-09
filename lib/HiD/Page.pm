@@ -1,3 +1,4 @@
+use 5.010;
 package HiD::Page;
 # ABSTRACT: Pages that are converted during the output process
 use Moose;
@@ -14,16 +15,6 @@ Also consumes L<HiD::Role::IsConverted> and L<HiD::Role::IsPublished>; see
 documentation for that role as well if you're trying to figure out how an
 object from this class works.
 
-=method output_filename
-
-=cut
-
-sub output_filename {
-  my $self = shift;
-
-  return file( $self->dest_dir , $self->basename . '.html' )->stringify;
-}
-
 =method publish
 
 =cut
@@ -38,6 +29,22 @@ sub publish {
   open( my $out , '>' , $self->output_filename ) or die $!;
   print $out $self->rendered_content;
   close( $out );
+}
+
+# used to populate the 'url' attr in Role::IsPublished
+sub _build_url {
+  my $self = shift;
+
+  my $format = $self->get_metadata( 'permalink' ) // 'none';
+
+  my $url;
+  given( $format ) {
+    when( 'none'   ) { $url = $self->input_path . $self->basename . '.html' }
+    when( 'pretty' ) { $url = $self->input_path     }
+    default          { $url = $format               }
+  }
+
+  return "/$url";
 }
 
 __PACKAGE__->meta->make_immutable;
