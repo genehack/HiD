@@ -33,7 +33,7 @@ sub publish {
 sub _build_url {
   my $self = shift;
 
-  return ( $self->input_filename =~ m|/index.html$| )
+  return ( $self->basename eq 'index' )
     ? $self->input_path : $self->input_filename;
 }
 

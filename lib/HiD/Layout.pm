@@ -123,6 +123,17 @@ sub render {
     %{ $page_data },
   );
 
+  my $processed_input_content;
+  my $input_content = delete $data->{content};
+
+  $self->processor->process(
+    \$input_content ,
+    $data ,
+    \$processed_input_content ,
+  );
+
+  $data->{content} = $processed_input_content;
+
   my $output;
 
   $self->processor->process(

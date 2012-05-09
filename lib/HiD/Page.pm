@@ -15,6 +15,12 @@ Also consumes L<HiD::Role::IsConverted> and L<HiD::Role::IsPublished>; see
 documentation for that role as well if you're trying to figure out how an
 object from this class works.
 
+=method get_default_layout
+
+=cut
+
+sub get_default_layout { 'default' }
+
 =method publish
 
 =cut

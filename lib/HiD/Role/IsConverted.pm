@@ -8,6 +8,8 @@ use Class::Load  qw/ :all /;
 use HiD::Types;
 use YAML::XS     qw/ Load /;
 
+requires 'get_default_layout';
+
 =attr content ( ro / Str / required )
 
 Page content (stuff after the YAML front matter)
@@ -93,7 +95,7 @@ has rendered_content => (
   default => sub {
     my $self = shift;
 
-    my $layout_name = $self->get_metadata( 'layout' ) // 'default';
+    my $layout_name = $self->get_metadata( 'layout' ) // $self->get_default_layout;
 
     my $layout = $self->layouts->{$layout_name};
 

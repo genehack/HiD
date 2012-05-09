@@ -4,29 +4,28 @@ with 'HiD::Role::IsConverted';
 with 'HiD::Role::IsPost';
 with 'HiD::Role::IsPublished';
 
-use String::Errf qw/ errf /;
+use File::Basename  qw/ fileparse /;
+use File::Path      qw/ make_path /;
+use String::Errf    qw/ errf /;
+
+=method get_default_layout
+
+=cut
+
+sub get_default_layout { 'post' }
 
 # override
-sub _build_layout {
-  my $self = shift;
-
-  my $layout_name = $self->get_metadata( 'layout' ) // 'post';
-
-  return $self->get_layout_by_name( $layout_name );
-}
-
-# override
-sub _build_permalink {
+sub _build_url {
   my $self = shift;
 
   my %formats = (
-    date   => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s.html' ,
-    pretty => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s/' ,
-    none   => '/%{categories}s/%{title}s.html' ,
+    date   => '%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s.html' ,
+    pretty => '%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s/' ,
+    none   => '%{categories}s/%{title}s.html' ,
   );
 
-  my $permalink_format = $self->get_metadata( 'permalink' ) //
-    $self->hid->config->{permalink} // 'date';
+  ### FIXME need a way to get overall config in here...
+  my $permalink_format = $self->get_metadata( 'permalink' ) // 'date';
 
   $permalink_format = $formats{$permalink_format}
     if exists $formats{$permalink_format};
@@ -41,7 +40,7 @@ sub _build_permalink {
     i_day      => $self->day,
     i_month    => $self->month,
     month      => $month ,
-    title      => $self->filename_title ,
+    title      => $self->basename ,
     year       => $self->year ,
   };
 }
@@ -49,24 +48,13 @@ sub _build_permalink {
 sub publish {
   my $self = shift;
 
-  my $content;
-  my $data = $self->processing_data;
+  my( undef , $dir ) = fileparse( $self->output_filename );
 
-  $self->process(
-    \$self->content ,
-    $data ,
-    \$content,
-  ) or die $self->hid->processor->tt->error;
+  make_path $dir unless -d $dir;
 
-  $data->{content} = $content;
-
-  $self->process(
-    ### FIXME just ... gross.
-    $self->layout->name . '.' . $self->layout->extension,
-    $data ,
-    $self->output_filename ,
-    ### FIXME also nasty...
-  ) or die $self->hid->processor->tt->error;
+  open( my $out , '>' , $self->output_filename ) or die $!;
+  print $out $self->rendered_content;
+  close( $out );
 }
 
 __PACKAGE__->meta->make_immutable;

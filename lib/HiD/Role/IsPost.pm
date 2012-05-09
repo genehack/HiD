@@ -2,8 +2,20 @@ package HiD::Role::IsPost;
 use Moose::Role;
 
 use DateTime;
+use File::Basename qw/ fileparse /;
 use HiD::Types;
 use YAML::XS;
+
+my $date_regex = qr|([0-9]{4})-([0-9]{2})-([0-9]{2})|;
+
+# override
+sub _build_basename {
+  my $self = shift;
+  my $ext = '.' . $self->ext;
+  my $basename = fileparse( $self->input_filename , $ext );
+  $basename =~ s/^$date_regex-//;
+  return $basename;
+}
 
 =attr categories
 
@@ -24,55 +36,34 @@ has date => (
   is      => 'ro' ,
   isa     => 'DateTime' ,
   lazy    => 1,
-  builder => '_build_date' ,
   handles => {
     day      => 'day' ,
     month    => 'month' ,
     strftime => 'strftime' ,
     year     => 'year' ,
   },
-);
+  default => sub {
+    my $self = shift;
 
-sub _build_date {
-  my $self = shift;
+    ### FIXME configurable?
+    my $date_regex = qr|([0-9]{4})-([0-9]{2})-([0-9]{2})|;
 
-  ### FIXME configurable?
-  my $date_regex = qr|([0-9]{4})-([0-9]{2})-([0-9]{2})|;
+    my( $year , $month , $day );
+    if ( my $date = $self->get_metadata( 'date' )) {
+      ( $year , $month , $day ) = $date
+        =~ m|^$date_regex|;
+    }
+    else {
+      ( $year , $month , $day ) = $self->input_filename
+        =~ m|^_posts/$date_regex-|;
+    }
 
-  my( $year , $month , $day , $title , $ext ) = $self->filename
-    =~ m|^_posts/$date_regex-(.*?)\.([^.]+)$|;
-
-  $self->_set_filename_ext( $ext )     if $ext;
-  $self->_set_filename_title( $title ) if $title;
-
-  if ( my $date = $self->get_metadata( 'date' )) {
-    ( $year , $month , $day ) = $date
-      =~ m|^$date_regex|;
-  }
-
-  return DateTime->new(
-    year => $year , month => $month , day => $day
-  );
-}
-
-=attr filename_ext
-
-=cut
-
-has filename_ext => (
-  is     => 'ro' ,
-  isa    => 'HiD_FileExtension' ,
-  writer => '_set_filename_ext',
-);
-
-=attr filename_title
-
-=cut
-
-has filename_title => (
-  is     => 'ro' ,
-  isa    => 'Str' ,
-  writer => '_set_filename_title' ,
+    return DateTime->new(
+      year  => $year ,
+      month => $month ,
+      day   => $day
+    );
+  },
 );
 
 =attr tags

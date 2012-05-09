@@ -88,6 +88,7 @@ DumpFile( '_config.yml' , { source => '.' } );
   open( my $fh , '>' , 'index.markdown' );
   print $fh <<EOL;
 ---
+title: foo
 ---
 # this should be h1
 EOL
@@ -140,7 +141,7 @@ EOL
   open( my $fh , '>' , 'page_permalink.mkdn' );
   print $fh <<EOL;
 ---
-permalink: permalink_page/index.html
+permalink: /permalink_page/index.html
 ---
 content.
 [% page.url %]
@@ -175,12 +176,12 @@ EOL
   file_exists_ok( '_site/2012/05/06/test.html' , 'expected post file');
   file_contains_like(
     '_site/2012/05/06/test.html' ,
-    qr|POST: this is a test post, and it's called this is a test post| ,
+    qr|POST: <p>this is a test post, and it's called this is a test post| ,
     'expected content'
   );
   file_contains_like(
     '_site/2012/05/06/test.html' ,
-    qr|and it lives at /2012/05/06/test.html| ,
+    qr|and it lives at /2012/05/06/test.html</p>| ,
     'expected content'
   );
 }
@@ -202,12 +203,12 @@ EOL
   file_exists_ok( '_site/2012/05/06/pretty/index.html' , 'expected post file');
   file_contains_like(
     '_site/2012/05/06/pretty/index.html' ,
-    qr|POST: this is a test post, and it's called this is a test post| ,
+    qr|POST: <p>this is a test post, and it's called this is a test post| ,
     'expected content'
   );
   file_contains_like(
     '_site/2012/05/06/pretty/index.html' ,
-    qr|and it lives at /2012/05/06/pretty/| ,
+    qr|and it lives at /2012/05/06/pretty/</p>| ,
     'expected content'
   );
 }
@@ -226,7 +227,7 @@ EOL
   file_exists_ok( '_site/2012/05/06/post.html' , 'expected post file');
   file_contains_like(
     '_site/2012/05/06/post.html' ,
-    qr|POST: this is a test post, and it's called this is a test post| ,
+    qr|POST: <p>this is a test post, and it's called this is a test post</p>| ,
     'expected content'
   );
 }

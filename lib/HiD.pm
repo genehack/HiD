@@ -208,6 +208,7 @@ sub _build_pages {
         my $page = HiD::Page->new({
           dest_dir       => $self->destination,
           input_filename => $_ ,
+          layouts        => $self->layouts ,
         });
         $page->content;
         $self->add_input( $_ => 'page' );
@@ -267,6 +268,7 @@ sub _build_posts {
       my $post = HiD::Post->new({
         dest_dir       => $self->destination,
         input_filename => $_ ,
+        layouts        => $self->layouts ,
       });
       $self->add_input( $_ => 'post' );
       $self->add_object( $post );

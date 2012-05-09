@@ -17,12 +17,14 @@ has basename => (
   is      => 'ro',
   isa     => 'Str' ,
   lazy    => 1 ,
-  default => sub {
-    my $self = shift;
-    my $ext = '.' . $self->ext;
-    return fileparse( $self->input_filename , $ext );
-  },
+  builder => '_build_basename',
 );
+
+sub _build_basename {
+  my $self = shift;
+  my $ext = '.' . $self->ext;
+  return fileparse( $self->input_filename , $ext );
+}
 
 =attr dest_dir ( ro / isa = HiD_DirPath / required )
 
