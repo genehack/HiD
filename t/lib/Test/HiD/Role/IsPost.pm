@@ -8,6 +8,12 @@ use namespace::autoclean;
 
 use DateTime;
 
+has expected_categories => (
+  is       => 'ro' ,
+  isa      => 'ArrayRef' ,
+  required =>  1,
+);
+
 has expected_date => (
   is       => 'ro' ,
   isa      => 'Str' ,
@@ -21,10 +27,10 @@ has expected_title => (
 );
 
 test "categories" => sub {
- TODO: {
-    local $TODO = 'write category tests';
-    ok(0);
-  }
+  my $test    = shift;
+  my $subject = $test->subject;
+
+  is_deeply( $subject->categories , $test->expected_categories );
 };
 
 test "correct date" => sub {

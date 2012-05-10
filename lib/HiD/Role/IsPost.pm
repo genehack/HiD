@@ -25,7 +25,18 @@ sub _build_basename {
 has categories => (
   is      => 'ro' ,
   isa     => 'ArrayRef' ,
-  default => sub {[]} ,
+  lazy    => 1 ,
+  default => sub {
+    my $self = shift;
+
+    if ( my $category = $self->get_metadata( 'category' )) {
+      return [ $category ];
+    }
+    elsif ( my $categories = $self->get_metadata( 'categories' )) {
+      return [ @$categories ];
+    }
+    else { return [] }
+  },
 );
 
 =attr date
