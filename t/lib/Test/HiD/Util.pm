@@ -51,4 +51,24 @@ sub make_page {
   });
 }
 
+sub make_post {
+  my( %arg ) = @_;
+
+  state $posts_dir = tempdir();
+  state $dest_dir  = tempdir();
+
+  my $file = join '/' , $posts_dir , $arg{file};
+
+  open( my $OUT , '>' , $file ) or die $!;
+  print $OUT $arg{content};
+  close( $OUT );
+
+  return HiD::Post->new({
+    dest_dir       => $dest_dir,
+    input_filename => $file ,
+    layouts        => $arg{layouts} ,
+  });
+}
+
+
 1;

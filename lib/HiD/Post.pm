@@ -19,9 +19,9 @@ sub _build_url {
   my $self = shift;
 
   my %formats = (
-    date   => '%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s.html' ,
-    pretty => '%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s/' ,
-    none   => '%{categories}s/%{title}s.html' ,
+    date   => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s.html' ,
+    pretty => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s/' ,
+    none   => '/%{categories}s/%{title}s.html' ,
   );
 
   ### FIXME need a way to get overall config in here...
@@ -30,11 +30,11 @@ sub _build_url {
   $permalink_format = $formats{$permalink_format}
     if exists $formats{$permalink_format};
 
-  my $categories = join '/' , @{ $self->categories } || '';
+  my $categories = ( join '/' , @{ $self->categories } ) || '';
   my $day        = $self->strftime( '%d' , $self->day   );
   my $month      = $self->strftime( '%m' , $self->month );
 
-  return errf $permalink_format , {
+  my $permalink = errf $permalink_format , {
     categories => $categories ,
     day        => $day ,
     i_day      => $self->day,
@@ -43,6 +43,10 @@ sub _build_url {
     title      => $self->basename ,
     year       => $self->year ,
   };
+
+  $permalink =~ s|//+|/|g;
+
+  return $permalink;
 }
 
 sub publish {
