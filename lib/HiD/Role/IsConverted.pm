@@ -132,9 +132,7 @@ has template_data => (
   },
 );
 
-sub BUILDARGS {}
-
-around 'BUILDARGS' => sub {
+around BUILDARGS => sub {
   my $orig  = shift;
   my $class = shift;
 
@@ -144,11 +142,6 @@ around 'BUILDARGS' => sub {
     open( my $IN , '<' , $args{input_filename} )
       or confess "$! $args{input_filename}";
 
-    my $first = <$IN>;
-
-    confess 'no front matter in ' . $args{input_filename}
-      unless $first =~ /^---$/;
-
     my $file_content;
     {
       local $/;
@@ -156,13 +149,21 @@ around 'BUILDARGS' => sub {
     }
     close( $IN );
 
-    my( $metadata , $content ) = split /---\n/ , $file_content;
+    my( $metadata , $content );
+    if ( $file_content =~ /^---/ ) {
+      ( $metadata , $content ) = $file_content
+        =~ /^---\n?(.*?)---\n?(.*)$/ms;
+    }
+    else {
+      $content  = $file_content;
+      $metadata = ''
+    }
 
     $args{content}  = $content;
     $args{metadata} = Load( $metadata ) // {};
   }
 
-  return \%args;
+  return $class->$orig( \%args );
 };
 
 no Moose::Role;

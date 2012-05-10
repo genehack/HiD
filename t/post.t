@@ -71,10 +71,149 @@ category: markdown
 EOF
     ),
   },
-  # textile
-  # permalink: pretty
-  # permalink: string
-  # permalink: format string
+  "textile conversion test" => {
+    converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_categories      => [] ,
+    expected_date            => '2011-11-11',
+    expected_title           => 'textile post',
+    expected_url             => '/2011/11/11/textile.html',
+    output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    subject                  => make_post(
+      file    => '2011-11-11-textile.textile',
+      layouts => $layouts ,
+      content => <<EOF,
+---
+title: textile post
+---
+h1. this should be h1
+EOF
+    ),
+  },
+  "permalink = pretty" => {
+    converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_categories      => [ qw/ foo bar / ] ,
+    expected_date            => '2010-10-10' ,
+    expected_title           => 'this is a markdown post',
+    expected_url             => '/foo/bar/2010/10/10/markdown2/',
+    output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    subject                  => make_post(
+      file    => '2010-10-10-markdown2.markdown',
+      layouts => $layouts ,
+      content => <<EOF,
+---
+title: this is a markdown post
+categories: foo bar
+permalink: pretty
+---
+# this should be h1
+EOF
+    ),
+  },
+  "permalink = string" => {
+    converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_categories      => [ ] ,
+    expected_date            => '2010-10-10' ,
+    expected_title           => 'this is a markdown post',
+    expected_url             => '/permalink/',
+    output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    subject                  => make_post(
+      file    => '2010-10-10-permalink-string.markdown',
+      layouts => $layouts ,
+      content => <<EOF,
+---
+title: this is a markdown post
+permalink: permalink/
+---
+# this should be h1
+EOF
+    ),
+  },
+  "permalink = format string" => {
+    converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_categories      => [ ] ,
+    expected_date            => '2010-10-10' ,
+    expected_title           => 'this is a markdown post',
+    expected_url             => '/2010-10-10-permalink',
+    output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    subject                  => make_post(
+      file    => '2010-10-10-permalink-format-string.markdown',
+      layouts => $layouts ,
+      content => <<EOF,
+---
+title: this is a markdown post
+permalink: '%{year}s-%{month}s-%{day}s-permalink'
+---
+# this should be h1
+EOF
+    ),
+  },
+  "metadata:date" => {
+    converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_categories      => [ ] ,
+    expected_date            => '2012-12-12 01:02:03' ,
+    expected_title           => 'this is a markdown post',
+    expected_url             => '/2012/12/12/metadata-date/',
+    output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    subject                  => make_post(
+      file    => '2010-10-10-metadata-date.markdown',
+      layouts => $layouts ,
+      content => <<EOF,
+---
+title: this is a markdown post
+permalink: pretty
+date: 2012-12-12 01:02:03
+---
+# this should be h1
+EOF
+    ),
+  },
+  "category post test" => {
+    converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_categories      => [ qw/ foo bar / ] ,
+    expected_date            => '2010-10-10' ,
+    expected_title           => 'this is a markdown post',
+    expected_url             => '/foo/bar/2010/10/10/markdown.html',
+    output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    subject                  => make_post(
+      file    => 'foo/bar/_posts/2010-10-10-markdown.markdown',
+      layouts => $layouts ,
+      content => <<EOF,
+---
+title: this is a markdown post
+category: baz
+---
+# this should be h1
+EOF
+    ),
+  },
+  "yaml category post test" => {
+    converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_categories      => [ qw/ bar foo / ] ,
+    expected_date            => '2010-10-10' ,
+    expected_title           => 'this is a markdown post',
+    expected_url             => '/bar/foo/2010/10/10/markdown.html',
+    output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    subject                  => make_post(
+      file    => '2010-10-10-markdown.markdown',
+      layouts => $layouts ,
+      content => <<EOF,
+---
+title: this is a markdown post
+categories:
+ - bar
+ - foo
+---
+# this should be h1
+EOF
+    ),
+  },
 );
 
 my $test_files = [
@@ -86,65 +225,5 @@ my $test_files = [
 
 # and run tests
 map { run_tests( $_ , $test_files , $tests{$_} ) } keys %tests;
-
-# run_tests(
-#   "textile conversion test" ,
-#   {
-#     converted_content_regexp => qr|<h1>this should be h1</h1>|,
-#     expected_url             => $textile_url ,
-#     output_regexp            => qr|PAGE: <h1>this should be h1</h1>| ,
-#     rendered_content_regexp  => qr|PAGE: <h1>this should be h1</h1>| ,
-#     subject => HiD::Page->new({
-#       dest_dir       => $dest_dir,
-#       input_filename => $textile_file ,
-#       layouts        => {
-#         default => HiD::Layout->new({
-#           filename  => $layout_file ,
-#           processor => Template->new( ABSOLUTE => 1 ) ,
-#         }) ,
-#       },
-#     }),
-#   },
-# );
-
-# run_tests(
-#   "permalink = pretty" ,
-#   {
-#     converted_content_regexp => qr/this is some pretty page content./,
-#     expected_url             => $pretty_url ,
-#     output_regexp            => qr/PAGE: this is some pretty page content/ ,
-#     rendered_content_regexp  => qr/PAGE: this is some pretty page content/ ,
-#     subject => HiD::Page->new({
-#       dest_dir       => $dest_dir,
-#       input_filename => $pretty_file ,
-#       layouts        => {
-#         default => HiD::Layout->new({
-#           filename  => $layout_file ,
-#           processor => Template->new( ABSOLUTE => 1 ) ,
-#         }) ,
-#       },
-#     }),
-#   },
-# );
-
-# run_tests(
-#   "permalink = constant" ,
-#   {
-#     converted_content_regexp => qr/this is some page content./,
-#     expected_url             => $perma_url,
-#     output_regexp            => qr/PAGE: this is some page content/ ,
-#     rendered_content_regexp  => qr/PAGE: this is some page content/ ,
-#     subject => HiD::Page->new({
-#       dest_dir       => $dest_dir,
-#       input_filename => $perma_file ,
-#       layouts        => {
-#         default => HiD::Layout->new({
-#           filename  => $layout_file ,
-#           processor => Template->new( ABSOLUTE => 1 ) ,
-#         }) ,
-#       },
-#     }),
-#   },
-# );
 
 done_testing;

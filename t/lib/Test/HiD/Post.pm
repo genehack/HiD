@@ -34,11 +34,16 @@ test "output filename" => sub {
 
     like( $subject->output_filename , qr|.html$| , 'ends in html' );
 
-    my( $year , $month , $day ) = $subject->input_filename
-      =~ /([0-9]{4})-([0-9]{2})-([0-9]{2})-/;
+  SKIP: {
+      skip "invalid if date set" , 1
+        if ( $subject->get_metadata( 'date') );
 
-    like( $subject->output_filename , qr|$year/$month/$day/| ,
-          'contains date parts');
+      my( $year , $month , $day ) = $subject->input_filename
+        =~ /([0-9]{4})-([0-9]{2})-([0-9]{2})-/;
+
+      like( $subject->output_filename , qr|$year/$month/$day/| ,
+            'contains date parts');
+    }
   };
 };
 

@@ -28,11 +28,10 @@ test "parsing input filename into parts" => sub {
 };
 
 test "has url" => sub {
-  my $test = shift;
+  my $test    = shift;
   my $subject = $test->subject;
-  my $url = $subject->url;
-  like( $url , qr|^/|, 'starts with /' );
-  is( $url , $test->expected_url , 'expected url' );
+
+  is( $subject->url , $test->expected_url , 'expected url' );
 };
 
 1;

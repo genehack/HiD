@@ -2,6 +2,7 @@ package HiD::Role::IsPost;
 use Moose::Role;
 
 use DateTime;
+use Date::Parse    qw/ str2time  /;
 use File::Basename qw/ fileparse /;
 use HiD::Types;
 use YAML::XS;
@@ -13,7 +14,7 @@ sub _build_basename {
   my $self = shift;
   my $ext = '.' . $self->ext;
   my $basename = fileparse( $self->input_filename , $ext );
-  $basename =~ s/^$date_regex-//;
+  $basename =~ s/^.*?$date_regex-// or die;
   return $basename;
 }
 
@@ -33,7 +34,13 @@ has categories => (
       return [ $category ];
     }
     elsif ( my $categories = $self->get_metadata( 'categories' )) {
-      return [ @$categories ];
+      if ( ref $categories ) {
+        return [ @$categories ];
+      }
+      else {
+        my @categories = split /\s/ , $categories;
+        return [ @categories ];
+      }
     }
     else { return [] }
   },
@@ -56,24 +63,22 @@ has date => (
   default => sub {
     my $self = shift;
 
-    ### FIXME configurable?
-    my $date_regex = qr|([0-9]{4})-([0-9]{2})-([0-9]{2})|;
-
     my( $year , $month , $day );
     if ( my $date = $self->get_metadata( 'date' )) {
-      ( $year , $month , $day ) = $date
-        =~ m|^$date_regex|;
+      return DateTime->from_epoch(
+        epoch     => str2time( $date ),
+        time_zone => 'local' ,
+      );
     }
     else {
       ( $year , $month , $day ) = $self->input_filename
-        =~ m|^.*?/$date_regex-|;
+        =~ m|^.*?/([0-9]{4})-([0-9]{2})-([0-9]{2})-|;
+      return DateTime->new(
+        year  => $year ,
+        month => $month ,
+        day   => $day
+      );
     }
-
-    return DateTime->new(
-      year  => $year ,
-      month => $month ,
-      day   => $day
-    );
   },
 );
 
@@ -108,6 +113,25 @@ sub _build_title {
 
   return ( ref $title ) ? $$title : $title;
 }
+
+around BUILDARGS => sub {
+  my $orig  = shift;
+  my $class = shift;
+
+  my %args = ( ref $_[0] and ref $_[0] eq 'HASH' ) ? %{ $_[0] } : @_;
+
+  if ( my $input = $args{input_filename} ) {
+    if ( my $source = $args{source} ) {
+      $input =~ s|$source/?||;
+    }
+
+    if ( my( $cat ) = $input =~ m|^(.+?)/?_posts/| ) {
+      $args{categories} = [ split '/' , $cat ];
+    }
+  }
+
+  return $class->$orig( \%args );
+};
 
 no Moose::Role;
 1;

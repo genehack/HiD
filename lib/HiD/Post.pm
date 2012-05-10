@@ -44,6 +44,7 @@ sub _build_url {
     year       => $self->year ,
   };
 
+  $permalink = "/$permalink";
   $permalink =~ s|//+|/|g;
 
   return $permalink;
@@ -59,6 +60,17 @@ sub publish {
   open( my $out , '>' , $self->output_filename ) or die $!;
   print $out $self->rendered_content;
   close( $out );
+}
+
+sub BUILD {
+  my $self = shift;
+
+  if ( defined $self->get_metadata('published')
+         and not $self->get_metadata('published')) {
+    warn sprintf "WARNING: Skipping %s because 'published' flag is false\n" ,
+      $self->input_filename;
+    die;
+  }
 }
 
 __PACKAGE__->meta->make_immutable;

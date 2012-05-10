@@ -6,11 +6,14 @@ use namespace::autoclean;
 use Class::Load        qw/ :all /;
 use File::Basename;
 use File::Find::Rule;
+use File::Path         qw/ make_path /;
+use File::Remove       qw/ remove /;
 use HiD::File;
 use HiD::Layout;
 use HiD::Page;
 use HiD::Post;
 use HiD::Types;
+use Path::Class        qw/ file /;
 use Try::Tiny;
 use YAML::XS           qw/ LoadFile /;
 
@@ -60,7 +63,11 @@ has destination => (
   is      => 'ro' ,
   isa     => 'HiD_DirPath' ,
   lazy    => 1 ,
-  default => sub { return shift->get_config( 'destination' ) // '_site' },
+  default => sub {
+    my $dest = shift->get_config( 'destination' ) // '_site';
+    make_path $dest unless -e -d $dest;
+    return $dest;
+  },
 );
 
 =attr include_dir
@@ -229,7 +236,7 @@ sub _build_pages {
 has post_file_regex => (
   is      => 'ro' ,
   isa     => 'RegexpRef' ,
-  default => sub { qr/^[0-9]{4}-[0-9]{2}-[0-9]{2}-(?:.+?)\.(?:mk|mkd|mkdn|markdown)$/ },
+  default => sub { qr/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}-(?:.+?)\.(?:mk|mkd|mkdn|markdown|md|text|textile|html)$/ },
 );
 
 =attr posts_dir
@@ -260,8 +267,15 @@ sub _build_posts {
   # build layouts before posts
   $self->layouts;
 
+  my $rule = File::Find::Rule->new;
+
+  my @posts_directories = $rule->or(
+    $rule->new->directory->name( '_posts' ) ,
+      $rule->new->directory->name( '_site' )->prune->discard ,
+  )->in( $self->source );
+
   my @potential_posts = File::Find::Rule->file
-    ->name( $self->post_file_regex )->in( $self->posts_dir );
+    ->name( $self->post_file_regex )->in( @posts_directories );
 
   my @posts = grep { $_ } map {
     try {
@@ -273,7 +287,7 @@ sub _build_posts {
       $self->add_input( $_ => 'post' );
       $self->add_object( $post );
       $post
-    };
+    } catch { 0 };
   } @potential_posts;
 
   return \@posts;

@@ -6,6 +6,7 @@ use Test::Routine;
 use Test::More;
 use namespace::autoclean;
 
+use Date::Parse qw/ str2time /;
 use DateTime;
 
 has expected_categories => (
@@ -37,9 +38,10 @@ test "correct date" => sub {
   my $test    = shift;
   my $subject = $test->subject;
 
-  my( $y , $m , $d )  = split /-/ , $test->expected_date;
-
-  my $dt = DateTime->new( year => $y , month => $m , day => $d );
+  my $dt = DateTime->from_epoch(
+    epoch     => str2time( $test->expected_date ),
+    time_zone => 'local',
+  );
 
   is( 0 , DateTime->compare( $subject->date , $dt ));
 };

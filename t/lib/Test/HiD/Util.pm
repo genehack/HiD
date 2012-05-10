@@ -4,7 +4,9 @@ use 5.010;
 
 package Test::HiD::Util;
 
-use File::Temp qw/ tempfile tempdir /;
+use File::Basename  qw/ fileparse /;
+use File::Path      qw/ make_path /;
+use File::Temp      qw/ tempfile tempdir /;
 use HiD::Layout;
 use HiD::Page;
 use HiD::Post;
@@ -57,7 +59,15 @@ sub make_post {
   state $posts_dir = tempdir();
   state $dest_dir  = tempdir();
 
-  my $file = join '/' , $posts_dir , $arg{file};
+  my @path_parts = ( $posts_dir );
+
+  push @path_parts , '_posts'
+    unless ( $arg{file} =~ m|/_posts/| );
+
+  my $file = join '/' , @path_parts , $arg{file};
+
+  my( undef , $dir ) = fileparse( $file );
+  make_path $dir unless -d $dir;
 
   open( my $OUT , '>' , $file ) or die $!;
   print $OUT $arg{content};
@@ -67,6 +77,7 @@ sub make_post {
     dest_dir       => $dest_dir,
     input_filename => $file ,
     layouts        => $arg{layouts} ,
+    source         => $posts_dir,
   });
 }
 
