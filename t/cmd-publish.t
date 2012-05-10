@@ -133,18 +133,18 @@ EOL
     '_site/plain.html' , qr|plain html| , 'more expected content'
   );
 }
-{ # 'page' file without YAML front matter = just copy, no process
+{ # 'page' file without YAML front matter = still process
   open( my $fh , '>' , 'no_yaml.mkdn' );
   print $fh <<EOL;
-# this will stay as YAML
+# this will not stay as YAML
 EOL
   close( $fh );
 
   _assert_good_run();
 
-  file_exists_ok( '_site/no_yaml.mkdn' , 'expected file' );
+  file_exists_ok( '_site/no_yaml.html' , 'expected file' );
   file_contains_like(
-    '_site/no_yaml.mkdn' , qr|# this will stay as YAML| , 'expected content'
+    '_site/no_yaml.html' , qr|<h1>this will not stay as YAML</h1>| , 'expected content'
   );
 }
 { # 'page' file with permalink

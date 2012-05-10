@@ -53,6 +53,16 @@ has converted_content => (
   },
 );
 
+=attr hid
+
+=cut
+
+has hid => (
+  is  => 'ro' ,
+  isa => 'HiD' ,
+);
+
+
 =attr layouts ( ro / HashRef[HiD::Layout] / required )
 
 Hashref of layout objects
@@ -97,7 +107,8 @@ has rendered_content => (
 
     my $layout_name = $self->get_metadata( 'layout' ) // $self->get_default_layout;
 
-    my $layout = $self->layouts->{$layout_name};
+    my $layout = $self->layouts->{$layout_name} // $self->layouts->{default} //
+      die "FIXME no default layout?";
 
     my $output = $layout->render( $self->template_data );
 
@@ -112,7 +123,7 @@ Data for passing to template processing function.
 =cut
 
 has template_data => (
-  is     => 'ro' ,
+  is      => 'ro' ,
   isa     => 'HashRef' ,
   lazy    => 1 ,
   default => sub {
@@ -121,6 +132,7 @@ has template_data => (
     my $data = {
       content  => $self->converted_content ,
       page     => $self->metadata ,
+      site     => $self->hid ,
     };
 
     foreach my $method ( qw/ title url / ) {

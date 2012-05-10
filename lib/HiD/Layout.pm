@@ -130,7 +130,7 @@ sub render {
     \$input_content ,
     $data ,
     \$processed_input_content ,
-  );
+  ) or die $self->processor->tt->error;
 
   $data->{content} = $processed_input_content;
 

@@ -223,6 +223,7 @@ sub _build_pages {
       try {
         my $page = HiD::Page->new({
           dest_dir       => $self->destination,
+          hid            => $self ,
           input_filename => $_ ,
           layouts        => $self->layouts ,
         });
@@ -436,6 +437,9 @@ sub publish {
   foreach ( File::Find::Rule->in( $self->destination )) {
     $self->wrote_file($_) or remove \1 , $_;
   }
+
+  1;
+
 }
 
 __PACKAGE__->meta->make_immutable;
