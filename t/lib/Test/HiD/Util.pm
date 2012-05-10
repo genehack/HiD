@@ -1,44 +1,53 @@
-package Test::HiD::Util;
-
 use strict;
 use warnings;
+use 5.010;
+
+package Test::HiD::Util;
 
 use File::Temp qw/ tempfile tempdir /;
-use HiD;
+use HiD::Layout;
+use HiD::Page;
+use HiD::Post;
+use Template;
 
-sub bootstrap_hid {
-  my $layout_dir  = tempdir();
-  my $destination = tempdir();
-  my $source_dir  = tempdir();
+use Exporter 'import';
+our @EXPORT_OK = qw/ make_layout make_page make_post /;
 
-  bootstrap_layout( $layout_dir , 'default');
+sub make_layout {
+  my( %arg ) = @_;
 
-  return HiD->new({
-    config => {
-      layout_dir  => $layout_dir  ,
-      destination => $destination ,
-      source      => $source_dir  ,
-    },
-  })
-}
+  state $template = Template->new( ABSOLUTE => 1 );
 
-sub bootstrap_layout {
-  my( $dir , $name ) = @_;
-
-  open( my $fh , '>' , "$dir/$name.html" ) or die $!;
-  print $fh "[% content %]\n";
+  my( $fh , $file) = tempfile( SUFFIX => '.html' );
+  print $fh $arg{content};
   close( $fh );
+
+  my $layout_args = {
+    filename  => $file ,
+    processor => $template ,
+  };
+  $layout_args->{layout} = $arg{layout} if $arg{layout};
+
+  return HiD::Layout->new( $layout_args );
 }
 
-sub bootstrap_page {
-  my( $dir , $name , $hid ) = @_;
+sub make_page {
+  my( %arg ) = @_;
 
-  open( my $fh , '>' , "$dir/$name" ) or die $!;
-  print $fh "---\nlayout: default\n---\nPAGE\n";
+  state $input_dir = tempdir();
+  state $dest_dir  = tempdir();
+
+  my $file = join '/' , $input_dir , $arg{file};
+
+  open( my $OUT , '>' , $file ) or die $!;
+  print $OUT $arg{content};
+  close( $OUT );
 
   return HiD::Page->new({
-    filename => "$dir/$name",
-    hid      => $hid ,
+    dest_dir       => $dest_dir,
+    input_filename => $file ,
+    layouts        => $arg{layouts} ,
+    source         => $input_dir,
   });
 }
 

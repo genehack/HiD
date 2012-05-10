@@ -43,14 +43,22 @@ sub _build_url {
 
   my $format = $self->get_metadata( 'permalink' ) // 'none';
 
+  my $source = $self->source;
+  my $path_frag = $self->input_path;
+  $path_frag =~ s/^$source//;
+
+  my $naive = join '/' , $path_frag , $self->basename;
+
   my $url;
   given( $format ) {
-    when( 'none'   ) { $url = $self->input_path . $self->basename . '.html' }
-    when( 'pretty' ) { $url = $self->input_path . $self->basename . '/'     }
-    default          { $url = $format                                       }
+    when( 'none'   ) { $url = $naive . '.html' }
+    when( 'pretty' ) { $url = $naive . '/'     }
+    default          { $url = "/$format"       }
   }
 
-  return "/$url";
+  $url =~ s|//+|/|g;
+
+  return $url;
 }
 
 __PACKAGE__->meta->make_immutable;

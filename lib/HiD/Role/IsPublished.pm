@@ -102,6 +102,18 @@ has output_filename => (
   },
 );
 
+=attr source ( ro / isa = Str )
+
+Same as 'source' in HiD.pm. Normally shouldn't need to be provided...
+
+=cut
+
+has source => (
+  is      => 'ro' ,
+  isa     => 'Str' ,
+  default => '' ,
+);
+
 =attr url ( ro / isa = Str / lazily built from output_filename and dest_dir )
 
 The URL to the output path for the written file.
