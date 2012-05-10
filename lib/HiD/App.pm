@@ -10,6 +10,7 @@ See C<perldoc hid> for usage information.
 
 =cut
 
+sub default_command { 'publish' };
 
 __PACKAGE__->meta->make_immutable;
 1;

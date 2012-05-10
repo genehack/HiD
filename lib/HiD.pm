@@ -163,6 +163,15 @@ sub _build_layouts {
   return \%layouts;
 }
 
+=attr limited_posts
+
+=cut
+
+has limit_posts => (
+  is     => 'ro' ,
+  isa    => 'HiD_PosInt' ,
+);
+
 =attr objects
 
 =cut
@@ -290,6 +299,13 @@ sub _build_posts {
     } catch { 0 };
   } @potential_posts;
 
+  @posts = sort { $b->date <=> $a->date } @posts;
+
+  if ( my $limit = $self->limit_posts ) {
+    die "--limit_posts must be positive" if $limit < 1;
+    @posts = splice( @posts , -$limit , $limit );
+  }
+
   return \@posts;
 }
 
@@ -385,6 +401,42 @@ has source => (
     return $source;
   },
 );
+
+has written_files => (
+  is      => 'ro' ,
+  isa     => 'HashRef' ,
+  traits  => [ qw/ Hash / ] ,
+  default => sub {{}},
+  handles => {
+    add_written_file  => 'set' ,
+    written_file      => 'get' ,
+    all_written_files => 'keys' ,
+    wrote_file        => 'defined' ,
+  },
+);
+
+sub publish {
+  my( $self ) = @_;
+
+  # bootstrap data structures -- FIXME should have a more explicit way to do this
+  $self->regular_files;
+
+  $self->add_written_file( $self->destination => '_site_dir' );
+
+  foreach my $file ( $self->all_objects ) {
+    $file->publish;
+
+    my $path;
+    foreach my $part ( split '/' , $file->output_filename ) {
+      $path = file( $path , $part )->stringify;
+      $self->add_written_file( $path => 1 );
+    }
+  }
+
+  foreach ( File::Find::Rule->in( $self->destination )) {
+    $self->wrote_file($_) or remove \1 , $_;
+  }
+}
 
 __PACKAGE__->meta->make_immutable;
 1;

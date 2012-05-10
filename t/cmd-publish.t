@@ -47,6 +47,16 @@ EOHTML
     qr/^WARNING: Could not read configuration/ ,
     'warning on STDERR';
 }
+{    # running without a command name should do the same
+  my $result = test_app( 'HiD::App' => [ ]);
+
+  is   $result->stdout    , '' , 'expected STDOUT';
+  is   $result->exit_code , 0  , 'exit=success';
+
+  like $result->stderr ,
+    qr/^WARNING: Could not read configuration/ ,
+      'warning on STDERR';
+}
 
 DumpFile( '_config.yml' , { source => '.' } );
 
@@ -151,13 +161,9 @@ EOL
   _assert_good_run();
 
   file_exists_ok( '_site/permalink_page/index.html' , 'expected file' );
- TODO:
-  {
-    local $TODO = 'y u no wrk?!';
-    file_contains_like(
-      '_site/permalink_page/index.html' , qr|permalink_page/| , 'expected content'
-    );
-  }
+  file_contains_like(
+    '_site/permalink_page/index.html' , qr|permalink_page/| , 'expected content'
+  );
 }
 { # 'post' file processing
   open( my $fh , '>' , '_posts/2012-05-06-test.mkdn' );

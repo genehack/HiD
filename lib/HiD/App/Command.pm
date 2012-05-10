@@ -23,6 +23,7 @@ has hid => (
     'all_objects' ,
     'config' ,
     'destination' ,
+    'publish' ,
   ] ,
 );
 

@@ -19,5 +19,10 @@ subtype 'HiD_FilePath'
   => as 'Str'
   => where { -f $_ };
 
+subtype 'HiD_PosInt'
+  => as 'Int'
+  => where { $_ > 0 }
+  => message { "Must be positive integer." };
+
 no Moose::Util::TypeConstraints;
 1;
