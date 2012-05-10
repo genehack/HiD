@@ -277,26 +277,6 @@ EOL
     'expected content'
   );
 }
-{ # 'post' file without title gets 'NO TITLE!'
-  open( my $fh , '>' , '_posts/2012-05-06-no-title.mkdn' );
-  print $fh <<EOL;
----
-layout: post
----
-this is a test post, and it's called [% page.title %]
-and it was made on [% page.date %]
-EOL
-  close( $fh );
-
-  _assert_good_run();
-
-  file_exists_ok( '_site/2012/05/06/no-title.html' , 'expected post file');
-  file_contains_like(
-    '_site/2012/05/06/no-title.html' ,
-    qr|it's called NO TITLE!| ,
-    'expected content'
-  );
-}
 
 TODO: { # embedded layouts
   local $TODO = 'embedded layouts all fucked up';
