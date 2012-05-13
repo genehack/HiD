@@ -17,6 +17,17 @@ use Path::Class        qw/ file /;
 use Try::Tiny;
 use YAML::XS           qw/ LoadFile /;
 
+=attr cli_opts
+
+=cut
+
+has cli_opts => (
+  is      => 'ro' ,
+  isa     => 'HashRef' ,
+  lazy    => 1 ,
+  default => sub {{}} ,
+);
+
 =attr config
 
 =cut
@@ -33,16 +44,26 @@ has config => (
 );
 
 sub _build_config {
-  my $file = shift->config_file;
+  my $self = shift;
 
-  my $config;
-  try { $config = LoadFile( $file ) ; ref $config eq 'HASH' or die }
-  catch {
-    warn "WARNING: Could not read configuration. Using defaults (and options).\n";
-    $config = {};
+  my( $config , $config_loaded );
+
+  if ( my $file = $self->config_file ) {
+    try {
+      $config = LoadFile( $file ) // {};
+      ref $config eq 'HASH' or die $!;
+      $config_loaded++;
+    };
+  }
+
+  $config_loaded or $config = {}
+    and warn "WARNING: Could not read configuration. Using defaults (and options).\n";
+
+  return {
+    %{ $self->default_config } ,
+    %$config ,
+    %{ $self->cli_opts } ,
   };
-
-  return $config;
 }
 
 =attr config_file
@@ -52,7 +73,24 @@ sub _build_config {
 has config_file => (
   is      => 'ro' ,
   isa     => 'Str' ,
-  default => '_config.yml' ,
+);
+
+=attr default_config
+
+=cut
+
+has default_config => (
+  is       => 'ro' ,
+  isa      => 'HashRef' ,
+  traits   => [ 'Hash' ] ,
+  init_arg => undef ,
+  default  => sub{{
+    destination => '_site'    ,
+    include_dir => '_includes',
+    layout_dir  => '_layouts' ,
+    posts_dir   => '_posts' ,
+    source      => '.' ,
+  }},
 );
 
 =attr destination
@@ -64,7 +102,7 @@ has destination => (
   isa     => 'HiD_DirPath' ,
   lazy    => 1 ,
   default => sub {
-    my $dest = shift->get_config( 'destination' ) // '_site';
+    my $dest = shift->get_config( 'destination' );
     make_path $dest unless -e -d $dest;
     return $dest;
   },
@@ -80,8 +118,8 @@ has include_dir => (
   lazy    => 1,
   default => sub {
     my $self = shift;
-    $self->get_config( 'include_dir' ) //
-      ( -e -d '_includes' ) ? '_includes' : undef;
+    my $dir  = $self->get_config( 'include_dir' );
+    ( -e -d '_includes' ) ? $dir : undef;
   } ,
 );
 
@@ -108,7 +146,7 @@ has layout_dir => (
   is      => 'ro' ,
   isa     => 'HiD_DirPath' ,
   lazy    => 1 ,
-  default => sub { shift->get_config( 'layout_dir' ) // '_layouts' } ,
+  default => sub { shift->get_config( 'layout_dir' ) },
 );
 
 =attr layouts
@@ -257,7 +295,7 @@ has posts_dir => (
   is      => 'ro' ,
   isa     => 'HiD_DirPath' ,
   lazy    => 1 ,
-  default => '_posts' ,
+  default => sub { shift->get_config( 'posts_dir' ) },
 );
 
 =attr posts
@@ -397,7 +435,7 @@ has source => (
   lazy    => 1 ,
   default => sub {
     my $self   = shift;
-    my $source = $self->get_config( 'source') // '.';
+    my $source = $self->get_config( 'source' );
     chdir $source or die $!;
     return $source;
   },

@@ -10,15 +10,15 @@ has config_file => (
   isa         => 'Str' ,
   cmd_aliases => 'f' ,
   traits      => [ qw/ Getopt / ] ,
+  default     => '_config.yml' ,
 );
 
 has hid => (
   is       => 'ro' ,
   isa      => 'HiD' ,
   traits   => [ qw/ NoGetopt/ ] ,
-  lazy     => 1 ,
   init_arg => undef ,
-  builder  => '_build_hid' ,
+  writer   => '_set_hid' ,
   handles  => [
     'all_objects' ,
     'config' ,
@@ -36,6 +36,11 @@ sub execute {
     print $self->usage->text;
     exit;
   }
+
+  $self->_set_hid( HiD->new({
+    cli_opts    => $opts ,
+    config_file => $self->config_file ,
+  }));
 
   $self->_run( $opts , $args );
 }
