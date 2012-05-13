@@ -34,6 +34,10 @@ use File::Basename  qw/ fileparse /;
 use File::Path      qw/ make_path /;
 use String::Errf    qw/ errf /;
 
+=for Pod::Coverage BUILD
+
+=cut
+
 sub BUILD {
   my $self = shift;
 
