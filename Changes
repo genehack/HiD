@@ -2,4 +2,6 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.1       2012-05-13 18:29:49 America/New_York
+
         Initial release. Happy Mother's Day.
