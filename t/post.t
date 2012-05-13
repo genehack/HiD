@@ -2,7 +2,6 @@
 
 use strict;
 use warnings;
-use 5.010;
 
 use lib 't/lib';
 

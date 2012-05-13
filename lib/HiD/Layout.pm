@@ -1,14 +1,37 @@
-package HiD::Layout;
 # ABSTRACT: Class representing a particular layout
-use Moose;
 
+=head1 SYNOPSIS
+
+    my $layout = HiD::Layout->new({
+      filename  => $path_to_file ,
+      processor => $hid_processor_object ,
+    });
+
+=head1 DESCRIPTION
+
+Class representing layout files.
+
+=cut
+
+package HiD::Layout;
+use Moose;
 use namespace::autoclean;
+
+use 5.014;
+use utf8;
+use autodie;
+use warnings    qw/ FATAL  utf8     /;
+use open        qw/ :std  :utf8     /;
+use charnames   qw/ :full           /;
+use feature     qw/ unicode_strings /;
 
 use File::Slurp qw/ read_file / ;
 use HiD::Types;
 use YAML::XS;
 
 =attr content
+
+Content of this layout.
 
 =cut
 
@@ -20,6 +43,8 @@ has content => (
 
 =attr ext
 
+File extension of this layout.
+
 =cut
 
 has ext => (
@@ -28,6 +53,8 @@ has ext => (
 );
 
 =attr filename
+
+Filename of this layout.
 
 =cut
 
@@ -38,6 +65,9 @@ has filename => (
 
 =attr layout
 
+Name of a layout that will be used when processing this layout. (Can be
+applied recursively.)
+
 =cut
 
 has layout => (
@@ -47,6 +77,9 @@ has layout => (
 );
 
 =attr metadata
+
+Metadata for this layout. Populated from the YAML front matter in the layout
+file.
 
 =cut
 
@@ -59,6 +92,8 @@ has metadata => (
 
 =attr name
 
+Name of the layout.
+
 =cut
 
 has name => (
@@ -68,6 +103,8 @@ has name => (
 );
 
 =attr processor
+
+Processor object used to process content through this layout when rendering.
 
 =cut
 

@@ -1,7 +1,33 @@
-package HiD::Role::IsPublished;
 # ABSTRACT: Role to be consumed by classes that are published during processing
+
+=head1 SYNOPSIS
+
+    package MyThingThatIsPublished;
+    use Moose;
+    with 'HiD::Role::IsPublished';
+
+    ...
+
+    1;
+
+=head1 DESCRIPTION
+
+This role is for all objects that go through the HiD publishing process. It
+provides attributes and methods that are needed during that process.
+
+=cut
+
+package HiD::Role::IsPublished;
 use Moose::Role;
 use namespace::autoclean;
+
+use 5.014;
+use utf8;
+use autodie;
+use warnings    qw/ FATAL  utf8     /;
+use open        qw/ :std  :utf8     /;
+use charnames   qw/ :full           /;
+use feature     qw/ unicode_strings /;
 
 use File::Basename  qw/ fileparse /;
 use HiD::Types;
@@ -9,7 +35,10 @@ use Path::Class     qw/ file /;
 
 requires 'publish';
 
-=attr basename ( ro / isa = Str / lazily built from input_filename
+=attr basename ( ro / isa = Str / lazily built from input_filename )
+
+Basename of the file for this object (that is, without any leading directory
+path and without any file extension).
 
 =cut
 
@@ -69,6 +98,8 @@ has input_filename => (
 
 =attr input_path ( ro / isa = HiD_DirPath / lazily built from input_filename )
 
+The path component of the input filename.
+
 =cut
 
 has input_path => (
@@ -104,7 +135,7 @@ has output_filename => (
 
 =attr source ( ro / isa = Str )
 
-Same as 'source' in HiD.pm. Normally shouldn't need to be provided...
+Same as 'source' in HiD.pm. Normally shouldn't need to be provided.
 
 =cut
 

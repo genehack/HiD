@@ -1,7 +1,22 @@
-package HiD::Types;
 # ABSTRACT: HiD type constraints
+
+=head1 DESCRIPTION
+
+Type constraints for HiD.
+
+=cut
+
+package HiD::Types;
+
+use 5.014;
+use utf8;
 use strict;
+use autodie;
 use warnings;
+use warnings    qw/ FATAL  utf8     /;
+use open        qw/ :std  :utf8     /;
+use charnames   qw/ :full           /;
+use feature     qw/ unicode_strings /;
 
 use Moose::Util::TypeConstraints;
 

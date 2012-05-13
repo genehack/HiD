@@ -1,14 +1,198 @@
 # NAME
 
-HīD - Static website generation system
+HiD - Static website publishing framework
+
+# SYNOPSIS
+
+HīD is a blog-aware, GitHub-friendly, static website generation system
+inspired by Jekyll.
+
+# DESCRIPTION
+
+HiD users probably want to look at the documentation for the [hid](http://search.cpan.org/perldoc?hid) command.
+
+Subsequent documentation in this file describes internal details that are only
+useful or interesting for people that are trying to modify or extend HiD.
+
+# ATTRIBUTES
+
+## cli\_opts
+
+Hashref of command line options to integrate into the config.
+
+([HiD::App::Command](http://search.cpan.org/perldoc?HiD::App::Command)s should pass in the `$opt` variable to this.)
+
+## config
+
+Hashref of configuration information.
+
+## config\_file
+
+Path to a configuration file.
+
+## default\_config
+
+Hashref of standard configuration options. The default config is:
+
+    destination => '_site'    ,
+    include_dir => '_includes',
+    layout_dir  => '_layouts' ,
+    posts_dir   => '_posts' ,
+    source      => '.' ,
+
+## destination
+
+Directory to write output files into.
+
+__N.B.:__ If it doesn't exist and is needed, it will be created.
+
+## include\_dir
+
+Directory for template "include" files
+
+## inputs
+
+Hashref of input files. Keys are file paths; values are what type of file the
+system has classified that path as.
+
+## layout\_dir
+
+Directory where template files are located.
+
+## layouts
+
+Hashref of [HiD::Layout](http://search.cpan.org/perldoc?HiD::Layout) objects, keyed by layout name.
+
+## limit\_posts
+
+If set, only this many blog post files will be processed during publishing.
+
+Setting this can significantly speed up publishing for sites with many blog posts.
+
+## objects
+
+Array of objects (pages, posts, files) created during site processing.
+
+## page\_file\_regex
+
+Regular expression for identifying "page" files.
+
+\# FIXME should it be possible to set this from the config?
+
+## pages
+
+Arrayref of [HiD::Page](http://search.cpan.org/perldoc?HiD::Page) objects, populated during processing.
+
+## post\_file\_regex
+
+Regular expression for which files will be recognized as blog posts.
+
+FIXME should this be configurable?
+
+## posts\_dir
+
+Directory where blog posts are located.
+
+## posts
+
+Arrayref of [HiD::Post](http://search.cpan.org/perldoc?HiD::Post) objects, populated during processing.
+
+## processor
+
+Slot to hold the [HiD::Processor](http://search.cpan.org/perldoc?HiD::Processor) object that will be used during the
+publication process.
+
+## processor\_args
+
+Arguments to use when instantiating the [processor](http://search.cpan.org/perldoc?processor) attribute.
+
+Can be an arrayref or a hashref.
+
+Defaults to appropriate Template Toolkit arguments.
+
+## regular\_files
+
+ArrayRef of [HiD::File](http://search.cpan.org/perldoc?HiD::File) objects, populated during processing.
+
+## source
+
+Base directory that all other paths are calculated relative to.
+
+## written\_files
+
+Hashref of files written out during the publishing process.
+
+# METHODS
+
+## get\_config
+
+    my $config_key_value = $self->get_config( $config_key_name );
+
+Given a config key name, returns a config key value.
+
+## add\_input
+
+    $self->add_input( $input_file => $input_type );
+
+Record what input type a particular input file is.
+
+## seen\_input
+
+    if( $self->seen_input( $input_file )) { ... }
+
+Check to see if a particular input file has been seen.
+
+## get\_layout\_by\_name
+
+    my $hid_layout_obj = $self->get_layout_by_name( $name );
+
+Given a layout name (e.g., 'default') returns the corresponding [HiD::Layout](http://search.cpan.org/perldoc?HiD::Layout) object.
+
+## add\_object
+
+    $self->add_object( $generated_object );
+
+Add an object to the set of objects generated during site processing.
+
+## all\_objects
+
+    my @objects = $self->all_objects;
+
+Returns the list of all objects that have been generated.
+
+## add\_written\_file
+
+    $self->add_written_file( $file => 1 );
+
+Record that a file was written.
+
+## all\_written\_files
+
+    my @files = $self->all_written_files;
+
+Return the list of all files that were written out.
+
+## wrote\_file
+
+    if( $self->wrote_file( $file )) { ... }
+
+Check to see if a particular file has been written out.
+
+## publish
+
+    $self->publish;
+
+Process files and generate output per the active configuration.
+
+# SEE ALSO
+
+- [jekyll](http://jekyllrb.com/)
+- [Papery](http://search.cpan.org/perldoc?Papery)
+- [StaticVolt](http://search.cpan.org/perldoc?StaticVolt)
 
 # VERSION
 
 version 0.1
-
-# SYNOPSIS
-
-See `perldoc hid` for usage information.
 
 # AUTHOR
 

@@ -1,7 +1,32 @@
-package HiD;
 # ABSTRACT: Static website publishing framework
+
+=head1 SYNOPSIS
+
+HīD is a blog-aware, GitHub-friendly, static website generation system
+inspired by Jekyll.
+
+=head1 DESCRIPTION
+
+HiD users probably want to look at the documentation for the L<hid> command.
+
+Subsequent documentation in this file describes internal details that are only
+useful or interesting for people that are trying to modify or extend HiD.
+
+=cut
+
+package HiD;
 use Moose;
 use namespace::autoclean;
+
+use 5.014;
+use utf8;
+use strict;
+use autodie;
+use warnings;
+use warnings    qw/ FATAL  utf8     /;
+use open        qw/ :std  :utf8     /;
+use charnames   qw/ :full           /;
+use feature     qw/ unicode_strings /;
 
 use Class::Load        qw/ :all /;
 use File::Basename;
@@ -19,6 +44,10 @@ use YAML::XS           qw/ LoadFile /;
 
 =attr cli_opts
 
+Hashref of command line options to integrate into the config.
+
+(L<HiD::App::Command>s should pass in the C<$opt> variable to this.)
+
 =cut
 
 has cli_opts => (
@@ -29,6 +58,14 @@ has cli_opts => (
 );
 
 =attr config
+
+Hashref of configuration information.
+
+=method get_config
+
+    my $config_key_value = $self->get_config( $config_key_name );
+
+Given a config key name, returns a config key value.
 
 =cut
 
@@ -68,6 +105,8 @@ sub _build_config {
 
 =attr config_file
 
+Path to a configuration file.
+
 =cut
 
 has config_file => (
@@ -76,6 +115,14 @@ has config_file => (
 );
 
 =attr default_config
+
+Hashref of standard configuration options. The default config is:
+
+    destination => '_site'    ,
+    include_dir => '_includes',
+    layout_dir  => '_layouts' ,
+    posts_dir   => '_posts' ,
+    source      => '.' ,
 
 =cut
 
@@ -95,6 +142,10 @@ has default_config => (
 
 =attr destination
 
+Directory to write output files into.
+
+B<N.B.:> If it doesn't exist and is needed, it will be created.
+
 =cut
 
 has destination => (
@@ -109,6 +160,8 @@ has destination => (
 );
 
 =attr include_dir
+
+Directory for template "include" files
 
 =cut
 
@@ -125,6 +178,21 @@ has include_dir => (
 
 =attr inputs
 
+Hashref of input files. Keys are file paths; values are what type of file the
+system has classified that path as.
+
+=method add_input
+
+    $self->add_input( $input_file => $input_type );
+
+Record what input type a particular input file is.
+
+=method seen_input
+
+    if( $self->seen_input( $input_file )) { ... }
+
+Check to see if a particular input file has been seen.
+
 =cut
 
 has inputs => (
@@ -140,6 +208,8 @@ has inputs => (
 
 =attr layout_dir
 
+Directory where template files are located.
+
 =cut
 
 has layout_dir => (
@@ -150,6 +220,14 @@ has layout_dir => (
 );
 
 =attr layouts
+
+Hashref of L<HiD::Layout> objects, keyed by layout name.
+
+=method get_layout_by_name
+
+    my $hid_layout_obj = $self->get_layout_by_name( $name );
+
+Given a layout name (e.g., 'default') returns the corresponding L<HiD::Layout> object.
 
 =cut
 
@@ -201,7 +279,11 @@ sub _build_layouts {
   return \%layouts;
 }
 
-=attr limited_posts
+=attr limit_posts
+
+If set, only this many blog post files will be processed during publishing.
+
+Setting this can significantly speed up publishing for sites with many blog posts.
 
 =cut
 
@@ -211,6 +293,20 @@ has limit_posts => (
 );
 
 =attr objects
+
+Array of objects (pages, posts, files) created during site processing.
+
+=method add_object
+
+    $self->add_object( $generated_object );
+
+Add an object to the set of objects generated during site processing.
+
+=method all_objects
+
+    my @objects = $self->all_objects;
+
+Returns the list of all objects that have been generated.
 
 =cut
 
@@ -227,6 +323,10 @@ has objects => (
 
 =attr page_file_regex
 
+Regular expression for identifying "page" files.
+
+# FIXME should it be possible to set this from the config?
+
 =cut
 
 has page_file_regex => (
@@ -236,6 +336,8 @@ has page_file_regex => (
 );
 
 =attr pages
+
+Arrayref of L<HiD::Page> objects, populated during processing.
 
 =cut
 
@@ -279,6 +381,10 @@ sub _build_pages {
 
 =attr post_file_regex
 
+Regular expression for which files will be recognized as blog posts.
+
+FIXME should this be configurable?
+
 =cut
 
 has post_file_regex => (
@@ -288,6 +394,8 @@ has post_file_regex => (
 );
 
 =attr posts_dir
+
+Directory where blog posts are located.
 
 =cut
 
@@ -299,6 +407,8 @@ has posts_dir => (
 );
 
 =attr posts
+
+Arrayref of L<HiD::Post> objects, populated during processing.
 
 =cut
 
@@ -350,6 +460,9 @@ sub _build_posts {
 
 =attr processor
 
+Slot to hold the L<HiD::Processor> object that will be used during the
+publication process.
+
 =cut
 
 has processor => (
@@ -369,6 +482,16 @@ has processor => (
     return $processor_class->new( $self->processor_args );
   },
 );
+
+=attr processor_args
+
+Arguments to use when instantiating the L<processor> attribute.
+
+Can be an arrayref or a hashref.
+
+Defaults to appropriate Template Toolkit arguments.
+
+=cut
 
 has processor_args => (
   is      => 'ro' ,
@@ -391,6 +514,8 @@ has processor_args => (
 );
 
 =attr regular_files
+
+ArrayRef of L<HiD::File> objects, populated during processing.
 
 =cut
 
@@ -427,6 +552,8 @@ sub _build_regular_files {
 
 =attr source
 
+Base directory that all other paths are calculated relative to.
+
 =cut
 
 has source => (
@@ -441,6 +568,30 @@ has source => (
   },
 );
 
+=attr written_files
+
+Hashref of files written out during the publishing process.
+
+=method add_written_file
+
+    $self->add_written_file( $file => 1 );
+
+Record that a file was written.
+
+=method all_written_files
+
+    my @files = $self->all_written_files;
+
+Return the list of all files that were written out.
+
+=method wrote_file
+
+  if( $self->wrote_file( $file )) { ... }
+
+Check to see if a particular file has been written out.
+
+=cut
+
 has written_files => (
   is      => 'ro' ,
   isa     => 'HashRef' ,
@@ -448,11 +599,18 @@ has written_files => (
   default => sub {{}},
   handles => {
     add_written_file  => 'set' ,
-    written_file      => 'get' ,
     all_written_files => 'keys' ,
     wrote_file        => 'defined' ,
   },
 );
+
+=method publish
+
+    $self->publish;
+
+Process files and generate output per the active configuration.
+
+=cut
 
 sub publish {
   my( $self ) = @_;
@@ -479,6 +637,15 @@ sub publish {
   1;
 
 }
+
+=head1 SEE ALSO
+
+=for :list
+* L<jekyll|http://jekyllrb.com/>
+* L<Papery>
+* L<StaticVolt>
+
+=cut
 
 __PACKAGE__->meta->make_immutable;
 1;

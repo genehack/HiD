@@ -1,18 +1,76 @@
+# ABSTRACT: Blog posts
+
+=head1 SYNOPSIS
+
+    my $post = HiD::Post->new({
+      dest_dir       => 'path/to/output/dir'
+      input_filename => 'path/to/file/for/this/post' ,
+      layouts        => $hashref_of_hid_layout_objects,
+    });
+
+=head1 DESCRIPTION
+
+Class representing a "blog post" object.
+
+=cut
+
 package HiD::Post;
+
 use Moose;
 with 'HiD::Role::IsConverted';
 with 'HiD::Role::IsPost';
 with 'HiD::Role::IsPublished';
+use namespace::autoclean;
+
+use 5.014;
+use utf8;
+use autodie;
+use warnings    qw/ FATAL  utf8     /;
+use open        qw/ :std  :utf8     /;
+use charnames   qw/ :full           /;
+use feature     qw/ unicode_strings /;
 
 use File::Basename  qw/ fileparse /;
 use File::Path      qw/ make_path /;
 use String::Errf    qw/ errf /;
 
+sub BUILD {
+  my $self = shift;
+
+  if ( defined $self->get_metadata('published')
+         and not $self->get_metadata('published')) {
+    warn sprintf "WARNING: Skipping %s because 'published' flag is false\n" ,
+      $self->input_filename;
+    die;
+  }
+}
+
 =method get_default_layout
+
+The default layout used when publishing a L<HiD::Post> object. (Defaults to 'post'.)
 
 =cut
 
 sub get_default_layout { 'post' }
+
+=method publish
+
+Publish -- convert, render through any associated layouts, and write out to
+disk -- this data from this object.
+
+=cut
+
+sub publish {
+  my $self = shift;
+
+  my( undef , $dir ) = fileparse( $self->output_filename );
+
+  make_path $dir unless -d $dir;
+
+  open( my $out , '>' , $self->output_filename ) or die $!;
+  print $out $self->rendered_content;
+  close( $out );
+}
 
 # override
 sub _build_url {
@@ -48,29 +106,6 @@ sub _build_url {
   $permalink =~ s|//+|/|g;
 
   return $permalink;
-}
-
-sub publish {
-  my $self = shift;
-
-  my( undef , $dir ) = fileparse( $self->output_filename );
-
-  make_path $dir unless -d $dir;
-
-  open( my $out , '>' , $self->output_filename ) or die $!;
-  print $out $self->rendered_content;
-  close( $out );
-}
-
-sub BUILD {
-  my $self = shift;
-
-  if ( defined $self->get_metadata('published')
-         and not $self->get_metadata('published')) {
-    warn sprintf "WARNING: Skipping %s because 'published' flag is false\n" ,
-      $self->input_filename;
-    die;
-  }
 }
 
 __PACKAGE__->meta->make_immutable;

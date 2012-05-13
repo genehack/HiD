@@ -1,12 +1,50 @@
+# ABSTRACT: initialize a new site
+
+=head1 SYNOPSIS
+
+    $ ../bin/hid init
+    Enjoy your new site!
+
+    $ ls
+    _config.yml  _includes/  _layouts/  _site/
+
+    $ cat _config.yml
+    ---
+    title: My Great New Site
+
+=head1 DESCRIPTION
+
+Generates a directory structure and basic config for a Hid site.
+
+=head1 SEE ALSO
+
+See L<HiD::App::Command> for additional command line options supported by all
+sub commands.
+
+=cut
+
 package HiD::App::Command::init;
-# ABSTRACT: HiD 'init' subcmd - initialize a new site
 use Moose;
 extends 'HiD::App::Command';
+use namespace::autoclean;
 
-use 5.010;
-
+use 5.014;
+use utf8;
 use autodie;
+use warnings    qw/ FATAL  utf8     /;
+use open        qw/ :std  :utf8     /;
+use charnames   qw/ :full           /;
+use feature     qw/ unicode_strings /;
+
 use YAML::XS qw/ DumpFile /;
+
+=attr blog
+
+If enabled, this will add in additional site features useful for bloggers.
+
+# FIXME doesn't actually do anything currently.
+
+=cut
 
 has blog => (
   is            => 'ro' ,
@@ -16,6 +54,14 @@ has blog => (
   documentation => 'include blog-specific features when creating site' ,
 );
 
+=attr github
+
+If enabled, will set the site up to be hosted on and published through GitHub.
+
+# FIXME doesn't actually do anything currently.
+
+=cut
+
 has github => (
   is            => 'ro' ,
   isa           => 'Bool' ,
@@ -23,6 +69,12 @@ has github => (
   cmd_aliases   => 'g' ,
   documentation => 'create site ready for publishing on GitHub' ,
 );
+
+=attr title
+
+Provide a title for the site being created.
+
+=cut
 
 has title => (
   is            => 'ro' ,

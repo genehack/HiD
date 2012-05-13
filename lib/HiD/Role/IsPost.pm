@@ -1,5 +1,33 @@
+# ABSTRACT: Role for blog posts
+
+=head1 SYNOPSIS
+
+    package HiD::ThingThatIsAPost;
+    use Moose;
+    with 'HiD::Role::IsPost';
+
+    ...
+
+    1;
+
+=head1 DESCRIPTION
+
+This role is consumed by objects that are blog posts and provides blog
+post-specific attributes and methods.
+
+=cut
+
 package HiD::Role::IsPost;
 use Moose::Role;
+use namespace::autoclean;
+
+use 5.014;
+use utf8;
+use autodie;
+use warnings    qw/ FATAL  utf8     /;
+use open        qw/ :std  :utf8     /;
+use charnames   qw/ :full           /;
+use feature     qw/ unicode_strings /;
 
 use DateTime;
 use Date::Parse    qw/ str2time  /;
@@ -22,7 +50,6 @@ sub _build_basename {
 
 =cut
 
-### TODO parse categories out of metadat
 has categories => (
   is      => 'ro' ,
   isa     => 'ArrayRef' ,
@@ -47,6 +74,8 @@ has categories => (
 );
 
 =attr date
+
+DateTime object for this post.
 
 =cut
 

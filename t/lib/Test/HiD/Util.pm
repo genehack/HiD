@@ -1,6 +1,5 @@
-use strict;
+use 5.014;
 use warnings;
-use 5.010;
 
 package Test::HiD::Util;
 

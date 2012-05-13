@@ -1,11 +1,43 @@
-package HiD::App::Command::server;
 # ABSTRACT: HiD 'server' subcmd - start up a Plack-based web server for your site
+
+=head1 SYNOPSIS
+
+    $ ../bin/hid server
+    HTTP::Server::PSGI: Accepting connections at http://0:5000/
+
+=head1 DESCRIPTION
+
+Start a Plack-based web server that serves your C<destination> directory.
+
+=head1 SEE ALSO
+
+See L<HiD::App::Command> for additional command line options supported by all
+sub commands.
+
+=cut
+
+package HiD::App::Command::server;
 use Moose;
 extends 'HiD::App::Command';
+use namespace::autoclean;
 
-use 5.010;
+use 5.014;
+use utf8;
+use autodie;
+use warnings    qw/ FATAL  utf8     /;
+use open        qw/ :std  :utf8     /;
+use charnames   qw/ :full           /;
+use feature     qw/ unicode_strings /;
+
+use namespace::autoclean;
 
 use Plack::Runner;
+
+=attr port
+
+Port number to bind. Defaults to 5000.
+
+=cut
 
 has port => (
   is            => 'ro' ,

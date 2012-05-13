@@ -1,7 +1,35 @@
+# ABSTRACT: Role for objects that are converted during the publishing process
+
+=head1 SYNOPSIS
+
+    package HiD::ThingThatIsConverted
+    use Moose;
+    with 'HiD::Role::IsConverted';
+
+    ...
+
+    1;
+
+=head1 DESCRIPTION
+
+This role is consumed by objects that are converted during the publication
+process -- e.g., from Markdown or Textile to HTML, or rendered through a
+layout object. This role provides required attributes and methods used during
+that process.
+
+=cut
+
 package HiD::Role::IsConverted;
 use Moose::Role;
-
 use namespace::autoclean;
+
+use 5.014;
+use utf8;
+use autodie;
+use warnings    qw/ FATAL  utf8     /;
+use open        qw/ :std  :utf8     /;
+use charnames   qw/ :full           /;
+use feature     qw/ unicode_strings /;
 
 use Carp;
 use Class::Load  qw/ :all /;
@@ -28,6 +56,7 @@ Content after it has gone through the conversion process.
 
 =cut
 
+### FIXME make this extensible
 my %conversion_extension_map = (
   markdown => [ 'Text::Markdown' , 'markdown' ] ,
   mkdn     => [ 'Text::Markdown' , 'markdown' ] ,
@@ -55,6 +84,9 @@ has converted_content => (
 
 =attr hid
 
+The HiD object for the current site. Here primarily to provide access to site
+metadata.
+
 =cut
 
 has hid => (
@@ -65,7 +97,7 @@ has hid => (
 
 =attr layouts ( ro / HashRef[HiD::Layout] / required )
 
-Hashref of layout objects
+Hashref of layout objects keyed by name.
 
 =cut
 

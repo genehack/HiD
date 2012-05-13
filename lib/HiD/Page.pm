@@ -1,9 +1,35 @@
-use 5.010;
-package HiD::Page;
 # ABSTRACT: Pages that are converted during the output process
+
+=head1 SYNOPSIS
+
+    my $page = HiD::Page->new({
+      dest_dir       => 'path/to/output/dir' ,
+      hid            => $hid_object ,
+      input_filename => 'path/to/page/file' ,
+      layouts        => $hash_of_hid_layout_objects,
+    });
+
+=head1 DESCRIPTION
+
+Class representing a "page" object -- i.e., a file that is not a blog post,
+but that is still processed (e.g., converted from Markdown or Textile to HTML
+and run through a layout rendering step) during publication.
+
+=cut
+
+package HiD::Page;
 use Moose;
 with 'HiD::Role::IsConverted';
 with 'HiD::Role::IsPublished';
+use namespace::autoclean;
+
+use 5.014;
+use utf8;
+use autodie;
+use warnings    qw/ FATAL  utf8     /;
+use open        qw/ :std  :utf8     /;
+use charnames   qw/ :full           /;
+use feature     qw/ unicode_strings /;
 
 use File::Basename  qw/ fileparse /;
 use File::Path      qw/ make_path /;
@@ -17,11 +43,16 @@ object from this class works.
 
 =method get_default_layout
 
+Get the name of the default page layout. (The default is 'default'.)
+
 =cut
 
 sub get_default_layout { 'default' }
 
 =method publish
+
+Publish -- convert, render through any associated layouts, and write out to
+disk -- this data from this object.
 
 =cut
 

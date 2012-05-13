@@ -1,9 +1,49 @@
-package HiD::App::Command;
 # ABSTRACT: Base class for HiD commands
+
+=head1 SYNOPSIS
+
+    package HiD::App::Command::my_awesome_command;
+    use Moose;
+    extends 'HiD::App::Command';
+
+    sub _run {
+      my( $self , $opts , $args ) = @_;
+
+      # do whatcha like
+    }
+
+    1;
+
+=head1 DESCRIPTION
+
+Base class for implementing subcommands for L<hid>. Provides basic attributes
+like C<--config_file>. If you're going to write a sub-command, you want to
+base it on this class.
+
+=cut
+
+package HiD::App::Command;
 use Moose;
 extends 'MooseX::App::Cmd::Command';
+use namespace::autoclean;
+
+use 5.014;
+use utf8;
+use autodie;
+use warnings    qw/ FATAL  utf8     /;
+use open        qw/ :std  :utf8     /;
+use charnames   qw/ :full           /;
+use feature     qw/ unicode_strings /;
 
 use HiD;
+
+=attr config_file
+
+Path to config file.
+
+Defaults to './_config.yml'
+
+=cut
 
 has config_file => (
   is          => 'ro' ,
