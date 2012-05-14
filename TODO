@@ -1,0 +1,32 @@
+# HID TODO
+
+(in no particular order.)
+
+- plugin system
+ - need to define processing flow and figure out how to hook it
+
+- posts
+ - tags
+ - exposing data in 'page' in template
+  - title
+  - url
+  - date
+  - id
+  - categories
+  - tags
+   - tag cloud
+ - paging(?)
+
+- calculate dep chain of layouts; reduce to 'last-mod' date per
+  top-level layout file; use that for short-circuiting file writing 
+    
+- 'init' cmd work breakdown
+ - 'init --github'
+ - 'init --blog' 
+  - canned index
+  - archive generation plugin
+  
+- 'post' cmd work breakdown
+ - 'post --title --date --layout' 
+
+- source code highlighting
