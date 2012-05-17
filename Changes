@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.2       2012-05-16 22:12:39 America/New_York
+
         Added explict deps on Text::Markdown and Text::Textile.
 
 0.1       2012-05-13 18:29:49 America/New_York
