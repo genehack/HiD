@@ -198,9 +198,12 @@ around BUILDARGS => sub {
       ( $metadata , $content ) = $file_content
         =~ /^---\n?(.*?)---\n?(.*)$/ms;
     }
+    elsif ( $args{input_filename} =~ /\.html?$/ ) {
+      die "plain HTML file without YAML front matter"
+    }
     else {
       $content  = $file_content;
-      $metadata = ''
+      $metadata = '';
     }
 
     $args{content}  = $content;
