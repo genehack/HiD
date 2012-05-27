@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.3       2012-05-27 00:17:49 America/New_York
+
         Tweak index redirects in server
         Don't convert *.html without YAML front matter
         Remove test output files that shouldn't have been added

@@ -192,7 +192,7 @@ Process files and generate output per the active configuration.
 
 # VERSION
 
-version 0.2
+version 0.3
 
 # AUTHOR
 
