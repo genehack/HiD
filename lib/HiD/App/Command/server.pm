@@ -82,6 +82,13 @@ sub locate_file  {
 
   my $path = $env->{PATH_INFO} || '';
 
+  $path =~ s|^/||;
+
+  if ( -e -d $path ) {
+    $path .= '/' unless $path =~ m|/$|;
+    $env->{PATH_INFO} .= '/';
+  }
+
   $env->{PATH_INFO} .= 'index.html'
     if ( $path && $path =~ m|/$| );
 
