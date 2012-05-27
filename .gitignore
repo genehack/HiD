@@ -1,3 +1,4 @@
 .build
 HiD-*
 !releases/*.tar.gz
+t/jekyll_test_source/_site

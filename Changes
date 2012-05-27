@@ -2,6 +2,7 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        Remove test output files that shouldn't have been added
         Fix bug with file output building
         Switch encoding plugin
 
