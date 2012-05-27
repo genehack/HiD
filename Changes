@@ -2,6 +2,7 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        Fix bug with file output building
         Switch encoding plugin
 
 0.2       2012-05-16 22:12:39 America/New_York

@@ -54,5 +54,6 @@ is( scalar @post_dirs , 0 , 'no _posts in _site' );
 
 file_exists_ok( '_site/about/index.html' );
 file_exists_ok( '_site/contacts.html'    );
+file_exists_ok( '_site/css/index.css'    );
 
 done_testing;
