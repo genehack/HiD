@@ -112,6 +112,10 @@ has processor => (
   is       => 'ro',
   isa      => 'Object' ,
   required => 1 ,
+  handles  => {
+    process_template => 'process' ,
+    processor_error  => 'error' ,
+  },
 );
 
 
@@ -163,21 +167,21 @@ sub render {
   my $processed_input_content;
   my $input_content = delete $data->{content};
 
-  $self->processor->process(
+  $self->process_template(
     \$input_content ,
     $data ,
     \$processed_input_content ,
-  ) or die $self->processor->tt->error;
+  ) or die $self->processor_error;
 
   $data->{content} = $processed_input_content;
 
   my $output;
 
-  $self->processor->process(
+  $self->process_template(
     \$self->content ,
     $data ,
     \$output ,
-  ) or die $self->processor->error;
+  ) or die $self->processor_error;
 
   if ( my $embedded_layout = $self->layout ) {
     $data->{content} = $output;

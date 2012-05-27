@@ -28,7 +28,7 @@ use Template;
 has 'tt' => (
   is       => 'ro' ,
   isa      => 'Template' ,
-  handles  => [ qw/ process / ],
+  handles  => [ qw/ process error / ],
   required => 1 ,
 );
 
