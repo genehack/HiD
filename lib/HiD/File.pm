@@ -32,10 +32,10 @@ use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 use feature     qw/ unicode_strings /;
 
-use File::Basename  qw/ fileparse /;
-use File::Copy      qw/ copy /;
-use File::Path      qw/ make_path /;
-use Path::Class     qw/ file / ;
+use File::Basename         qw/ fileparse /;
+use File::Copy::Recursive  qw/ fcopy /;
+use File::Path             qw/ make_path /;
+use Path::Class            qw/ file / ;
 
 =method publish
 
@@ -50,7 +50,8 @@ sub publish {
 
   make_path $dir unless -d $dir;
 
-  copy( $self->input_filename , $self->output_filename ) or die $!;
+  fcopy( $self->input_filename , $self->output_filename )
+    or die $!;
 }
 
 # used to populate the 'url' attr in Role::IsPublished

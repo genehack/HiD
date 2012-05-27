@@ -4,6 +4,9 @@ Revision history for {{$dist->name}}
 
         Tweak index redirects again
 
+        Switch to File::Copy::Recursive::fcopy so permission bits will
+        be preserved during publishing
+
 0.3       2012-05-27 00:17:49 America/New_York
 
         Tweak index redirects in server
