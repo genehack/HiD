@@ -82,10 +82,10 @@ sub locate_file  {
 
   my $path = $env->{PATH_INFO} || '';
 
-  $path =~ s|^/||;
+  $path =~ s|^/|| unless $path eq '/';
 
-  if ( -e -d $path ) {
-    $path .= '/' unless $path =~ m|/$|;
+  if ( -e -d $path and $path !~ m|/$| ) {
+    $path .= '/';
     $env->{PATH_INFO} .= '/';
   }
 
