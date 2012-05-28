@@ -532,10 +532,11 @@ sub _build_regular_files {
   # build pages before regular files
   $self->pages;
 
-  my @potential_files = File::Find::Rule->file->in( '.' );
-
+  my @potential_files = File::Find::Rule->file->in('.');
   my @files = grep { $_ } map {
     if ($self->seen_input( $_ ) or $_ =~ /^_/ ) { 0 }
+    elsif( $_ =~ /^\.git/ ) { 0 }
+    elsif( $_ =~ /^\.svn/ or $_ =~ /\/\.svn\// ) { 0 }
     else {
       my $file = HiD::File->new({
         dest_dir       => $self->destination,
