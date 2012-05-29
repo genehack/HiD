@@ -61,6 +61,7 @@ my %conversion_extension_map = (
   markdown => [ 'Text::Markdown' , 'markdown' ] ,
   mkdn     => [ 'Text::Markdown' , 'markdown' ] ,
   mk       => [ 'Text::Markdown' , 'markdown' ] ,
+  md       => [ 'Text::Markdown' , 'markdown' ] ,
   textile  => [ 'Text::Textile'  , 'process'  ] ,
 );
 
