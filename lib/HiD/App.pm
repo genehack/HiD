@@ -9,6 +9,7 @@ See C<perldoc hid> for usage information.
 package HiD::App;
 use Moose;
 extends 'MooseX::App::Cmd';
+with 'HiD::Role::HasConfig';
 use namespace::autoclean;
 
 use 5.014;

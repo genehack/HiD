@@ -15,6 +15,7 @@ Class representing layout files.
 
 package HiD::Layout;
 use Moose;
+with 'HiD::Role::HasConfig';
 use namespace::autoclean;
 
 use 5.014;
@@ -137,7 +138,6 @@ sub BUILDARGS {
         =~ m|^---\n(.*?)---\n(.*)$|s;
       $metadata = Load( $meta ) if $meta;
     }
-
     $args{metadata} = $metadata;
     $args{content}  = $content;
   }
@@ -157,13 +157,23 @@ Will recurse into embedded layouts as needed.
 sub render {
   my( $self , $data ) = @_;
 
-  my $page_data = $data->{page} // {};
+  my %config = ();
+  foreach my $var (qw(baseurl title caption)) {
+      my $val = $self->config->{$var};
+      $config{$var} = $val;
+  }
 
+  my $page_data = $data->{page} // {};
   %{ $data->{page} } = (
     %{ $self->metadata } ,
     %{ $page_data },
   );
 
+  my $site_data = $data->{site} // {};
+  %{ $data->{site} } = (
+    config => \%config,
+    %{ $site_data },
+  );
   my $processed_input_content;
   my $input_content = delete $data->{content};
 
