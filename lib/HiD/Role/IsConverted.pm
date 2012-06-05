@@ -58,30 +58,40 @@ Content after it has gone through the conversion process.
 
 =cut
 
-### FIXME make this extensible
-my %conversion_extension_map = (
-  markdown => [ 'Text::Markdown' , 'markdown' ] ,
-  mkdn     => [ 'Text::Markdown' , 'markdown' ] ,
-  mk       => [ 'Text::Markdown' , 'markdown' ] ,
-  md       => [ 'Text::Markdown' , 'markdown' ] ,
-  textile  => [ 'Text::Textile'  , 'process'  ] ,
-);
-
 has converted_content => (
   is      => 'ro' ,
   isa     => 'Str' ,
   lazy    => 1 ,
   default => sub {
     my $self = shift;
+    return _convert_by_extension( $self->content , $self->ext );
+  }
+);
 
-    return $self->content
-      unless exists $conversion_extension_map{ $self->ext };
+=attr converted_excerpt ( ro / Str / lazily built from content )
 
-    my( $module , $method ) =
-      @{ $conversion_extension_map{ $self->ext }};
-    load_class( $module );
+Excerpt after it has gone through the conversion process
 
-    return $module->new->$method( $self->content );
+=cut
+
+has converted_excerpt => (
+  is      => 'ro' ,
+  isa     => 'Str' ,
+  lazy    => 1 ,
+  default => sub {
+    my $self = shift;
+
+    my $converted_excerpt = _convert_by_extension( $self->excerpt , $self->ext );
+
+    if ( $self->excerpt ne $self->content ) {
+      # Add the "read more" link
+      ### FIXME this should be configurable
+      $converted_excerpt .= q{<p class="readmore"><a href="}
+        . $self->url
+          . q{" class="readmore">read more</a></p>};
+    }
+
+    return $converted_excerpt;
   },
 );
 
@@ -208,6 +218,31 @@ around BUILDARGS => sub {
 
   return $class->$orig( \%args );
 };
+
+{ # hide the map
+
+  ### FIXME make this extensible
+  my %conversion_extension_map = (
+    markdown => [ 'Text::Markdown' , 'markdown' ] ,
+    mkdn     => [ 'Text::Markdown' , 'markdown' ] ,
+    mk       => [ 'Text::Markdown' , 'markdown' ] ,
+    md       => [ 'Text::Markdown' , 'markdown' ] ,
+    textile  => [ 'Text::Textile'  , 'process'  ] ,
+  );
+
+  sub _convert_by_extension {
+    my( $content , $extension ) = @_;
+
+    return $content
+      unless exists $conversion_extension_map{ $extension };
+
+    my( $module , $method ) = @{ $conversion_extension_map{ $extension }};
+    load_class( $module );
+
+    my $converted = $module->new->$method( $content );
+    return $converted;
+  }
+}
 
 no Moose::Role;
 1;

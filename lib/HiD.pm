@@ -188,6 +188,21 @@ has destination => (
   },
 );
 
+=attr excerpt_separator
+
+String that distinguishes initial excerpt from "below the fold" content
+
+Defaults to "\n\n"
+
+=cut
+
+has excerpt_separator => (
+  is  => 'ro' ,
+  isa => 'Str' ,
+  lazy => 1 ,
+  default => sub { shift->get_config( 'excerpt_separator' ) // "\n\n" }
+);
+
 =attr include_dir
 
 Directory for template "include" files

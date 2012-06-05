@@ -3,7 +3,8 @@
 =head1 SYNOPSIS
 
     my $post = HiD::Post->new({
-      dest_dir       => 'path/to/output/dir'
+      dest_dir       => 'path/to/output/dir' ,
+      hid            => $master_hid_object ,
       input_filename => 'path/to/file/for/this/post' ,
       layouts        => $hashref_of_hid_layout_objects,
     });
