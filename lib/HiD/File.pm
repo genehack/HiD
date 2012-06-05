@@ -22,6 +22,7 @@ well if you're trying to figure out how an object from this class works.
 package HiD::File;
 use Moose;
 with 'HiD::Role::IsPublished';
+with 'HiD::Role::HasConfig';
 use namespace::autoclean;
 
 use 5.014;

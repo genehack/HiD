@@ -22,24 +22,6 @@ Hashref of command line options to integrate into the config.
 
 ([HiD::App::Command](http://search.cpan.org/perldoc?HiD::App::Command)s should pass in the `$opt` variable to this.)
 
-## config
-
-Hashref of configuration information.
-
-## config\_file
-
-Path to a configuration file.
-
-## default\_config
-
-Hashref of standard configuration options. The default config is:
-
-    destination => '_site'    ,
-    include_dir => '_includes',
-    layout_dir  => '_layouts' ,
-    posts_dir   => '_posts' ,
-    source      => '.' ,
-
 ## destination
 
 Directory to write output files into.
@@ -123,12 +105,6 @@ Base directory that all other paths are calculated relative to.
 Hashref of files written out during the publishing process.
 
 # METHODS
-
-## get\_config
-
-    my $config_key_value = $self->get_config( $config_key_name );
-
-Given a config key name, returns a config key value.
 
 ## add\_input
 

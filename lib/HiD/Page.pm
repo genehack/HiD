@@ -21,6 +21,7 @@ package HiD::Page;
 use Moose;
 with 'HiD::Role::IsConverted';
 with 'HiD::Role::IsPublished';
+with 'HiD::Role::HasConfig';
 use namespace::autoclean;
 
 use 5.014;

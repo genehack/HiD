@@ -19,6 +19,7 @@ provides attributes and methods that are needed during that process.
 
 package HiD::Role::IsPublished;
 use Moose::Role;
+#with 'HiD::Role::HasConfig';
 use namespace::autoclean;
 
 use 5.014;
@@ -128,6 +129,9 @@ has output_filename => (
 
     my $url = $self->url;
     $url .= 'index.html' if $url =~ m|/$|;
+    my $base = $self->baseurl;
+
+    $url =~ s/^$base//;
 
     return file( $self->dest_dir , $url )->stringify;
   },
@@ -157,6 +161,28 @@ has url => (
   lazy    => 1 ,
   builder => '_build_url' ,
 );
+
+=attr baseurl 
+
+=cut
+
+has baseurl => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    builder => '_build_baseurl',
+);
+
+sub _build_baseurl {
+    my $self = shift;
+
+    my $base_url = $self->config->{baseurl};
+    if( defined $base_url ) {
+        return $base_url;
+    }
+    return '/';
+}
+
 
 no Moose::Role;
 1;
