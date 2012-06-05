@@ -122,6 +122,34 @@ has tags => (
   default => sub {[]} ,
 );
 
+=attr blurb
+
+It is generally useful to summarize or lead a post with a "read more" tag added
+to the end of the post.  This is ideal for a blog where we might not want to list
+the full post on the front page.  Going to use <!-- BREAK --> as the blurb separator.
+
+=cut
+
+has blurb => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    builder => '_build_blurb',
+);
+
+sub _build_blurb {
+    my $self = shift;
+
+    my $content = $self->content;
+
+    return unless defined $content;
+    if($content =~ /^<!-- BREAK -->/mp) {
+        return ${^PREMATCH};
+    }
+    return $content;
+}
+
+
 =attr title
 
 =cut

@@ -83,6 +83,38 @@ has converted_content => (
   },
 );
 
+=attr converted_blurb
+
+Converts the blurb portion to HTML
+
+=cut
+
+has converted_blurb => (
+  is      => 'ro' ,
+  isa     => 'Str' ,
+  lazy    => 1 ,
+  default => sub {
+    my $self = shift;
+
+    return $self->blurb
+      unless exists $conversion_extension_map{ $self->ext };
+
+    my( $module , $method ) =
+      @{ $conversion_extension_map{ $self->ext }};
+    load_class( $module );
+
+    # Convert the blob
+    my $blurb = $module->new->$method( $self->blurb );
+    # Add the "read more" link
+    $blurb .= q{<p class="readmore"><a href="} . $self->url . q{" class="readmore">read more</a></p>}
+        if $self->blurb ne $self->content;
+
+    return $blurb;
+  },
+);
+
+
+
 =attr hid
 
 The HiD object for the current site. Here primarily to provide access to site
