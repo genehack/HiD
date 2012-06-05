@@ -19,7 +19,6 @@ post-specific attributes and methods.
 
 package HiD::Role::IsPost;
 use Moose::Role;
-with 'HiD::Role::HasConfig';
 use namespace::autoclean;
 
 use 5.014;

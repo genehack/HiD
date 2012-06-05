@@ -19,7 +19,6 @@ provides attributes and methods that are needed during that process.
 
 package HiD::Role::IsPublished;
 use Moose::Role;
-#with 'HiD::Role::HasConfig';
 use namespace::autoclean;
 
 use 5.014;
