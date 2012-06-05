@@ -16,6 +16,7 @@ useful or interesting for people that are trying to modify or extend HiD.
 
 package HiD;
 use Moose;
+with 'HiD::Role::HasConfig';
 use namespace::autoclean;
 
 use 5.014;
@@ -55,89 +56,6 @@ has cli_opts => (
   isa     => 'HashRef' ,
   lazy    => 1 ,
   default => sub {{}} ,
-);
-
-=attr config
-
-Hashref of configuration information.
-
-=method get_config
-
-    my $config_key_value = $self->get_config( $config_key_name );
-
-Given a config key name, returns a config key value.
-
-=cut
-
-has config => (
-  is      => 'ro' ,
-  isa     => 'HashRef' ,
-  traits  => [ 'Hash' ],
-  lazy    => 1 ,
-  builder => '_build_config' ,
-  handles => {
-    get_config => 'get' ,
-  }
-);
-
-sub _build_config {
-  my $self = shift;
-
-  my( $config , $config_loaded );
-
-  if ( my $file = $self->config_file ) {
-    try {
-      $config = LoadFile( $file ) // {};
-      ref $config eq 'HASH' or die $!;
-      $config_loaded++;
-    };
-  }
-
-  $config_loaded or $config = {}
-    and warn "WARNING: Could not read configuration. Using defaults (and options).\n";
-
-  return {
-    %{ $self->default_config } ,
-    %$config ,
-    %{ $self->cli_opts } ,
-  };
-}
-
-=attr config_file
-
-Path to a configuration file.
-
-=cut
-
-has config_file => (
-  is      => 'ro' ,
-  isa     => 'Str' ,
-);
-
-=attr default_config
-
-Hashref of standard configuration options. The default config is:
-
-    destination => '_site'    ,
-    include_dir => '_includes',
-    layout_dir  => '_layouts' ,
-    posts_dir   => '_posts' ,
-    source      => '.' ,
-
-=cut
-
-has default_config => (
-  is       => 'ro' ,
-  isa      => 'HashRef' ,
-  traits   => [ 'Hash' ] ,
-  init_arg => undef ,
-  default  => sub{{
-    destination => '_site'    ,
-    include_dir => '_includes',
-    layout_dir  => '_layouts' ,
-    posts_dir   => '_posts' ,
-    source      => '.' ,
-  }},
 );
 
 =attr destination

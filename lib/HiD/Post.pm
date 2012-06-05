@@ -20,6 +20,7 @@ use Moose;
 with 'HiD::Role::IsConverted';
 with 'HiD::Role::IsPost';
 with 'HiD::Role::IsPublished';
+with 'HiD::Role::HasConfig';
 use namespace::autoclean;
 
 use 5.014;
@@ -81,13 +82,20 @@ sub _build_url {
   my $self = shift;
 
   my %formats = (
+    simple => '/posts/%{year}/%{month}/%{title}.html',
     date   => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s.html' ,
     pretty => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s/' ,
     none   => '/%{categories}s/%{title}s.html' ,
   );
 
-  ### FIXME need a way to get overall config in here...
   my $permalink_format = $self->get_metadata( 'permalink' ) // 'date';
+
+  my $base_url = $self->config->{baseurl};
+  if( defined $base_url ) {
+      foreach my $k (keys %formats) {
+        $formats{$k} = join('/', $base_url, $formats{$k} );
+      }
+  }
 
   $permalink_format = $formats{$permalink_format}
     if exists $formats{$permalink_format};
