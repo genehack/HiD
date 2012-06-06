@@ -79,7 +79,8 @@ has converted_content => (
       @{ $conversion_extension_map{ $self->ext }};
     load_class( $module );
 
-    return $module->new->$method( $self->content );
+    my $content =  $module->new->$method( $self->content );
+    return $self->replace_inline( $content );
   },
 );
 
@@ -109,7 +110,7 @@ has converted_blurb => (
     $blurb .= q{<p class="readmore"><a href="} . $self->url . q{" class="readmore">read more</a></p>}
         if $self->blurb ne $self->content;
 
-    return $blurb;
+    return $self->replace_inline( $blurb );
   },
 );
 
@@ -245,6 +246,31 @@ around BUILDARGS => sub {
 
   return $class->$orig( \%args );
 };
+
+
+=method replace_inline
+
+Ability to replace placeholders surrounded by '##' with something else.
+
+Useful to specify paths to media files.  In config:
+
+replace_inline:
+  MEDIA: /blog/media
+
+=cut
+
+sub replace_inline {
+    my ($self,$rendered) = @_;
+
+    my %config = %{ $self->config };
+
+    if( exists $config{replace_inline} ) {
+        foreach my $placeholder (keys %{ $config{replace_inline} }) {
+            $rendered =~ s{##$placeholder##}{$config{replace_inline}->{$placeholder}}mg;
+        }
+    }
+    return $rendered;
+}
 
 no Moose::Role;
 1;
