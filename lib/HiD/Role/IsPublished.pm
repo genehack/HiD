@@ -161,7 +161,9 @@ has url => (
   builder => '_build_url' ,
 );
 
-=attr baseurl 
+=attr baseurl
+
+Base URL for use in Templates
 
 =cut
 
