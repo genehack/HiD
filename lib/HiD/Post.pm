@@ -82,7 +82,7 @@ sub _build_url {
   my $self = shift;
 
   my %formats = (
-    simple => '/posts/%{year}/%{month}/%{title}.html',
+    simple => '/post/%{year}/%{month}/%{title}.html',
     date   => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s.html' ,
     pretty => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s/' ,
     none   => '/%{categories}s/%{title}s.html' ,

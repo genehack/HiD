@@ -201,7 +201,7 @@ has template_data => (
       site     => $self->hid ,
     };
 
-    foreach my $method ( qw/ title url / ) {
+    foreach my $method ( qw/ title url date / ) {
       $data->{page}{$method} = $self->$method
         if $self->can( $method );
     }
