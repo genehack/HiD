@@ -38,6 +38,7 @@ Hashref of standard configuration options. The default config is:
     include_dir => '_includes',
     layout_dir  => '_layouts' ,
     posts_dir   => '_posts' ,
+    plugin_dir  => '_plugins',
     source      => '.' ,
 
 ## destination
@@ -49,6 +50,14 @@ __N.B.:__ If it doesn't exist and is needed, it will be created.
 ## include\_dir
 
 Directory for template "include" files
+
+## plugin\_dir
+
+Directory for plugins, which will be called after publish.
+
+## plugins
+
+Plugins, called after publish.
 
 ## inputs
 
@@ -72,6 +81,14 @@ Setting this can significantly speed up publishing for sites with many blog post
 ## objects
 
 Array of objects (pages, posts, files) created during site processing.
+
+## categories
+
+Categories hash, contains (category, post) pairs
+
+## tags
+
+Tags hash, contains (tag, posts) pairs
 
 ## page\_file\_regex
 
@@ -192,7 +209,7 @@ Process files and generate output per the active configuration.
 
 # VERSION
 
-version 0.3
+version 0.4
 
 # AUTHOR
 
