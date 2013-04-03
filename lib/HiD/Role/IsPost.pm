@@ -120,7 +120,7 @@ has tags => (
   isa     => 'ArrayRef',
   default => sub {
     my $self = shift;
-      
+
     if ( my $tag = $self->get_metadata( 'tag' )) {
       return [ $tag ];
     }
