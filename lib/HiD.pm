@@ -38,6 +38,7 @@ use HiD::Layout;
 use HiD::Page;
 use HiD::Post;
 use HiD::Types;
+use Module::Find;
 use Path::Class        qw/ file /;
 use Try::Tiny;
 use YAML::XS           qw/ LoadFile /;
@@ -442,6 +443,33 @@ sub _build_plugins {
   return undef unless $self->plugin_dir;
   # TODO: LOAD PLUGIN
   return [];
+
+  # default plugin modules in HiD
+  my @def_mods = findallmod "Plugin";
+
+  # plugin modules in plugin_dir
+  setmoduledirs $self->plugin_dir;
+  my @mods = map { s/^\.:://r } findallmod ".";
+
+  # load plugin modules
+  my @all_plugins;
+
+  push @INC , $self->plugin_dir;
+
+  foreach my $m ( @mods , @def_mods ) {
+    my( $lrlt , $lerr ) = try_load_class( $m );
+
+    warn "plugin $m cannot be loaded : $lerr \n" and next
+      unless $lrlt;
+
+    $m->isa('HiD::Plugin')
+      or warn "plugin $m is not a valid plugin. Plugins must inherit from HiD::Plugin\n"
+        and next;
+
+    push @all_plugins, $m;
+  }
+
+  return @all_plugins ? \@all_plugins : undef;
 }
 
 =attr post_file_regex
@@ -726,7 +754,12 @@ sub publish {
     $self->wrote_file($_) or remove \1 , $_;
   }
 
-  # TODO: execute PLUGINS
+  # execute PLUGINS
+  return 1 unless $self->plugins;
+
+  foreach my $p (@{$self->plugins}) {
+      $p->new->after_publish($self);
+  }
   1;
 
 }
