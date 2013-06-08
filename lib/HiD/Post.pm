@@ -25,28 +25,29 @@ use namespace::autoclean;
 use 5.014;
 use utf8;
 use autodie;
-use warnings    qw/ FATAL  utf8     /;
-use open        qw/ :std  :utf8     /;
-use charnames   qw/ :full           /;
-use feature     qw/ unicode_strings /;
+use warnings qw/ FATAL  utf8     /;
+use open qw/ :std  :utf8     /;
+use charnames qw/ :full           /;
+use feature qw/ unicode_strings /;
 
-use File::Basename  qw/ fileparse /;
-use File::Path      qw/ make_path /;
-use String::Errf    qw/ errf /;
+use File::Basename qw/ fileparse /;
+use File::Path qw/ make_path /;
+use String::Errf qw/ errf /;
 
 =for Pod::Coverage BUILD
 
 =cut
 
 sub BUILD {
-  my $self = shift;
+    my $self = shift;
 
-  if ( defined $self->get_metadata('published')
-         and not $self->get_metadata('published')) {
-    warn sprintf "WARNING: Skipping %s because 'published' flag is false\n" ,
-      $self->input_filename;
-    die;
-  }
+    if ( defined $self->get_metadata('published')
+        and not $self->get_metadata('published') )
+    {
+        warn sprintf "WARNING: Skipping %s because 'published' flag is false\n",
+          $self->input_filename;
+        die;
+    }
 }
 
 =method get_default_layout
@@ -65,51 +66,63 @@ disk -- this data from this object.
 =cut
 
 sub publish {
-  my $self = shift;
+    my $self = shift;
 
-  my( undef , $dir ) = fileparse( $self->output_filename );
+    my ( undef, $dir ) = fileparse( $self->output_filename );
 
-  make_path $dir unless -d $dir;
+    make_path $dir unless -d $dir;
 
-  open( my $out , '>:utf8' , $self->output_filename ) or die $!;
-  print $out $self->rendered_content;
-  close( $out );
+    open( my $out, '>:utf8', $self->output_filename ) or die $!;
+
+    my ( undef, $input_dir ) = fileparse( $self->input_filename );
+    my $input_dir_depth  = () = $input_dir =~ m!/!g;
+    my $output_dir_depth = () = $dir =~ m!/!g;
+    if ( my $add_dir = "../" x ( $output_dir_depth - $input_dir_depth ) ) {
+        print $out $self->rendered_content =~
+          s#src="(?!(?:[^:]+:/)?/)([^"]+)#src="$add_dir$1#gr;
+    }
+    else {
+        print $out $self->rendered_content;
+    }
+
+    close($out);
 }
 
 # override
 sub _build_url {
-  my $self = shift;
+    my $self = shift;
 
-  my %formats = (
-    date   => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s.html' ,
-    pretty => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s/' ,
-    none   => '/%{categories}s/%{title}s.html' ,
-  );
+    my %formats = (
+        date   => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s.html',
+        pretty => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s/',
+        none   => '/%{categories}s/%{title}s.html',
+    );
 
-  ### FIXME need a way to get overall config in here...
-  my $permalink_format = $self->get_metadata( 'permalink' ) // 'date';
+    ### FIXME need a way to get overall config in here...
+    my $permalink_format = $self->get_metadata('permalink') // 'date';
 
-  $permalink_format = $formats{$permalink_format}
-    if exists $formats{$permalink_format};
+    $permalink_format = $formats{$permalink_format}
+      if exists $formats{$permalink_format};
 
-  my $categories = ( join '/' , @{ $self->categories } ) || '';
-  my $day        = $self->strftime( '%d' , $self->day   );
-  my $month      = $self->strftime( '%m' , $self->month );
+    my $categories = ( join '/', @{ $self->categories } ) || '';
+    my $day   = $self->strftime( '%d', $self->day );
+    my $month = $self->strftime( '%m', $self->month );
 
-  my $permalink = errf $permalink_format , {
-    categories => $categories ,
-    day        => $day ,
-    i_day      => $self->day,
-    i_month    => $self->month,
-    month      => $month ,
-    title      => $self->basename ,
-    year       => $self->year ,
-  };
+    my $permalink = errf $permalink_format ,
+      {
+        categories => $categories,
+        day        => $day,
+        i_day      => $self->day,
+        i_month    => $self->month,
+        month      => $month,
+        title      => $self->basename,
+        year       => $self->year,
+      };
 
-  $permalink = "/$permalink";
-  $permalink =~ s|//+|/|g;
+    $permalink = "/$permalink";
+    $permalink =~ s|//+|/|g;
 
-  return $permalink;
+    return $permalink;
 }
 
 __PACKAGE__->meta->make_immutable;
