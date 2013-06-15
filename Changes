@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.7       2013-06-15 21:00:15 Asia/Harbin
         export tags and categories
         add --auto_fresh/--auto argument, just like jekyll
 
