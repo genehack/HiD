@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+        export tags and categories
+        add --auto_fresh/--auto argument, just like jekyll
 
 0.6       2013-06-14 23:04:25 Asia/Harbin
 
