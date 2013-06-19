@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+        refine regex for relative URI
 	refine --auto_fresh/--auto option, use AnyEvent::Filesys::Notify
 0.7       2013-06-15 21:00:15 Asia/Harbin
         export tags and categories
