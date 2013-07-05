@@ -33,6 +33,8 @@ use feature     qw/ unicode_strings /;
 
 use Carp;
 use Class::Load  qw/ :all /;
+use Encode;
+use File::Slurp  qw/ read_file /;
 use HiD::Types;
 use YAML::XS     qw/ Load /;
 
@@ -217,15 +219,7 @@ around BUILDARGS => sub {
   my %args = ( ref $_[0] and ref $_[0] eq 'HASH' ) ? %{ $_[0] } : @_;
 
   unless ( $args{content} and $args{metadata} ) {
-    open( my $IN , '<' , $args{input_filename} )
-      or confess "$! $args{input_filename}";
-
-    my $file_content;
-    {
-      local $/;
-      $file_content .= <$IN>;
-    }
-    close( $IN );
+    my $file_content = read_file( $args{input_filename}, binmode => ':utf8' );
 
     my( $metadata , $content );
     if ( $file_content =~ /^---/ ) {
@@ -241,7 +235,7 @@ around BUILDARGS => sub {
     }
 
     $args{content}  = $content;
-    $args{metadata} = Load( $metadata ) // {};
+    $args{metadata} = Load( encode('utf8',$metadata) ) // {};
   }
 
   return $class->$orig( \%args );

@@ -72,7 +72,7 @@ sub publish {
 
   make_path $dir unless -d $dir;
 
-  open( my $out , '>' , $self->output_filename ) or die $!;
+  open( my $out , '>:utf8' , $self->output_filename ) or die $!;
   print $out $self->rendered_content;
   close( $out );
 }
