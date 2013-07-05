@@ -4,6 +4,7 @@
 
     my $post = HiD::Post->new({
       dest_dir       => 'path/to/output/dir'
+      hid            =>  $hid,
       input_filename => 'path/to/file/for/this/post' ,
       layouts        => $hashref_of_hid_layout_objects,
     });
@@ -71,8 +72,17 @@ sub publish {
 
   make_path $dir unless -d $dir;
 
-  open( my $out , '>' , $self->output_filename ) or die $!;
-  print $out $self->rendered_content;
+  open( my $out, '>:utf8', $self->output_filename ) or die $!;
+  my ( undef, $input_dir ) = fileparse( $self->input_filename );
+  my $input_dir_depth  = () = $input_dir =~ m!/!g;
+  my $output_dir_depth = () = $dir =~ m!/!g;
+  if ( my $add_dir = "../" x ( $output_dir_depth - $input_dir_depth ) ) {
+      print $out $self->rendered_content =~
+          s#src="(?!https?://|/)([^"]+)#src="$add_dir$1#gr;
+  }
+  else {
+      print $out $self->rendered_content;
+  }
   close( $out );
 }
 

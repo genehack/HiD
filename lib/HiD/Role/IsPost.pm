@@ -115,11 +115,26 @@ has date => (
 
 =cut
 
-### TODO parse tags out of metadata
 has tags => (
   is      => 'ro' ,
   isa     => 'ArrayRef',
-  default => sub {[]} ,
+  default => sub {
+    my $self = shift;
+
+    if ( my $tag = $self->get_metadata( 'tag' )) {
+      return [ $tag ];
+    }
+    elsif ( my $tags = $self->get_metadata( 'tags' )) {
+      if ( ref $tags ) {
+        return [ @$tags ];
+      }
+      else {
+        my @tags = split /\s/ , $tags;
+        return [ @tags ];
+      }
+    }
+    else { return [] }
+  } ,
 );
 
 =attr title

@@ -41,6 +41,7 @@ use HiD::Types;
 use Path::Class        qw/ file /;
 use Try::Tiny;
 use YAML::XS           qw/ LoadFile /;
+use Module::Find;
 
 =attr cli_opts
 
@@ -122,6 +123,7 @@ Hashref of standard configuration options. The default config is:
     include_dir => '_includes',
     layout_dir  => '_layouts' ,
     posts_dir   => '_posts' ,
+    plugin_dir  => '_plugins',
     source      => '.' ,
 
 =cut
@@ -136,6 +138,7 @@ has default_config => (
     include_dir => '_includes',
     layout_dir  => '_layouts' ,
     posts_dir   => '_posts' ,
+    plugin_dir  => '_plugins',
     source      => '.' ,
   }},
 );
@@ -175,6 +178,63 @@ has include_dir => (
     ( -e -d '_includes' ) ? $dir : undef;
   } ,
 );
+
+=attr plugin_dir
+
+Directory for plugins, which will be called after publish.
+
+=cut
+
+has plugin_dir => (
+  is      => 'ro',
+  isa     => 'Maybe[HiD_DirPath]',
+  lazy    => 1,
+  default => sub {
+    my $dir = shift->get_config('plugin_dir');
+    (-e -d $dir) ? $dir : undef;
+  },
+);
+
+=attr plugins
+
+Plugins, called after publish.
+
+=cut
+
+has plugins => (
+    is => 'ro',
+    isa => 'Maybe[ArrayRef[Str]]',
+    lazy => 1,
+    builder => '_build_plugins',
+);
+
+sub _build_plugins {
+  my $self = shift;
+  return undef unless $self->plugin_dir;
+
+  # default plugin modules in HiD
+  my @def_mods = findallmod "Plugin";
+
+  setmoduledirs $self->plugin_dir;
+  my @mods = map { s/^\.:://r } findallmod ".";
+
+  # load plugin modules
+  my @all_plugins;
+  push @INC, $self->plugin_dir;
+  foreach my $m ( @mods, @def_mods ) {
+      my ($lrlt, $lerr) = try_load_class($m);
+      unless ($lrlt) {
+          warn " plugin $m cannot be loaded : $lerr \n";
+          next;
+      }
+      unless ( $m->isa('HiD::Plugin') ) {
+          warn " plugin $m is not a valid plugin : must subclass of HiD::Plugin \n";
+          next;
+      }
+      push @all_plugins, $m;
+  }
+  return @all_plugins ? \@all_plugins : undef;
+}
 
 =attr inputs
 
@@ -321,6 +381,57 @@ has objects => (
   },
 );
 
+=attr categories
+
+Categories hash, contains (category, post) pairs
+
+=cut
+
+has 'categories' => (
+  is      => 'ro' ,
+  isa     => 'Maybe[HashRef[ArrayRef[HiD::Post]]]' ,
+  lazy    => 1 ,
+  builder => '_build_categories' ,
+);
+
+sub _build_categories {
+  my $self = shift;
+
+  return undef unless $self->posts;
+
+  my $categories_hash = {};
+  foreach my $post ( @{ $self->posts } ) {
+    push @{ $categories_hash->{$_} }, $post for @{ $post->categories };
+  }
+  return $categories_hash;
+}
+
+=attr tags
+
+Tags hash, contains (tag, posts) pairs
+
+=cut
+
+has 'tags' => (
+  is      => 'ro',
+  isa     => 'Maybe[HashRef[ArrayRef[HiD::Post]]]',
+  lazy    => 1,
+  builder => '_build_tags',
+);
+
+sub _build_tags {
+  my $self = shift;
+  
+  return undef unless $self->posts;
+
+  my $tags_hash = {};
+  foreach my $post ( @{ $self->posts } ) {
+      push @{ $tags_hash->{$_} }, $post for @{ $post->tags };
+  }
+  return $tags_hash;
+}
+
+
 =attr page_file_regex
 
 Regular expression for identifying "page" files.
@@ -439,6 +550,7 @@ sub _build_posts {
     try {
       my $post = HiD::Post->new({
         dest_dir       => $self->destination,
+        hid            => $self,
         input_filename => $_ ,
         layouts        => $self->layouts ,
       });
@@ -634,6 +746,12 @@ sub publish {
     $self->wrote_file($_) or remove \1 , $_;
   }
 
+  # execute PLUGINS
+  return 1 unless $self->plugins;
+
+  foreach my $p ( @{ $self->plugins } ) {
+      $p->new->after_publish($self);
+  }
   1;
 
 }
