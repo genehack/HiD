@@ -766,6 +766,13 @@ sub publish {
 
 }
 
+=head1 CONTRIBUTORS
+
+=for :list
+* ChinaXing
+
+=cut
+
 =head1 SEE ALSO
 
 =for :list
