@@ -30,7 +30,7 @@ chdir $test_dir or BAIL_OUT "Couldn't change to test dir";
   # fire warning with no _config.yml
   my $result = test_app( 'HiD::App' => [ 'config' ]);
 
-  like $result->stdout    , qr/destination.*"_site"/ , 'expected STDOUT';
+  like $result->stdout    , qr/destination.*?"/ , 'expected STDOUT';
   like $result->stderr    , qr/WARNING: Could not read configuration/ , 'warning on STDERR';
   is   $result->exit_code , 0           , 'success';
 }
@@ -42,7 +42,7 @@ DumpFile( '_config.yml' , {} );
   # and now we don't get the warning
   my $result = test_app( 'HiD::App' => [ 'config' ]);
 
-  like $result->stdout    , qr/destination.*"_site"/ , 'expected STDOUT';
+  like $result->stdout    , qr/destination.*?"/ , 'expected STDOUT';
   is   $result->stderr    , ''          , 'empty STDERR';
   is   $result->exit_code , 0           , 'success';
 }
@@ -50,7 +50,7 @@ DumpFile( '_config.yml' , {} );
   # dump a subsection of the config
   my $result = test_app( 'HiD::App' => [ 'config' , 'config' ]);
 
-  like $result->stdout    , qr/destination.*"_site"/ , 'expected STDOUT';
+  like $result->stdout    , qr/destination.*?"/ , 'expected STDOUT';
   is   $result->stderr    , ''          , 'empty STDERR';
   is   $result->exit_code , 0           , 'success';
 }
@@ -64,7 +64,7 @@ close( $fh );
   # and now we get the warning again.
   my $result = test_app( 'HiD::App' => [ 'config' ]);
 
-  like $result->stdout    , qr/destination.*"_site"/ , 'expected STDOUT';
+  like $result->stdout    , qr/destination.*?"/ , 'expected STDOUT';
   like $result->stderr    , qr/WARNING: Could not read configuration/ , 'warning on STDERR';
   is   $result->exit_code , 0           , 'success';
 }

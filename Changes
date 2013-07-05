@@ -2,6 +2,10 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        Ditch given/when code.
+
+        Tweak tests
+
         Tweak index redirects again
 
         Switch to File::Copy::Recursive::fcopy so permission bits will

@@ -81,11 +81,10 @@ sub _build_url {
   my $naive = join '/' , $path_frag , $self->basename;
 
   my $url;
-  given( $format ) {
-    when( 'none'   ) { $url = $naive . '.html' }
-    when( 'pretty' ) { $url = $naive . '/'     }
-    default          { $url = "/$format"       }
-  }
+
+  if(    $format eq 'none'   ) { $url = $naive . '.html' }
+  elsif( $format eq 'pretty' ) { $url = $naive . '/'     }
+  else                         { $url = "/$format"       }
 
   $url =~ s|//+|/|g;
 
