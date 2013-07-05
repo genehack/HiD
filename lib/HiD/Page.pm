@@ -85,11 +85,10 @@ sub _build_url {
   my $ext = exists $_valid_exts{$self->ext} ? $self->ext : 'html';
 
   my $url;
-  given( $format ) {
-    when( 'none'   ) { $url = $naive . ".$ext" }
-    when( 'pretty' ) { $url = $naive . '/'     }
-    default          { $url = "/$format"       }
-  }
+
+  if(    $format eq 'none'   ) { $url = $naive . '.html' }
+  elsif( $format eq 'pretty' ) { $url = $naive . '/'     }
+  else                         { $url = "/$format"       }
 
   $url =~ s|//+|/|g;
 
