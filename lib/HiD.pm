@@ -43,6 +43,32 @@ use Path::Class        qw/ file /;
 use Try::Tiny;
 use YAML::XS           qw/ LoadFile /;
 
+=attr categories
+
+Categories hash, contains (category, post) pairs
+
+=cut
+
+has categories => (
+  is      => 'ro' ,
+  isa     => 'Maybe[HashRef[ArrayRef[HiD::Post]]]' ,
+  lazy    => 1 ,
+  builder => '_build_categories' ,
+);
+
+sub _build_categories {
+  my $self = shift;
+
+  return undef unless $self->posts;
+
+  my $categories_hash = {};
+  foreach my $post ( @{$self->posts} ) {
+    push @{ $categories_hash->{$_} }, $post for @{ $post->categories };
+  }
+
+  return $categories_hash;
+}
+
 =attr cli_opts
 
 Hashref of command line options to integrate into the config.
