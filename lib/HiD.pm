@@ -504,6 +504,7 @@ sub _build_posts {
     try {
       my $post = HiD::Post->new({
         dest_dir       => $self->destination,
+        hid            => $self ,
         input_filename => $_ ,
         layouts        => $self->layouts ,
       });
