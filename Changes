@@ -2,6 +2,16 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        Add auto_refresh attribute to 'server' command (ChinaXing)
+
+        Various UTF-8 fixes (ChinaXing)
+
+        Add tag support (ChinaXing)
+
+        Add plugin support (ChinaXing)
+
+        Add category support (ChinaXing)
+
 0.4       2013-07-04 21:57:29 America/Los_Angeles
 
         Ditch given/when code.
