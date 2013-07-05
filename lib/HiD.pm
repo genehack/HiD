@@ -98,7 +98,7 @@ Given a config key name, returns a config key value.
 has config => (
   is      => 'ro' ,
   isa     => 'HashRef' ,
-  traits  => [ 'Hash' ],
+  traits  => [ 'Hash' ] ,
   lazy    => 1 ,
   builder => '_build_config' ,
   handles => {
@@ -196,12 +196,12 @@ Directory for template "include" files
 has include_dir => (
   is      => 'ro' ,
   isa     => 'Maybe[HiD_DirPath]' ,
-  lazy    => 1,
+  lazy    => 1 ,
   default => sub {
     my $self = shift;
     my $dir  = $self->get_config( 'include_dir' );
     ( -e -d '_includes' ) ? $dir : undef;
-  } ,
+  },
 );
 
 =attr inputs
@@ -339,10 +339,10 @@ Returns the list of all objects that have been generated.
 =cut
 
 has objects => (
-  is  => 'ro' ,
-  isa => 'ArrayRef[Object]' ,
-  traits => [ 'Array' ] ,
-  default => sub{[]} ,
+  is      => 'ro' ,
+  isa     => 'ArrayRef[Object]' ,
+  traits  => [ 'Array' ] ,
+  default => sub {[]},
   handles => {
     add_object  => 'push' ,
     all_objects => 'elements' ,
@@ -509,8 +509,9 @@ sub _build_posts {
       });
       $self->add_input( $_ => 'post' );
       $self->add_object( $post );
-      $post
-    } catch { 0 };
+      $post;
+    }
+    catch { 0 };
   } @potential_posts;
 
   @posts = sort { $b->date <=> $a->date } @posts;
