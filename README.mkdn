@@ -168,7 +168,7 @@ Process files and generate output per the active configuration.
 
 # VERSION
 
-version 0.3
+version 0.4
 
 # AUTHOR
 
