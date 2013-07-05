@@ -147,6 +147,7 @@ Hashref of standard configuration options. The default config is:
     destination => '_site'    ,
     include_dir => '_includes',
     layout_dir  => '_layouts' ,
+    plugin_dir  => '_plugins' ,
     posts_dir   => '_posts' ,
     source      => '.' ,
 
@@ -161,6 +162,7 @@ has default_config => (
     destination => '_site'    ,
     include_dir => '_includes',
     layout_dir  => '_layouts' ,
+    plugin_dir  => '_plugins' ,
     posts_dir   => '_posts' ,
     source      => '.' ,
   }},
@@ -403,6 +405,43 @@ sub _build_pages {
   } @potential_pages;
 
   return \@pages;
+}
+
+=attr plugin_dir
+
+Directory for plugins, which will be called after publish.
+
+=cut
+
+has plugin_dir => (
+  is      => 'ro',
+  isa     => 'Maybe[HiD_DirPath]',
+  lazy    => 1,
+  default => sub {
+    my $dir = shift->get_config('plugin_dir');
+    (-e -d $dir) ? $dir : undef;
+  },
+);
+
+=attr plugins
+
+Plugins, called after publish.
+
+=cut
+
+has plugins => (
+  is      => 'ro' ,
+  isa     => 'Maybe[ArrayRef[HiD::Plugin]]' ,
+  lazy    => 1 ,
+  builder => '_build_plugins' ,
+);
+
+sub _build_plugins {
+  my $self = shift;
+
+  return undef unless $self->plugin_dir;
+  # TODO: LOAD PLUGIN
+  return [];
 }
 
 =attr post_file_regex
@@ -660,6 +699,7 @@ sub publish {
     $self->wrote_file($_) or remove \1 , $_;
   }
 
+  # TODO: execute PLUGINS
   1;
 
 }
