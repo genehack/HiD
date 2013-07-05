@@ -633,6 +633,31 @@ has source => (
   },
 );
 
+=attr tags
+
+Tags hash, contains (tag, posts) pairs
+
+=cut
+
+has 'tags' => (
+  is      => 'ro',
+  isa     => 'Maybe[HashRef[ArrayRef[HiD::Post]]]',
+  lazy    => 1,
+  builder => '_build_tags',
+);
+
+sub _build_tags {
+  my $self = shift;
+
+  return undef unless $self->posts;
+
+  my $tags_hash = {};
+  foreach my $post (@{$self->posts}) {
+    push @{$tags_hash->{$_}}, $post for @{$post->tags};
+  }
+  return $tags_hash;
+}
+
 =attr written_files
 
 Hashref of files written out during the publishing process.

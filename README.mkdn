@@ -131,6 +131,10 @@ ArrayRef of [HiD::File](http://search.cpan.org/perldoc?HiD::File) objects, popul
 
 Base directory that all other paths are calculated relative to.
 
+## tags
+
+Tags hash, contains (tag, posts) pairs
+
 ## written\_files
 
 Hashref of files written out during the publishing process.
