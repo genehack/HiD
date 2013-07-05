@@ -33,6 +33,22 @@ use namespace::autoclean;
 
 use Plack::Runner;
 
+=attr auto_refresh
+
+Automatically refresh result when source file/dir changed, just likey jekyll
+
+=cut
+
+has auto_refresh => (
+  is            => 'ro',
+  isa           => 'Bool',
+  traits        => [ 'Getopt' ],
+  cmd_aliases   => [ qw/ auto A / ],
+  documentation => 'auto re-publish when source changes, Default=False',
+  lazy          => 1,
+  default       => 0,
+);
+
 =attr port
 
 Port number to bind. Defaults to 5000.
@@ -65,8 +81,29 @@ sub _run {
 
   my $app = HiD::Server->new( root => $self->destination )->to_app;
 
-  my $runner = Plack::Runner->new();
-  $runner->parse_options( '-p' , $self->port );
+  my %args = ( -p => $self->port );
+
+  # auto refresh
+  if ( $self->auto_refresh ) {
+    my @dirs = map { $self->hid->get_config($_) } qw/ include_dir layout_dir posts_dir /;
+
+    for my $dir (qw/pages regular_files/) {
+      push @dirs, map { $_->input_filename } @{ $self->hid->$dir };
+    }
+
+    $args{'-R'} = join ',', @dirs;
+    $args{'-r'} = 1;
+
+    my $original_app = $app;
+    $app = \sub {
+      say 'Rebuild ... ';
+      $self->publish;
+      $original_app;
+    };
+  }
+
+  my $runner = Plack::Runner->new;
+  $runner->parse_options(%args);
   $runner->run($app);
 }
 
