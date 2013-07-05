@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.4       2013-07-04 21:57:29 America/Los_Angeles
+
         Ditch given/when code.
 
         Tweak tests
