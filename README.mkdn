@@ -16,6 +16,10 @@ useful or interesting for people that are trying to modify or extend HiD.
 
 # ATTRIBUTES
 
+## categories
+
+Categories hash, contains (category, post) pairs
+
 ## cli\_opts
 
 Hashref of command line options to integrate into the config.
