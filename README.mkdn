@@ -26,6 +26,25 @@ Hashref of command line options to integrate into the config.
 
 ([HiD::App::Command](http://search.cpan.org/perldoc?HiD::App::Command)s should pass in the `$opt` variable to this.)
 
+## config
+
+Hashref of configuration information.
+
+## config\_file
+
+Path to a configuration file.
+
+## default\_config
+
+Hashref of standard configuration options. The default config is:
+
+    destination => '_site'    ,
+    include_dir => '_includes',
+    layout_dir  => '_layouts' ,
+    plugin_dir  => '_plugins' ,
+    posts_dir   => '_posts' ,
+    source      => '.' ,
+
 ## destination
 
 Directory to write output files into.
@@ -68,6 +87,14 @@ Regular expression for identifying "page" files.
 ## pages
 
 Arrayref of [HiD::Page](http://search.cpan.org/perldoc?HiD::Page) objects, populated during processing.
+
+## plugin\_dir
+
+Directory for plugins, which will be called after publish.
+
+## plugins
+
+Plugins, called after publish.
 
 ## post\_file\_regex
 
