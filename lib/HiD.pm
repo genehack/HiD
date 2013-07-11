@@ -441,8 +441,6 @@ sub _build_plugins {
   my $self = shift;
 
   return undef unless $self->plugin_dir;
-  # TODO: LOAD PLUGIN
-  return [];
 
   # default plugin modules in HiD
   my @def_mods = findallmod "Plugin";
