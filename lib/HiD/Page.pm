@@ -86,7 +86,7 @@ sub _build_url {
 
   my $url;
 
-  if(    $format eq 'none'   ) { $url = $naive . '.html' }
+  if(    $format eq 'none'   ) { $url = $naive . ".$ext" }
   elsif( $format eq 'pretty' ) { $url = $naive . '/'     }
   else                         { $url = "/$format"       }
 
