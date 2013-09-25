@@ -561,7 +561,7 @@ sub _build_posts {
 
   # Set previous/next post
   my $prev = undef;
-  foreach my $curr (@posts) {
+  foreach my $curr (reverse @posts) {
       if ( defined $prev ) {
           eval {
               $prev->set_next({ url => $curr->url, title => $curr->title });
