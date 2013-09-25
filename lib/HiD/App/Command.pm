@@ -53,6 +53,22 @@ has config_file => (
   default     => '_config.yml' ,
 );
 
+=attr verbose
+
+Enable verbose output.
+
+Defaults to false
+
+=cut
+
+has verbose => (
+    is          => 'ro',
+    isa         => 'Bool',
+    cmd_aliases => 'v',
+    traits      => [ 'Getopt' ],
+    default     => undef,
+);
+
 has hid => (
   is       => 'ro' ,
   isa      => 'HiD' ,
@@ -80,7 +96,10 @@ sub execute {
   $self->_set_hid( HiD->new({
     cli_opts    => $opts ,
     config_file => $self->config_file ,
+    verbose     => $self->verbose,
   }));
+
+  printf("+ loaded config from %s.\n", $self->config_file) if $self->verbose;
 
   $self->_run( $opts , $args );
 }

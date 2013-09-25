@@ -35,6 +35,33 @@ use File::Basename  qw/ fileparse /;
 use File::Path      qw/ make_path /;
 use String::Errf    qw/ errf /;
 
+=attr next
+
+Access the next post
+
+=cut
+
+has next => (
+    is      => 'rw',
+    isa     => 'HashRef',
+    writer  => 'set_next',
+    reader  => 'next',
+);
+
+=attr prev
+
+Access the previous post
+
+=cut
+
+has prev => (
+    is      => 'rw',
+    isa     => 'HashRef',
+    writer  => 'set_prev',
+    reader  => 'prev',
+);
+
+
 =for Pod::Coverage BUILD
 
 =cut
@@ -67,6 +94,9 @@ disk -- this data from this object.
 
 sub publish {
   my $self = shift;
+
+  $self->template_data->{prev} //= $self->prev;
+  $self->template_data->{next} //= $self->next;
 
   my( undef , $dir ) = fileparse( $self->output_filename );
 

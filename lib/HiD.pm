@@ -85,6 +85,19 @@ has cli_opts => (
   default => sub {{}} ,
 );
 
+=attr verbose
+
+Enable verbose output
+
+=cut
+
+has verbose => (
+  is      => 'ro' ,
+  isa     => 'Bool' ,
+  default => 0,
+);
+
+
 =attr config
 
 Hashref of configuration information.
@@ -400,6 +413,7 @@ sub _build_pages {
         $page->content;
         $self->add_input( $_ => 'page' );
         $self->add_object( $page );
+        printf(" + page(%s) added.\n", $_) if $self->verbose;
         $page;
       }
       catch { 0 };
@@ -537,12 +551,28 @@ sub _build_posts {
       });
       $self->add_input( $_ => 'post' );
       $self->add_object( $post );
+      printf(" + post(%s) added.\n", $_) if $self->verbose;
       $post;
     }
     catch { 0 };
   } @potential_posts;
 
   @posts = sort { $b->date <=> $a->date } @posts;
+
+  # Set previous/next post
+  my $prev = undef;
+  foreach my $curr (@posts) {
+      if ( defined $prev ) {
+          eval {
+              $prev->set_next({ url => $curr->url, title => $curr->title });
+              $curr->set_prev({ url => $prev->url, title => $prev->title });
+          };
+          if( my $err = $@ ) {
+            warn " !! Error setting next/previous posts: $err";
+          }
+      }
+      $prev = $curr;
+  }
 
   if ( my $limit = $self->limit_posts ) {
     die "--limit_posts must be positive" if $limit < 1;
@@ -638,6 +668,7 @@ sub _build_regular_files {
       });
       $self->add_input( $_ => 'file' );
       $self->add_object( $file );
+      printf(" + regular_file(%s) added.\n", $_) if $self->verbose;
       $file;
     }
   } @potential_files;

@@ -26,6 +26,10 @@ Hashref of command line options to integrate into the config.
 
 ([HiD::App::Command](http://search.cpan.org/perldoc?HiD::App::Command)s should pass in the `$opt` variable to this.)
 
+## verbose
+
+Enable verbose output
+
 ## config
 
 Hashref of configuration information.
@@ -141,6 +145,12 @@ Hashref of files written out during the publishing process.
 
 # METHODS
 
+## get\_config
+
+    my $config_key_value = $self->get_config( $config_key_name );
+
+Given a config key name, returns a config key value.
+
 ## add\_input
 
     $self->add_input( $input_file => $input_type );
@@ -195,6 +205,10 @@ Check to see if a particular file has been written out.
 
 Process files and generate output per the active configuration.
 
+# CONTRIBUTORS
+
+- ChinaXing
+
 # SEE ALSO
 
 - [jekyll](http://jekyllrb.com/)
@@ -203,7 +217,7 @@ Process files and generate output per the active configuration.
 
 # VERSION
 
-version 0.4
+version 0.5
 
 # AUTHOR
 
