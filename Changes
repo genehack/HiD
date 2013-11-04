@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        Whole mess of stuff (excerpt support, general tweaks) (reyjrar)
+
         Add auto_refresh attribute to 'server' command (ChinaXing)
 
         Various UTF-8 fixes (ChinaXing)

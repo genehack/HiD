@@ -51,6 +51,12 @@ Directory to write output files into.
 
 __N.B.:__ If it doesn't exist and is needed, it will be created.
 
+## excerpt\_separator
+
+String that distinguishes initial excerpt from "below the fold" content
+
+Defaults to "\\n\\n"
+
 ## include\_dir
 
 Directory for template "include" files
@@ -204,6 +210,7 @@ Process files and generate output per the active configuration.
 # CONTRIBUTORS
 
 - ChinaXing
+- reyjrar
 
 # SEE ALSO
 
