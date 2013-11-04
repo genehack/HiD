@@ -93,8 +93,9 @@ metadata.
 =cut
 
 has hid => (
-  is  => 'ro' ,
-  isa => 'HiD' ,
+  is       => 'ro' ,
+  isa      => 'HiD' ,
+  required => 1 ,
 );
 
 

@@ -201,6 +201,10 @@ Check to see if a particular file has been written out.
 
 Process files and generate output per the active configuration.
 
+# CONTRIBUTORS
+
+- ChinaXing
+
 # SEE ALSO
 
 - [jekyll](http://jekyllrb.com/)
@@ -209,7 +213,7 @@ Process files and generate output per the active configuration.
 
 # VERSION
 
-version 0.4
+version 1.0
 
 # AUTHOR
 

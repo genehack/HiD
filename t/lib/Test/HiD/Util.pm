@@ -6,6 +6,7 @@ package Test::HiD::Util;
 use File::Basename  qw/ fileparse /;
 use File::Path      qw/ make_path /;
 use File::Temp      qw/ tempfile tempdir /;
+use HiD;
 use HiD::Layout;
 use HiD::Page;
 use HiD::Post;
@@ -46,6 +47,7 @@ sub make_page {
 
   return HiD::Page->new({
     dest_dir       => $dest_dir,
+    hid            => HiD->new({config => {}}),
     input_filename => $file ,
     layouts        => $arg{layouts} ,
     source         => $input_dir,
@@ -74,6 +76,7 @@ sub make_post {
 
   return HiD::Post->new({
     dest_dir       => $dest_dir,
+    hid            => HiD->new({config => {}}) ,
     input_filename => $file ,
     layouts        => $arg{layouts} ,
     source         => $posts_dir,

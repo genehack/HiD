@@ -1,4 +1,4 @@
-#! /opt/perl/bin/perl
+#! /usr/bin/env perl
 # PODNAME: hid
 # ABSTRACT: cool site, bro.
 
