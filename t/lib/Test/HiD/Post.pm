@@ -10,6 +10,13 @@ use namespace::autoclean;
 use File::Temp qw/ tempfile tempdir /;
 use HiD::Post;
 
+has converted_excerpt_regexp => (
+  is      => 'ro' ,
+  isa     => 'RegexpRef' ,
+  lazy    => 1 ,
+  default => sub { shift->converted_content_regexp }
+);
+
 has output_regexp => (
   is       => 'ro' ,
   isa      => 'RegexpRef' ,
@@ -21,6 +28,13 @@ has subject => (
   isa      => 'HiD::Post' ,
   required => 1 ,
 );
+
+test "has converted excerpt" => sub {
+  my $test    = shift;
+  my $subject = $test->subject;
+
+  like( $subject->converted_excerpt , $test->converted_excerpt_regexp );
+};
 
 test "output filename" => sub {
   my $test    = shift;

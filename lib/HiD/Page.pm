@@ -80,9 +80,12 @@ sub _build_url {
 
   my $naive = join '/' , $path_frag , $self->basename;
 
+  my %_valid_exts = map { $_=>1 } qw(rss xml html htm xhtml xhtm shtml shtm);
+  my $ext = exists $_valid_exts{$self->ext} ? $self->ext : 'html';
+
   my $url;
 
-  if(    $format eq 'none'   ) { $url = $naive . '.html' }
+  if(    $format eq 'none'   ) { $url = $naive . ".$ext" }
   elsif( $format eq 'pretty' ) { $url = $naive . '/'     }
   else                         { $url = "/$format"       }
 

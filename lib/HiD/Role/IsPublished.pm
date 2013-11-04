@@ -55,6 +55,29 @@ sub _build_basename {
   return fileparse( $self->input_filename , $ext );
 }
 
+=attr baseurl
+
+Base URL for use in Templates
+
+=cut
+
+has baseurl => (
+  is      => 'ro',
+  isa     => 'Str',
+  lazy    => 1,
+  builder => '_build_baseurl',
+);
+
+sub _build_baseurl {
+  my $self = shift;
+
+  my $base_url = $self->config->{baseurl};
+  if( defined $base_url ) {
+    return $base_url;
+  }
+  return '/';
+}
+
 =attr dest_dir ( ro / isa = HiD_DirPath / required )
 
 The path to the directory where the output_filename will be written.

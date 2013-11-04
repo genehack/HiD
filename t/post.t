@@ -150,6 +150,30 @@ permalink: '%{year}s-%{month}s-%{day}s-permalink'
 EOF
     ),
   },
+  "excerpt" => {
+    converted_content_regexp => qr|<h1>this should be h1</h1>\s*<p>content</p>|,
+    converted_excerpt_regexp => qr|<h1>this should be h1</h1>.+read more|s,
+    expected_categories      => [ ] ,
+    expected_date            => '2010-10-10' ,
+    expected_title           => 'this is a excerpt test',
+    expected_url             => '/2010-10-10-excerpt',
+    output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
+    subject                  => make_post(
+      file    => '2010-10-10-excerpt.markdown',
+      layouts => $layouts ,
+      content => <<EOF,
+---
+title: this is a excerpt test
+permalink: '%{year}s-%{month}s-%{day}s-excerpt'
+---
+# this should be h1
+
+
+content
+EOF
+    ),
+  },
   "metadata:date" => {
     converted_content_regexp => qr|<h1>this should be h1</h1>|,
     expected_categories      => [ ] ,

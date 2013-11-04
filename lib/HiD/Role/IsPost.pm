@@ -111,6 +111,37 @@ has date => (
   },
 );
 
+=attr excerpt
+
+It is generally useful to summarize or lead a post with a "read more" tag
+added to the end of the post.  This is ideal for a blog where we might not
+want to list the full post on the front page.
+
+=cut
+
+has excerpt => (
+  is      => 'ro',
+  isa     => 'Str',
+  lazy    => 1,
+  builder => '_build_excerpt',
+);
+
+sub _build_excerpt {
+  my $self = shift;
+
+  my $content = $self->content;
+
+  return unless defined $content;
+
+  my $sep = $self->hid->excerpt_separator;
+
+  if($content =~ /^$sep/mp) {
+    return ${^PREMATCH};
+  }
+
+  return $content;
+}
+
 =attr tags
 
 =cut

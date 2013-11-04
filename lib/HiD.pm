@@ -188,6 +188,21 @@ has destination => (
   },
 );
 
+=attr excerpt_separator
+
+String that distinguishes initial excerpt from "below the fold" content
+
+Defaults to "\n\n"
+
+=cut
+
+has excerpt_separator => (
+  is  => 'ro' ,
+  isa => 'Str' ,
+  lazy => 1 ,
+  default => sub { shift->get_config( 'excerpt_separator' ) // "\n\n" }
+);
+
 =attr include_dir
 
 Directory for template "include" files
@@ -361,7 +376,7 @@ Regular expression for identifying "page" files.
 has page_file_regex => (
   is      => 'ro' ,
   isa     => 'RegexpRef',
-  default => sub { qr/\.(mk|mkd|mkdn|markdown|textile|html)$/ } ,
+  default => sub { qr/\.(mk|mkd|mkdn|markdown|textile|html|htm|xml|xhtml|xhtm|shtm|shtml|rss)$/ } ,
 );
 
 =attr pages
@@ -629,6 +644,8 @@ sub _build_regular_files {
 
   my @files = grep { $_ } map {
     if ($self->seen_input( $_ ) or $_ =~ /^_/ ) { 0 }
+    elsif( $_ =~ /^\.git/ ) { 0 }
+    elsif( $_ =~ /^\.svn/ or $_ =~ /\/\.svn\// ) { 0 }
     else {
       my $file = HiD::File->new({
         dest_dir       => $self->destination,
