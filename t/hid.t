@@ -40,6 +40,7 @@ file_contains_like(
   'see post count in index file',
 );
 my $last_post_content = $posts->[-1]->content;
+
 file_contains_like(
   '_site/index.html' ,
   qr/$last_post_content/,

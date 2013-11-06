@@ -528,7 +528,9 @@ Arrayref of L<HiD::Post> objects, populated during processing.
 
 has posts => (
   is      => 'ro' ,
-  isa     => 'Maybe[ArrayRef[HiD::Post]]' ,
+  isa     => 'ArrayRef[HiD::Post]' ,
+  traits  => [ qw/ Array / ] ,
+  handles => { posts_size => 'count' } ,
   lazy    => 1 ,
   builder => '_build_posts' ,
 );
@@ -594,7 +596,7 @@ has processor => (
   default => sub {
     my $self = shift;
 
-    my $processor_name  = $self->get_config( 'processor_name' ) // 'Template';
+    my $processor_name  = $self->get_config( 'processor_name' ) // 'Handlebars';
 
     my $processor_class = ( $processor_name =~ /^\+/ ) ? $processor_name
       : "HiD::Processor::$processor_name";
@@ -625,13 +627,11 @@ has processor_args => (
     return $self->get_config( 'processor_args' ) if
       defined $self->get_config( 'processor_args' );
 
-    my $include_path = $self->layout_dir;
-    $include_path   .= ':' . $self->include_dir
+    my @path = ( $self->layout_dir );
+    push @path , $self->include_dir
       if defined $self->include_dir;
 
-    return {
-      INCLUDE_PATH => $include_path ,
-    };
+    return { path => \@path };
   },
 );
 
