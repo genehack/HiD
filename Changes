@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        Added 'author' attribute to 'is_post'
+
 1.0       2013-11-04 14:44:27 America/Los_Angeles
 
         Whole mess of stuff (excerpt support, general tweaks) (reyjrar)

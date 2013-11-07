@@ -46,6 +46,28 @@ sub _build_basename {
   return $basename;
 }
 
+=attr author
+
+=cut
+
+has author => (
+  is      => 'ro' ,
+  isa     => 'Str' ,
+  lazy    => 1 ,
+  builder => '_build_author' ,
+);
+
+sub _build_author {
+  my $self = shift;
+
+  my $author = $self->get_metadata( 'author' );
+
+  die "Need author for " . $self->basename . "\n"
+    unless defined $author;
+
+  return $author;
+}
+
 =attr categories
 
 =cut
