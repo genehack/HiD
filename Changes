@@ -4,6 +4,9 @@ Revision history for {{$dist->name}}
 
         Added 'author' attribute to 'is_post'
 
+        Attempt to read post permalink format from global config if
+        not set by individual post
+
 1.0       2013-11-04 14:44:27 America/Los_Angeles
 
         Whole mess of stuff (excerpt support, general tweaks) (reyjrar)

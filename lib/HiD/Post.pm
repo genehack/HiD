@@ -88,8 +88,8 @@ sub _build_url {
     none   => '/%{categories}s/%{title}s.html' ,
   );
 
-  ### FIXME need a way to get overall config in here...
-  my $permalink_format = $self->get_metadata( 'permalink' ) // 'date';
+  my $permalink_format = $self->get_metadata( 'permalink' ) //
+    $self->hid->config->{'permalink'} // 'date';
 
   $permalink_format = $formats{$permalink_format}
     if exists $formats{$permalink_format};
