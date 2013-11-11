@@ -18,9 +18,13 @@ Class representing a "blog post" object.
 package HiD::Post;
 
 use Moose;
-with 'HiD::Role::IsConverted';
-with 'HiD::Role::IsPost';
-with 'HiD::Role::IsPublished';
+with
+  'HiD::Role::IsConverted',
+  'HiD::Role::IsPost',
+  'HiD::Role::IsPublished';
+with 'HiD::Role::DoesLogging'; # this one last b/c it needs method delegated
+                               # by initial roles
+
 use namespace::autoclean;
 
 use 5.014;
@@ -44,8 +48,9 @@ sub BUILD {
 
   if ( defined $self->get_metadata('published')
          and not $self->get_metadata('published')) {
-    warn sprintf "WARNING: Skipping %s because 'published' flag is false\n" ,
-      $self->input_filename;
+    $self->LOGWARN(
+      sprintf "Skipping %s because 'published' flag is false" , $self->input_filename
+    );
     die;
   }
 }
@@ -78,6 +83,16 @@ sub publish {
 }
 
 # override
+my $date_regex = qr|([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})|;
+
+sub _build_basename {
+  my $self = shift;
+  my $ext = '.' . $self->ext;
+  my $basename = fileparse( $self->input_filename , $ext );
+  $basename =~ s/^.*?$date_regex-// or die;
+  return $basename;
+}
+
 sub _build_url {
   my $self = shift;
 
@@ -89,7 +104,7 @@ sub _build_url {
   );
 
   my $permalink_format = $self->get_metadata( 'permalink' ) //
-    $self->hid->config->{'permalink'} // 'date';
+   $self->get_config('permalink') // 'date';
 
   $permalink_format = $formats{$permalink_format}
     if exists $formats{$permalink_format};

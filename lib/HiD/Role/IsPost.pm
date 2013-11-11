@@ -35,17 +35,6 @@ use File::Basename qw/ fileparse /;
 use HiD::Types;
 use YAML::XS;
 
-my $date_regex = qr|([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})|;
-
-# override
-sub _build_basename {
-  my $self = shift;
-  my $ext = '.' . $self->ext;
-  my $basename = fileparse( $self->input_filename , $ext );
-  $basename =~ s/^.*?$date_regex-// or die;
-  return $basename;
-}
-
 =attr author
 
 =cut

@@ -44,7 +44,7 @@ EOHTML
   is   $result->exit_code , 0  , 'exit=success';
 
   like $result->stderr ,
-    qr/^WARNING: Could not read configuration/ ,
+    qr/Could not read configuration/ ,
     'warning on STDERR';
 }
 {    # running without a command name should do the same
@@ -54,11 +54,19 @@ EOHTML
   is   $result->exit_code , 0  , 'exit=success';
 
   like $result->stderr ,
-    qr/^WARNING: Could not read configuration/ ,
+    qr/Could not read configuration/ ,
       'warning on STDERR';
 }
 
-DumpFile( '_config.yml' , { source => '.' } );
+DumpFile( '_config.yml' , {
+  source        => '.' ,
+  logger_config => {
+    'log4perl.logger'                                   => 'FATAL, Screen' ,
+    'log4perl.appender.Screen'         => 'Log::Log4perl::Appender::Screen',
+    'log4perl.appender.Screen.layout'                   => 'PatternLayout' ,
+    'log4perl.appender.Screen.layout.ConversionPattern' => '[%d] %5p %m%n' ,
+  } ,
+} );
 
 { # as should publish once there is a config
   _assert_good_run();

@@ -30,8 +30,9 @@ chdir $test_dir or BAIL_OUT "Couldn't change to test dir";
   # fire warning with no _config.yml
   my $result = test_app( 'HiD::App' => [ 'config' ]);
 
-  like $result->stdout    , qr/destination.*?"/ , 'expected STDOUT';
-  like $result->stderr    , qr/WARNING: Could not read configuration/ , 'warning on STDERR';
+  like $result->stdout    , qr/destination.*?"/              , 'expected STDOUT';
+  like $result->stderr    , qr/Could not read configuration/ , 'warning on STDERR';
+
   is   $result->exit_code , 0           , 'success';
 }
 
@@ -64,8 +65,8 @@ close( $fh );
   # and now we get the warning again.
   my $result = test_app( 'HiD::App' => [ 'config' ]);
 
-  like $result->stdout    , qr/destination.*?"/ , 'expected STDOUT';
-  like $result->stderr    , qr/WARNING: Could not read configuration/ , 'warning on STDERR';
+  like $result->stdout    , qr/destination.*?"/              , 'expected STDOUT';
+  like $result->stderr    , qr/Could not read configuration/ , 'warning on STDERR';
   is   $result->exit_code , 0           , 'success';
 }
 

@@ -17,7 +17,7 @@ useful or interesting for people that are trying to modify or extend HiD.
 package HiD;
 use Moose;
 use namespace::autoclean;
-
+# note: we also do 'with HiD::Role::DoesLogging', just later on because reasons.
 use 5.014;
 use utf8;
 use strict;
@@ -102,9 +102,7 @@ has config => (
   traits  => [ 'Hash' ] ,
   lazy    => 1 ,
   builder => '_build_config' ,
-  handles => {
-    get_config => 'get' ,
-  }
+  handles => { get_config => 'get' } ,
 );
 
 sub _build_config {
@@ -121,7 +119,7 @@ sub _build_config {
   }
 
   $config_loaded or $config = {}
-    and warn "WARNING: Could not read configuration. Using defaults (and options).\n";
+    and warn( 'Could not read configuration. Using defaults (and options).' );
 
   return {
     %{ $self->default_config } ,
@@ -129,6 +127,9 @@ sub _build_config {
     %{ $self->cli_opts } ,
   };
 }
+
+# this is down here so it will see the 'get_config' delegation...
+with 'HiD::Role::DoesLogging';
 
 =attr config_file
 
@@ -289,6 +290,8 @@ has layouts => (
 sub _build_layouts {
   my $self = shift;
 
+  $self->INFO( "Building layouts" );
+
   my @layout_files = File::Find::Rule->file
     ->in( $self->layout_dir );
 
@@ -305,6 +308,8 @@ sub _build_layouts {
     });
 
     $self->add_input( $layout_file => 'layout' );
+
+    $self->DEBUG( "* Added layout $layout_file" );
   }
 
   foreach my $layout_name ( keys %layouts ) {
@@ -397,6 +402,8 @@ sub _build_pages {
 
   # build posts before pages
   $self->posts;
+
+  $self->INFO( "Posts built." );
 
   my @potential_pages = File::Find::Rule->file->
     name( $self->page_file_regex )->in( '.' );
@@ -531,6 +538,10 @@ sub _build_posts {
   # build layouts before posts
   $self->layouts;
 
+  $self->INFO("Layouts built.");
+
+  $self->INFO("Building posts." );
+
   my $rule = File::Find::Rule->new;
 
   my @posts_directories = $rule->or(
@@ -543,6 +554,7 @@ sub _build_posts {
 
   my @posts = grep { $_ } map {
     try {
+      $self->DEBUG( "* Trying to build post $_" );
       my $post = HiD::Post->new({
         dest_dir       => $self->destination,
         hid            => $self ,
@@ -551,6 +563,7 @@ sub _build_posts {
       });
       $self->add_input( $_ => 'post' );
       $self->add_object( $post );
+      $self->DEBUG( "* Built post $_" );
       $post;
     }
     catch { 0 };
@@ -639,6 +652,8 @@ sub _build_regular_files {
 
   # build pages before regular files
   $self->pages;
+
+  $self->INFO( "Pages built" );
 
   my @potential_files = File::Find::Rule->file->in( '.' );
 
@@ -750,13 +765,19 @@ Process files and generate output per the active configuration.
 sub publish {
   my( $self ) = @_;
 
+  $self->INFO( "publish" );
+
   # bootstrap data structures -- FIXME should have a more explicit way to do this
   $self->regular_files;
+
+  $self->INFO( "files bootstrapped" );
 
   $self->add_written_file( $self->destination => '_site_dir' );
 
   foreach my $file ( $self->all_objects ) {
     $file->publish;
+
+    $self->INFO( sprintf "* Published %s" , $file->output_filename );
 
     my $path;
     foreach my $part ( split '/' , $file->output_filename ) {
@@ -771,6 +792,8 @@ sub publish {
 
   # execute PLUGINS
   return 1 unless $self->plugins;
+
+  $self->INFO( "processing plugins" );
 
   foreach my $p (@{$self->plugins}) {
       $p->new->after_publish($self);

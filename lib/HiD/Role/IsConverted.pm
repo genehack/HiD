@@ -106,6 +106,7 @@ has hid => (
   is       => 'ro' ,
   isa      => 'HiD' ,
   required => 1 ,
+  handles  => [ qw/ get_config /] ,
 );
 
 

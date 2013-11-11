@@ -23,7 +23,7 @@ chdir $test_dir or BAIL_OUT "Couldn't change to test dir";
 
   my $config;
   warning_like { $config = $hid->config }
-    qr|^WARNING: Could not read configuration\. Using defaults \(and options\)\.| ,
+    qr|Could not read configuration\. Using defaults \(and options\)\.| ,
       'fire warning with no config file';
   is_deeply( $config , $hid->default_config , 'default config' );
 }
@@ -32,7 +32,7 @@ chdir $test_dir or BAIL_OUT "Couldn't change to test dir";
 
   my $config;
   warning_like { $config = $hid->config }
-    qr|^WARNING: Could not read configuration\. Using defaults \(and options\)\.| ,
+    qr|Could not read configuration\. Using defaults \(and options\)\.| ,
     'fire warning with nonexistant config file';
   is_deeply( $config , $hid->default_config , 'default config' );
 }
@@ -89,7 +89,7 @@ close( $fh );
 
   my $config;
   warning_like { $config = $hid->config }
-    qr|^WARNING: Could not read configuration\. Using defaults \(and options\)\.| ,
+    qr|Could not read configuration\. Using defaults \(and options\)\.| ,
       'fire warning with bad config file';
   is_deeply( $config , $hid->default_config , 'default config' );
 }
