@@ -18,6 +18,7 @@ package HiD;
 use Moose;
 use namespace::autoclean;
 # note: we also do 'with HiD::Role::DoesLogging', just later on because reasons.
+
 use 5.014;
 use utf8;
 use strict;
