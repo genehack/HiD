@@ -68,6 +68,10 @@ sub BUILDARGS {
           my( $context , $list ) = @_;
           return join ',' , @$list;
         },
+        pretty_date => sub {
+          my( $context, $dt ) = @_;
+          return $dt->strftime( "%d %b %Y" );
+        }
       },
     ),
   };
