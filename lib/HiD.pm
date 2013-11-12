@@ -18,6 +18,7 @@ package HiD;
 use Moose;
 use namespace::autoclean;
 # note: we also do 'with HiD::Role::DoesLogging', just later on because reasons.
+
 use 5.014;
 use utf8;
 use strict;
@@ -29,6 +30,7 @@ use charnames   qw/ :full           /;
 use feature     qw/ unicode_strings /;
 
 use Class::Load        qw/ :all /;
+use DateTime;
 use File::Basename;
 use File::Find::Rule;
 use File::Path         qw/ make_path /;
@@ -527,7 +529,9 @@ Arrayref of L<HiD::Post> objects, populated during processing.
 
 has posts => (
   is      => 'ro' ,
-  isa     => 'Maybe[ArrayRef[HiD::Post]]' ,
+  isa     => 'ArrayRef[HiD::Post]' ,
+  traits  => [ qw/ Array / ] ,
+  handles => { posts_size => 'count' } ,
   lazy    => 1 ,
   builder => '_build_posts' ,
 );
@@ -593,7 +597,7 @@ has processor => (
   default => sub {
     my $self = shift;
 
-    my $processor_name  = $self->get_config( 'processor_name' ) // 'Template';
+    my $processor_name  = $self->get_config( 'processor_name' ) // 'Handlebars';
 
     my $processor_class = ( $processor_name =~ /^\+/ ) ? $processor_name
       : "HiD::Processor::$processor_name";
@@ -624,13 +628,11 @@ has processor_args => (
     return $self->get_config( 'processor_args' ) if
       defined $self->get_config( 'processor_args' );
 
-    my $include_path = $self->layout_dir;
-    $include_path   .= ':' . $self->include_dir
+    my @path = ( $self->layout_dir );
+    push @path , $self->include_dir
       if defined $self->include_dir;
 
-    return {
-      INCLUDE_PATH => $include_path ,
-    };
+    return { path => \@path };
   },
 );
 
@@ -717,6 +719,22 @@ sub _build_tags {
   }
   return $tags_hash;
 }
+
+=attr time
+
+DateTime object from the start of the latest run of the system.
+
+Cannot be set via argument.
+
+=cut
+
+has time => (
+  is       => 'ro',
+  isa      => 'DateTime' ,
+  init_arg => undef ,
+  default  => sub { DateTime->now() } ,
+);
+
 
 =attr written_files
 

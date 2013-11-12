@@ -25,14 +25,14 @@ diag "Testing in $test_dir";
 mkdir "_$_" foreach qw/ includes layouts posts site /;
 {
   open( my $fh , '>' , '_layouts/default.html' );
-  print $fh <<EOHTML;
-<html><head><title>[% page.title %]</title></head><body>[% content %]</body></html>
+  print $fh <<'EOHTML';
+<html><head><title>{{page.title}}</title></head><body>{{{content}}}</body></html>
 EOHTML
   close( $fh );
 }
 {
   open( my $fh , '>' , '_layouts/post.html' );
-  print $fh 'POST: [% content %]';
+  print $fh 'POST: {{{content}}}';
   close( $fh );
 }
 
@@ -121,13 +121,13 @@ EOL
 }
 { # publish with 'page' file = HTML is processed into output dir
   open( my $fh , '>' , 'plain.html' );
-  print $fh <<EOL;
+  print $fh <<'EOL';
 ---
 layout: default
 title: plain html
 ---
 <h1>this should be h1</h1>
-[% title %]
+{{title}}
 EOL
   close( $fh );
 
@@ -157,12 +157,12 @@ EOL
 }
 { # 'page' file with permalink
   open( my $fh , '>' , 'page_permalink.mkdn' );
-  print $fh <<EOL;
+  print $fh <<'EOL';
 ---
 permalink: /permalink_page/index.html
 ---
 content.
-[% page.url %]
+{{page.url}}
 EOL
   close( $fh );
 
@@ -175,13 +175,13 @@ EOL
 }
 { # 'post' file processing
   open( my $fh , '>' , '_posts/2012-05-06-test.mkdn' );
-  print $fh <<EOL;
+  print $fh <<'EOL';
 ---
 layout: post
 title: this is a test post
 ---
-this is a test post, and it's called [% page.title %]
-and it lives at [% page.url %]
+this is a test post, and it's called {{page.title}}
+and it lives at {{page.url}}
 EOL
   close( $fh );
 
@@ -201,14 +201,15 @@ EOL
 }
 { # 'post' file processing with "pretty" style permalinks
   open( my $fh , '>' , '_posts/2012-05-06-pretty.mkdn' );
-  print $fh <<EOL;
+  print $fh <<'EOL';
 ---
 layout: post
 permalink: pretty
 title: this is a test post
 ---
-this is a test post, and it's called [% page.title %]
-and it lives at [% page.url %]
+this is a test post, and it's called {{page.title}}
+
+and it lives at {{page.url}}
 EOL
   close( $fh );
 
@@ -228,11 +229,11 @@ EOL
 }
 { # 'post' file without layout still defaults to 'post' layout
   open( my $fh , '>' , '_posts/2012-05-06-post.mkdn' );
-  print $fh <<EOL;
+  print $fh <<'EOL';
 ---
 title: this is a test post
 ---
-this is a test post, and it's called [% page.title %]
+this is a test post, and it's called {{page.title}}
 EOL
   close( $fh );
 
@@ -247,12 +248,12 @@ EOL
 }
 { # 'post' file with default layout gets default layout
   open( my $fh , '>' , '_posts/2012-05-06-default.mkdn' );
-  print $fh <<EOL;
+  print $fh <<'EOL';
 ---
 layout: default
 title: this is a test post
 ---
-this is a test post, and it's called [% page.title %]
+this is a test post, and it's called {{page.title}}
 EOL
   close( $fh );
 
@@ -272,13 +273,13 @@ EOL
 }
 { # 'post' file can override date in yaml
   open( my $fh , '>' , '_posts/2012-05-06-date-override.mkdn' );
-  print $fh <<EOL;
+  print $fh <<'EOL';
 ---
 date: 1999-01-01
 title: this is a test post
 ---
-this is a test post, and it's called [% page.title %]
-and it was made on [% page.date %]
+this is a test post, and it's called {{page.title}}
+and it was made on {{page.date}}
 EOL
   close( $fh );
 
@@ -297,22 +298,22 @@ TODO: { # embedded layouts
 
   {
     open( my $fh , '>' , '_layouts/embedded_post.html' );
-    print $fh <<EOL;
+    print $fh <<'EOL';
 ---
 layout: default
 ----
-EMBEDDED POST: [% content %]
+EMBEDDED POST: {{content}}
 EOL
     close( $fh );
   }
 
   open( my $fh , '>' , '_posts/2012-05-06-embedded_layout.mkdn' );
-  print $fh <<EOL;
+  print $fh <<'EOL';
 ---
 layout: embedded_post
 title: this is a test post
 ---
-this is a test embedded post, and it's called [% page.title %]
+this is a test embedded post, and it's called {{page.title}}
 EOL
   close( $fh );
 

@@ -1,16 +1,16 @@
-# ABSTRACT: Use Template Toolkit to publish your HiD files
+# ABSTRACT: Use Text::Handlebars to publish your HiD files
 
 =head1 SYNOPSIS
 
-    my $processor = HiD::Proccessor::Template->new({ arg => $val });
+    my $processor = HiD::Proccessor::Handlebars->new({ arg => $val });
 
 =head1 DESCRIPTION
 
-Wraps up a L<Template> object and allows it to be used during HiD publication.
+Wraps up a L<Text::Handlebars> object and allows it to be used during HiD publication.
 
 =cut
 
-package HiD::Processor::Template;
+package HiD::Processor::Handlebars;
 use Moose;
 extends 'HiD::Processor';
 use namespace::autoclean;
@@ -23,12 +23,11 @@ use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 use feature     qw/ unicode_strings /;
 
-use Template;
+use Text::Handlebars;
 
-has 'tt' => (
+has 'hb' => (
   is       => 'ro' ,
-  isa      => 'Template' ,
-  handles  => [ qw/ process / ],
+  isa      => 'Text::Handlebars' ,
   required => 1 ,
 );
 
@@ -40,7 +39,15 @@ sub BUILDARGS {
 
   my %args = ( ref $_[0] && ref $_[0] eq 'HASH' ) ? %{ $_[0] } : @_;
 
-  return { tt => Template->new( %args ) };
+  return { hb => Text::Handlebars->new( %args ) };
+}
+
+sub process {
+  my( $self , $input_ref , $args , $output_ref ) = @_;
+
+  $$output_ref = $self->hb->render_string( $$input_ref , $args );
+
+  return 1;
 }
 
 __PACKAGE__->meta->make_immutable;

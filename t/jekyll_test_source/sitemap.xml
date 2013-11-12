@@ -7,7 +7,7 @@ layout: nil
 
   <url>
     <loc>http://example.com</loc>
-    <lastmod>{{ site.time | date: "%Y-%m-%d" }}</lastmod>
+    <lastmod>{{ site.time }}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -15,7 +15,7 @@ layout: nil
   {% for post in site.posts %}
   <url>
     <loc>http://example.com{{ post.url }}/</loc>
-    <lastmod>{{ post.date | date: "%Y-%m-%d" }}</lastmod>
+    <lastmod>{{ post.date }}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -24,7 +24,7 @@ layout: nil
   {% for page in site.html_pages %}
   <url>
     <loc>http://example.com{{ page.url }}</loc>
-    <lastmod>{{ site.time | date: "%Y-%m-%d" }}</lastmod>
+    <lastmod>{{ site.time }}</lastmod>
     {% if page.changefreq %}<changefreq>{{ page.changefreq }}</changefreq>{% endif %}
     {% if page.priority %}<priority>{{ page.priority }}</priority>{% endif %}
   </url>
