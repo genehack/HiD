@@ -677,6 +677,30 @@ sub _build_regular_files {
   return \@files;
 }
 
+=attr remove_unwritten_files ( Boolean )
+
+Boolean value controlling whether files found in the C<dest_dir> that weren't
+produced by HiD should be removed. In other words, when this is true, after a
+C<hid publish> run, only files produced by HiD will be found in the
+C<dest_dir>.
+
+Defaults to true.
+
+=cut
+
+has remove_unwritten_files => (
+  is => 'ro' ,
+  isa => 'Bool' ,
+  lazy => 1 ,
+  default => sub {
+    my $self = shift;
+    return $self->get_config('remove_unwritten_files')
+      if defined $self->get_config('remove_unwritten_files');
+
+    return 1;
+  },
+);
+
 =attr source
 
 Base directory that all other paths are calculated relative to.
@@ -804,8 +828,10 @@ sub publish {
     }
   }
 
-  foreach ( File::Find::Rule->in( $self->destination )) {
-    $self->wrote_file($_) or remove \1 , $_;
+  if ( $self->remove_unwritten_files ) {
+    foreach ( File::Find::Rule->in( $self->destination )) {
+      $self->wrote_file($_) or remove \1 , $_;
+    }
   }
 
   # execute PLUGINS
