@@ -86,9 +86,7 @@ has converted_excerpt => (
     if ( $self->excerpt ne $self->content ) {
       # Add the "read more" link
       ### FIXME this should be configurable
-      $converted_excerpt .= q{<p class="readmore"><a href="}
-        . $self->url
-          . q{" class="readmore">read more</a></p>};
+      $converted_excerpt .= $self->readmore_link;
     }
 
     return $converted_excerpt;
@@ -108,7 +106,6 @@ has hid => (
   required => 1 ,
   handles  => [ qw/ get_config /] ,
 );
-
 
 =attr layouts ( ro / HashRef[HiD::Layout] / required )
 
@@ -136,6 +133,37 @@ has metadata => (
   traits  => [ 'Hash' ] ,
   handles => {
     get_metadata => 'get',
+  },
+);
+
+=attr readmore_link
+
+Placed at the bottom of rendered excerpts. Intended to link to the full
+version of the content.
+
+A string matching C<__URL__> will be replaced with the URL of the object (i.e.,
+the output of C<$self->url>) being converted.
+
+=cut
+
+has readmore_link => (
+  is      => 'ro' ,
+  isa     => 'Str' ,
+  lazy    => 1 ,
+  default => sub {
+    my $self = shift;
+
+    if ( defined $self->get_config('readmore_link')) {
+      my $link = $self->get_config('readmore_link');
+      my $url = $self->url;
+      $link =~ s/__URL__/$url/;
+      return $link;
+    };
+
+    return
+      q{<p class="readmore"><a href="}
+      . $self->url
+      . q{" class="readmore">read more</a></p>};
   },
 );
 
