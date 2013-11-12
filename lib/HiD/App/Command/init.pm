@@ -90,7 +90,9 @@ sub _run {
 
   die "TODO: github support" if $self->github;
 
-  mkdir "_$_" for qw/ includes layouts site /;
+  for ( qw/ includes layouts site / ) {
+    mkdir "_$_" unless -e "_$_"
+  }
 
   open( my $fh , '>' , '_layouts/default.html' );
   print $fh <<EOF;

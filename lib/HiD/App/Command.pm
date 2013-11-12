@@ -77,10 +77,15 @@ sub execute {
     exit;
   }
 
-  $self->_set_hid( HiD->new({
-    cli_opts    => $opts ,
-    config_file => $self->config_file ,
-  }));
+  my $hid_config = { cli_opts => $opts };
+  if ( $self->isa( 'HiD::App::Command::init')) {
+    $hid_config->{config} = {},
+  }
+  else {
+    $hid_config->{config_file} = $self->config_file
+  }
+
+  $self->_set_hid( HiD->new($hid_config) );
 
   $self->_run( $opts , $args );
 }
