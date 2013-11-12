@@ -30,6 +30,7 @@ use charnames   qw/ :full           /;
 use feature     qw/ unicode_strings /;
 
 use Class::Load        qw/ :all /;
+use DateTime;
 use File::Basename;
 use File::Find::Rule;
 use File::Path         qw/ make_path /;
@@ -718,6 +719,22 @@ sub _build_tags {
   }
   return $tags_hash;
 }
+
+=attr time
+
+DateTime object from the start of the latest run of the system.
+
+Cannot be set via argument.
+
+=cut
+
+has time => (
+  is       => 'ro',
+  isa      => 'DateTime' ,
+  init_arg => undef ,
+  default  => sub { DateTime->now() } ,
+);
+
 
 =attr written_files
 
