@@ -115,7 +115,7 @@ EOF
     expected_categories      => [ ] ,
     expected_date            => '2010-10-10' ,
     expected_title           => 'this is a markdown post',
-    expected_url             => '/permalink/',
+    expected_url             => 'permalink/',
     output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     subject                  => make_post(
@@ -135,7 +135,7 @@ EOF
     expected_categories      => [ ] ,
     expected_date            => '2010-10-10' ,
     expected_title           => 'this is a markdown post',
-    expected_url             => '/2010-10-10-permalink',
+    expected_url             => '2010-10-10-permalink',
     output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     subject                  => make_post(
@@ -156,7 +156,7 @@ EOF
     expected_categories      => [ ] ,
     expected_date            => '2010-10-10' ,
     expected_title           => 'this is a excerpt test',
-    expected_url             => '/2010-10-10-excerpt',
+    expected_url             => '2010-10-10-excerpt',
     output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     subject                  => make_post(

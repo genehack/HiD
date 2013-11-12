@@ -124,7 +124,6 @@ sub _build_url {
     year       => $self->year ,
   };
 
-  $permalink = "/$permalink";
   $permalink =~ s|//+|/|g;
 
   return $permalink;
