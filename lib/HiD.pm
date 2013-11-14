@@ -450,13 +450,16 @@ has plugin_dir => (
 
 =attr plugins
 
-Plugins, called after publish.
+Plugins, which consume either of the L<HiD::Plugin> or L<HiD::Generator> roles.
+
+Plugins used to subclass L<HiD::Plugin>, but that behavior is deprecated and
+will be removed on or after 13 Nov 2014.
 
 =cut
 
 has plugins => (
   is      => 'ro' ,
-  isa     => 'Maybe[ArrayRef[HiD::Plugin]]' ,
+  isa     => 'ArrayRef[Pluginish]' ,
   lazy    => 1 ,
   builder => '_build_plugins' ,
 );
@@ -464,34 +467,31 @@ has plugins => (
 sub _build_plugins {
   my $self = shift;
 
-  return undef unless $self->plugin_dir;
-
-  # default plugin modules in HiD
-  my @def_mods = findallmod "Plugin";
+  return [] unless $self->plugin_dir;
 
   # plugin modules in plugin_dir
   setmoduledirs $self->plugin_dir;
   my @mods = map { s/^\.:://r } findallmod ".";
 
-  # load plugin modules
-  my @all_plugins;
-
   push @INC , $self->plugin_dir;
 
-  foreach my $m ( @mods , @def_mods ) {
+  my @plugins = ();
+  foreach my $m ( @mods ) {
     my( $lrlt , $lerr ) = try_load_class( $m );
 
     warn "plugin $m cannot be loaded : $lerr \n" and next
       unless $lrlt;
 
-    $m->isa('HiD::Plugin')
-      or warn "plugin $m is not a valid plugin. Plugins must inherit from HiD::Plugin\n"
+    ( $m->isa('HiD::Plugin') or
+      $m->does('HiD::Plugin') or
+      $m->does('HiD::Generator') )
+      or warn "plugin $m is not a valid plugin.\n"
         and next;
 
-    push @all_plugins, $m;
+    push @plugins, $m->new;
   }
 
-  return @all_plugins ? \@all_plugins : undef;
+  return \@plugins;
 }
 
 =attr post_file_regex
@@ -809,12 +809,21 @@ sub publish {
 
   $self->INFO( "publish" );
 
-  # bootstrap data structures -- FIXME should have a more explicit way to do this
+  # bootstrap data structures
+  # FIXME should have a more explicit way to do this
   $self->regular_files;
 
   $self->INFO( "files bootstrapped" );
 
   $self->add_written_file( $self->destination => '_site_dir' );
+
+  $self->INFO( "processing plugins for generate()" );
+
+  foreach my $plugin ( @{ $self->plugins } ) {
+    if ( $plugin->does( 'HiD::Generator' )) {
+      $plugin->generate($self)
+    }
+  }
 
   foreach my $file ( $self->all_objects ) {
     $file->publish;
@@ -834,16 +843,19 @@ sub publish {
     }
   }
 
-  # execute PLUGINS
   return 1 unless $self->plugins;
 
-  $self->INFO( "processing plugins" );
+  $self->INFO( "processing plugins for after_publish()" );
 
-  foreach my $p (@{$self->plugins}) {
-      $p->new->after_publish($self);
+  foreach my $plugin ( @{ $self->plugins } ) {
+    if ( $plugin->does( 'HiD::Plugin' ) or
+         ### FIXME remove after 13 Nov 2014
+         $plugin->isa( 'HiD::Plugin'  )) {
+      $plugin->after_publish($self)
+    }
   }
-  1;
 
+  1;
 }
 
 =head1 CONTRIBUTORS
