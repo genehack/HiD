@@ -40,6 +40,9 @@ sub BUILDARGS {
 
   my %args = ( ref $_[0] && ref $_[0] eq 'HASH' ) ? %{ $_[0] } : @_;
 
+  my $path = [ '.' , './_layouts' ];
+  push @$path , './_includes' if -e -d './_includes';
+
   return {
     txs => Text::Xslate->new(
       function => {
@@ -47,7 +50,7 @@ sub BUILDARGS {
         lc          => sub { lc( shift ) } ,
         pretty_date => sub { shift->strftime( "%d %b %Y" ) },
       } ,
-      path => [ '.' , './_layouts' ]
+      path => $path ,
     ),
   };
 }
