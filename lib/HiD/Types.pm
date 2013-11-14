@@ -39,5 +39,17 @@ subtype 'HiD_PosInt'
   => where { $_ > 0 }
   => message { "Must be positive integer." };
 
+### FIXME delete if after 13 Nov 2014
+class_type 'deprecated_HiD_Plugin_class' , { class => 'HiD::Plugin'};
+
+role_type 'HiD_Plugin'    , { role => 'HiD::Plugin'};
+role_type 'HiD_Generator' , { role => 'HiD::Generator'};
+
+union 'Pluginish' , [qw/
+                         deprecated_HiD_Plugin_class
+                         HiD_Plugin
+                         HiD_Generator
+                       / ];
+
 no Moose::Util::TypeConstraints;
 1;
