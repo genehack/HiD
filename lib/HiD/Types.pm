@@ -39,6 +39,8 @@ subtype 'HiD_PosInt'
   => where { $_ > 0 }
   => message { "Must be positive integer." };
 
+class_type 'HiD_Post' , { class => 'HiD::Post' };
+
 ### FIXME delete if after 13 Nov 2014
 class_type 'deprecated_HiD_Plugin_class' , { class => 'HiD::Plugin'};
 
