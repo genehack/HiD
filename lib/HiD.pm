@@ -38,6 +38,7 @@ use File::Remove       qw/ remove /;
 use HiD::File;
 use HiD::Layout;
 use HiD::Page;
+use HiD::Pager;
 use HiD::Post;
 use HiD::Types;
 use Module::Find;
@@ -529,7 +530,7 @@ Arrayref of L<HiD::Post> objects, populated during processing.
 
 has posts => (
   is      => 'ro' ,
-  isa     => 'ArrayRef[HiD::Post]' ,
+  isa     => 'ArrayRef[HiD_Post]' ,
   traits  => [ qw/ Array / ] ,
   handles => { posts_size => 'count' } ,
   lazy    => 1 ,
@@ -824,6 +825,39 @@ sub publish {
       $plugin->generate($self)
     }
   }
+
+  if ( $self->config->{pagination} ){
+    my $entries_per_page = $self->config->{pagination}{entries}
+      or die "Must set 'pagination.entries' key in pagination config";
+
+    my $page_fstring = $self->config->{pagination}{page}
+      or die "Must set 'pagination.page' key in pagination config";
+
+    my $template = $self->config->{pagination}{template}
+      or die "Must set 'pagination.template' key in pagination config";
+
+    my $pager = HiD::Pager->new({
+      entries             => $self->posts ,
+      entries_per_page    => $entries_per_page ,
+      hid                 => $self ,
+      page_pattern        => $page_fstring
+    });
+
+    while ( my $page_data = $pager->next ) {
+      my $page = HiD::Page->new({
+        dest_dir       => $self->destination ,
+        hid            => $self ,
+        input_filename => $template ,
+        layouts        => $self->layouts ,
+        url            => $page_data->{current_page_url} ,
+      });
+      $page->metadata->{page_data} = $page_data;
+
+      $self->add_input( "Paged page $page_data->{page_number}" => 'page' );
+      $self->add_object( $page );
+    }
+  }
+
 
   foreach my $file ( $self->all_objects ) {
     $file->publish;
