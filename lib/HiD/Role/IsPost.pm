@@ -200,6 +200,25 @@ sub _build_title {
   return ( ref $title ) ? $$title : $title;
 }
 
+=attr twitter
+
+=cut
+
+has twitter => (
+  is => 'ro' ,
+  isa => 'Str' ,
+  lazy => 1 ,
+  builder => '_build_twitter' ,
+);
+
+sub _build_twitter {
+  my $self = shift;
+
+  my $twitter = $self->get_metadata( 'twitter' );
+
+  return defined $twitter ? $twitter : undef;
+}
+
 around BUILDARGS => sub {
   my $orig  = shift;
   my $class = shift;
