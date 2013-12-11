@@ -468,31 +468,53 @@ has plugins => (
 sub _build_plugins {
   my $self = shift;
 
-  return [] unless $self->plugin_dir;
+  my @loaded_plugins;
 
-  # plugin modules in plugin_dir
-  setmoduledirs $self->plugin_dir;
-  my @mods = map { s/^\.:://r } findallmod ".";
+  if ( my $plugin_list = $self->config->{plugins} ){
+    my @plugins = ( ref $plugin_list eq 'ARRAY' ) ? @$plugin_list
+      : (split /\s+/ , $plugin_list );
 
-  push @INC , $self->plugin_dir;
+    foreach ( @plugins ) {
 
-  my @plugins = ();
-  foreach my $m ( @mods ) {
-    my( $lrlt , $lerr ) = try_load_class( $m );
-
-    warn "plugin $m cannot be loaded : $lerr \n" and next
-      unless $lrlt;
-
-    ( $m->isa('HiD::Plugin') or
-      $m->does('HiD::Plugin') or
-      $m->does('HiD::Generator') )
-      or warn "plugin $m is not a valid plugin.\n"
-        and next;
-
-    push @plugins, $m->new;
+      my $plugin_name = ( /^\+/ ) ? $_ : "HiD::Generator::$_";
+      $self->INFO( "* Loading plugin $plugin_name" );
+      next unless _load_plugin_or_warn( $plugin_name );
+      push @loaded_plugins , $plugin_name->new;
+    }
   }
 
-  return \@plugins;
+  if ( $self->plugin_dir ) {
+    # plugin modules in plugin_dir
+    setmoduledirs $self->plugin_dir;
+    my @mods = map { s/^\.:://r } findallmod ".";
+
+    push @INC , $self->plugin_dir;
+
+    foreach my $m ( @mods ) {
+      $self->INFO(" * Loading plugin $m" );
+      next unless _load_plugin_or_warn( $m );
+      push @loaded_plugins, $m->new;
+    }
+  }
+
+  return \@loaded_plugins;
+}
+
+sub _load_plugin_or_warn {
+  my $plugin = shift;
+
+  my( $lrlt , $lerr ) = try_load_class( $plugin );
+
+  warn "plugin $plugin cannot be loaded : $lerr \n" and return undef
+    unless $lrlt;
+
+  ( $plugin->isa('HiD::Plugin') or
+    $plugin->does('HiD::Plugin') or
+    $plugin->does('HiD::Generator') )
+    or warn "plugin $plugin is not a valid plugin.\n"
+      and return undef;
+
+  return 1;
 }
 
 =attr post_file_regex
