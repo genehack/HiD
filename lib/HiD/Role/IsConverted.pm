@@ -252,11 +252,12 @@ around BUILDARGS => sub {
 
   ### FIXME make this extensible
   my %conversion_extension_map = (
-    markdown => [ 'Text::Markdown' , 'markdown' ] ,
-    mkdn     => [ 'Text::Markdown' , 'markdown' ] ,
-    mk       => [ 'Text::Markdown' , 'markdown' ] ,
-    md       => [ 'Text::Markdown' , 'markdown' ] ,
-    textile  => [ 'Text::Textile'  , 'process'  ] ,
+    markdown => [ 'Text::Markdown'      , 'markdown' ] ,
+    mkdn     => [ 'Text::Markdown'      , 'markdown' ] ,
+    mk       => [ 'Text::Markdown'      , 'markdown' ] ,
+    md       => [ 'Text::Markdown'      , 'markdown' ] ,
+    mmd      => [ 'Text::MultiMarkdown' , 'markdown' ] ,
+    textile  => [ 'Text::Textile'       , 'process'  ] ,
   );
 
   sub _convert_by_extension {

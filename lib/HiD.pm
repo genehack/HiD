@@ -384,7 +384,7 @@ Regular expression for identifying "page" files.
 has page_file_regex => (
   is      => 'ro' ,
   isa     => 'RegexpRef',
-  default => sub { qr/\.(mk|mkd|mkdn|markdown|textile|html|htm|xml|xhtml|xhtm|shtm|shtml|rss)$/ } ,
+  default => sub { qr/\.(mk|mkd|mkdn|markdown|mmd|textile|html|htm|xml|xhtml|xhtm|shtm|shtml|rss)$/ } ,
 );
 
 =attr pages
@@ -528,7 +528,7 @@ FIXME should this be configurable?
 has post_file_regex => (
   is      => 'ro' ,
   isa     => 'RegexpRef' ,
-  default => sub { qr/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}-(?:.+?)\.(?:mk|mkd|mkdn|markdown|md|text|textile|html)$/ },
+  default => sub { qr/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}-(?:.+?)\.(?:mk|mkd|mkdn|markdown|md|mmd|text|textile|html)$/ },
 );
 
 =attr posts_dir
