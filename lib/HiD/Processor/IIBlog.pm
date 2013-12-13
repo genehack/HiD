@@ -49,6 +49,15 @@ sub BUILDARGS {
         commafy     => sub { my $a = shift; join ',' , @$a },
         lc          => sub { lc( shift ) } ,
         pretty_date => sub { shift->strftime( "%d %b %Y" ) },
+        syntax_color => sub {
+          my ($code, $filetype) = @_;
+          require Text::VimColor;
+          my $vim = Text::VimColor->new(
+            string   => $code,
+            filetype => $filetype,
+          );
+          return $vim->html;
+        },
       } ,
       path => $path ,
     ),
