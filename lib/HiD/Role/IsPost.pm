@@ -206,7 +206,7 @@ sub _build_title {
 
 has twitter => (
   is => 'ro' ,
-  isa => 'Str' ,
+  isa => 'Maybe[Str]' ,
   lazy => 1 ,
   builder => '_build_twitter' ,
 );
