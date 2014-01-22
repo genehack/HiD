@@ -73,7 +73,7 @@ sub _new_entry {
   $entry->title($post->title);
   $entry->author($author);
   $entry->add_link($link);
-  $entry->content($post->content);
+  $entry->content($post->converted_content);
 
   return $entry;
 }
