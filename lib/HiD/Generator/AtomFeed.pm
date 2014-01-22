@@ -82,7 +82,8 @@ sub _new_feed {
   my( $self , $site ) = @_;
 
   my $feed = XML::Atom::Feed->new();
-  $feed->title( $site->config->{title} );
+  my $title = $site->config->{atom_feed_title} // $site->config->{title};
+  $feed->title( $title );
 
   if ( my $base_url = $site->config->{atom_feed_base} ) {
     my $base_link = XML::Atom::Link->new();
