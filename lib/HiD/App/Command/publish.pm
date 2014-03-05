@@ -21,6 +21,7 @@ sub commands.
 package HiD::App::Command::publish;
 use Moose;
 extends 'HiD::App::Command';
+with 'HiD::Role::PublishesDrafts';
 use namespace::autoclean;
 
 use 5.014;
@@ -52,6 +53,10 @@ sub _run {
   my $config = {};
   if ( $self->limit_posts ) {
     $config->{limit_posts} = $self->limit_posts;
+  }
+
+  if ( $self->publish_drafts ){
+    $config->{publish_drafts} = 1;
   }
 
   $self->publish;

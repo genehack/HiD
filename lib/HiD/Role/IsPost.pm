@@ -51,10 +51,11 @@ sub _build_author {
 
   my $author = $self->get_metadata( 'author' );
 
-  die "Need author for " . $self->basename . "\n"
-    unless defined $author;
+  return $author if defined $author;
 
-  return $author;
+  return 'DRAFT AUTHOR -- FIX' if $self->is_draft;
+
+  die "Need author for " . $self->basename . "\n"
 }
 
 =attr categories
@@ -102,6 +103,10 @@ has date => (
   },
   default => sub {
     my $self = shift;
+
+    if ( $self->get_config( 'publish_drafts' )){
+      return DateTime->now if $self->is_draft;
+    }
 
     my( $year , $month , $day );
     if ( my $date = $self->get_metadata( 'date' )) {
@@ -237,6 +242,15 @@ around BUILDARGS => sub {
 
   return $class->$orig( \%args );
 };
+
+my $drafts_dir;
+sub is_draft {
+  my $self = shift;
+
+  $drafts_dir //= $self->get_config( 'drafts_dir' );
+  return ( $self->input_filename =~ /^$drafts_dir/ ) ? 1 : 0;
+}
+
 
 no Moose::Role;
 1;

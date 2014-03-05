@@ -19,6 +19,7 @@ sub commands.
 package HiD::App::Command::server;
 use Moose;
 extends 'HiD::App::Command';
+with 'HiD::Role::PublishesDrafts';
 use namespace::autoclean;
 
 use 5.014;
@@ -76,6 +77,11 @@ sub _build_port {
 
 sub _run {
   my( $self , $opts , $args ) = @_;
+
+  my $config = {};
+  if ( $self->publish_drafts ){
+    $config->{publish_drafts} = 1;
+  }
 
   $self->publish;
 
