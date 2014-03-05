@@ -572,8 +572,8 @@ sub _build_posts {
   my $rule = File::Find::Rule->new;
 
   my @posts_directories = $rule->or(
-    $rule->new->directory->name( '_posts' ) ,
-      $rule->new->directory->name( '_site' )->prune->discard ,
+    $rule->new->directory->name( $self->get_config( 'posts_dir' )) ,
+    $rule->new->directory->name( $self->get_config( 'destination' ))->prune->discard ,
   )->in( $self->source );
 
   my @potential_posts = File::Find::Rule->file
