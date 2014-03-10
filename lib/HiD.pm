@@ -593,7 +593,7 @@ sub _build_posts {
       $self->DEBUG( "* Built post $_" );
       $post;
     }
-    catch { 0 };
+    catch { $self->ERROR( "ERROR: Post failed to build: $_" ) };
   } @potential_posts;
 
   @posts = sort { $b->date <=> $a->date } @posts;
