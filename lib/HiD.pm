@@ -154,6 +154,7 @@ Hashref of standard configuration options. The default config is:
     layout_dir  => '_layouts' ,
     plugin_dir  => '_plugins' ,
     posts_dir   => '_posts' ,
+    drafts_dir  => '_drafts' ,
     source      => '.' ,
 
 =cut
@@ -169,6 +170,7 @@ has default_config => (
     layout_dir  => '_layouts' ,
     plugin_dir  => '_plugins' ,
     posts_dir   => '_posts' ,
+    drafts_dir  => '_drafts' ,
     source      => '.' ,
   }},
 );
@@ -190,6 +192,23 @@ has destination => (
     make_path $dest unless -e -d $dest;
     return $dest;
   },
+);
+
+=attr draft_post_file_regex
+
+Regular expression for which files will be recognized as draft blog posts.
+
+FIXME should this be configurable?
+
+FIXME this and post_file_regex should probably be built based on a common
+underlying "post_extensions_regex" attr...
+
+=cut
+
+has draft_post_file_regex => (
+  is      => 'ro' ,
+  isa     => 'RegexpRef' ,
+  default => sub { qr/^(?:.+?)\.(?:mk|mkd|mkdn|markdown|md|mmd|text|textile|html)$/ },
 );
 
 =attr excerpt_separator
@@ -572,12 +591,16 @@ sub _build_posts {
   my $rule = File::Find::Rule->new;
 
   my @posts_directories = $rule->or(
-    $rule->new->directory->name( '_posts' ) ,
-      $rule->new->directory->name( '_site' )->prune->discard ,
+    $rule->new->directory->name( $self->get_config( 'posts_dir' )) ,
+    $rule->new->directory->name( $self->get_config( 'destination' ))->prune->discard ,
   )->in( $self->source );
 
   my @potential_posts = File::Find::Rule->file
     ->name( $self->post_file_regex )->in( @posts_directories );
+
+  if ( $self->get_config( 'publish_drafts' )){
+    push @potential_posts , $self->_build_potential_draft_posts_list ,
+  }
 
   my @posts = grep { $_ } map {
     try {
@@ -604,6 +627,22 @@ sub _build_posts {
   }
 
   return \@posts;
+}
+
+sub _build_potential_draft_posts_list {
+  my( $self ) = @_;
+
+  my $rule = File::Find::Rule->new;
+
+  my @posts_directories = $rule->or(
+    $rule->new->directory->name( $self->get_config( 'drafts_dir' )) ,
+    $rule->new->directory->name( $self->get_config( 'destination' ))->prune->discard ,
+  )->in( $self->source );
+
+  my @potential_posts = File::Find::Rule->file
+    ->name( $self->draft_post_file_regex )->in( @posts_directories );
+
+  return @potential_posts;
 }
 
 =attr processor

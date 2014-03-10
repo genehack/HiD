@@ -89,7 +89,16 @@ sub _build_basename {
   my $self = shift;
   my $ext = '.' . $self->ext;
   my $basename = fileparse( $self->input_filename , $ext );
-  $basename =~ s/^.*?$date_regex-// or die;
+
+  if( $self->get_config( 'publish_drafts' )) {
+    if ( $self->is_draft ) {
+      # not fatal to lack a date if you're a draft, but okay to have one
+      $basename =~ s/^.*?$date_regex-//;
+      return $basename;
+    }
+  }
+
+  $basename =~ s/^.*?$date_regex-// or die "no date in filename";
   return $basename;
 }
 
