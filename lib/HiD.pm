@@ -502,15 +502,17 @@ sub _build_plugins {
     }
   }
 
-  if ( $self->plugin_dir ) {
+  if ( my $plugin_dir = $self->plugin_dir ) {
     # plugin modules in plugin_dir
-    setmoduledirs $self->plugin_dir;
-    my @mods = map { s/^\.:://r } findallmod ".";
+    my @mods = File::Find::Rule->file->
+      name( '*.pm' )->in( $plugin_dir );
 
-    push @INC , $self->plugin_dir;
+    push @INC , $plugin_dir;
 
     foreach my $m ( @mods ) {
-      $self->INFO(" * Loading plugin $m" );
+      $m =~ s|$plugin_dir/?||;
+      $m =~ s|.pm$||;
+      $self->INFO("* Loading plugin $m" );
       next unless _load_plugin_or_warn( $m );
       push @loaded_plugins, $m->new;
     }
