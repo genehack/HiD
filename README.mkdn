@@ -9,7 +9,7 @@ inspired by Jekyll.
 
 # DESCRIPTION
 
-HiD users probably want to look at the documentation for the [hid](http://search.cpan.org/perldoc?hid) command.
+HiD users probably want to look at the documentation for the [hid](https://metacpan.org/pod/hid) command.
 
 Subsequent documentation in this file describes internal details that are only
 useful or interesting for people that are trying to modify or extend HiD.
@@ -24,7 +24,7 @@ Categories hash, contains (category, post) pairs
 
 Hashref of command line options to integrate into the config.
 
-([HiD::App::Command](http://search.cpan.org/perldoc?HiD::App::Command)s should pass in the `$opt` variable to this.)
+([HiD::App::Command](https://metacpan.org/pod/HiD::App::Command)s should pass in the `$opt` variable to this.)
 
 ## config
 
@@ -43,6 +43,7 @@ Hashref of standard configuration options. The default config is:
     layout_dir  => '_layouts' ,
     plugin_dir  => '_plugins' ,
     posts_dir   => '_posts' ,
+    drafts_dir  => '_drafts' ,
     source      => '.' ,
 
 ## destination
@@ -50,6 +51,15 @@ Hashref of standard configuration options. The default config is:
 Directory to write output files into.
 
 __N.B.:__ If it doesn't exist and is needed, it will be created.
+
+## draft\_post\_file\_regex
+
+Regular expression for which files will be recognized as draft blog posts.
+
+FIXME should this be configurable?
+
+FIXME this and post\_file\_regex should probably be built based on a common
+underlying "post\_extensions\_regex" attr...
 
 ## excerpt\_separator
 
@@ -72,7 +82,7 @@ Directory where template files are located.
 
 ## layouts
 
-Hashref of [HiD::Layout](http://search.cpan.org/perldoc?HiD::Layout) objects, keyed by layout name.
+Hashref of [HiD::Layout](https://metacpan.org/pod/HiD::Layout) objects, keyed by layout name.
 
 ## limit\_posts
 
@@ -92,7 +102,7 @@ Regular expression for identifying "page" files.
 
 ## pages
 
-Arrayref of [HiD::Page](http://search.cpan.org/perldoc?HiD::Page) objects, populated during processing.
+Arrayref of [HiD::Page](https://metacpan.org/pod/HiD::Page) objects, populated during processing.
 
 ## plugin\_dir
 
@@ -100,7 +110,10 @@ Directory for plugins, which will be called after publish.
 
 ## plugins
 
-Plugins, called after publish.
+Plugins, which consume either of the [HiD::Plugin](https://metacpan.org/pod/HiD::Plugin) or [HiD::Generator](https://metacpan.org/pod/HiD::Generator) roles.
+
+Plugins used to subclass [HiD::Plugin](https://metacpan.org/pod/HiD::Plugin), but that behavior is deprecated and
+will be removed on or after 13 Nov 2014.
 
 ## post\_file\_regex
 
@@ -114,16 +127,16 @@ Directory where blog posts are located.
 
 ## posts
 
-Arrayref of [HiD::Post](http://search.cpan.org/perldoc?HiD::Post) objects, populated during processing.
+Arrayref of [HiD::Post](https://metacpan.org/pod/HiD::Post) objects, populated during processing.
 
 ## processor
 
-Slot to hold the [HiD::Processor](http://search.cpan.org/perldoc?HiD::Processor) object that will be used during the
+Slot to hold the [HiD::Processor](https://metacpan.org/pod/HiD::Processor) object that will be used during the
 publication process.
 
 ## processor\_args
 
-Arguments to use when instantiating the [processor](http://search.cpan.org/perldoc?processor) attribute.
+Arguments to use when instantiating the [processor](https://metacpan.org/pod/processor) attribute.
 
 Can be an arrayref or a hashref.
 
@@ -131,7 +144,16 @@ Defaults to appropriate Template Toolkit arguments.
 
 ## regular\_files
 
-ArrayRef of [HiD::File](http://search.cpan.org/perldoc?HiD::File) objects, populated during processing.
+ArrayRef of [HiD::File](https://metacpan.org/pod/HiD::File) objects, populated during processing.
+
+## remove\_unwritten\_files ( Boolean )
+
+Boolean value controlling whether files found in the `dest_dir` that weren't
+produced by HiD should be removed. In other words, when this is true, after a
+`hid publish` run, only files produced by HiD will be found in the
+`dest_dir`.
+
+Defaults to true.
 
 ## source
 
@@ -140,6 +162,12 @@ Base directory that all other paths are calculated relative to.
 ## tags
 
 Tags hash, contains (tag, posts) pairs
+
+## time
+
+DateTime object from the start of the latest run of the system.
+
+Cannot be set via argument.
 
 ## written\_files
 
@@ -169,7 +197,7 @@ Check to see if a particular input file has been seen.
 
     my $hid_layout_obj = $self->get_layout_by_name( $name );
 
-Given a layout name (e.g., 'default') returns the corresponding [HiD::Layout](http://search.cpan.org/perldoc?HiD::Layout) object.
+Given a layout name (e.g., 'default') returns the corresponding [HiD::Layout](https://metacpan.org/pod/HiD::Layout) object.
 
 ## add\_object
 
@@ -215,12 +243,12 @@ Process files and generate output per the active configuration.
 # SEE ALSO
 
 - [jekyll](http://jekyllrb.com/)
-- [Papery](http://search.cpan.org/perldoc?Papery)
-- [StaticVolt](http://search.cpan.org/perldoc?StaticVolt)
+- [Papery](https://metacpan.org/pod/Papery)
+- [StaticVolt](https://metacpan.org/pod/StaticVolt)
 
 # VERSION
 
-version 1.0
+version 1.1
 
 # AUTHOR
 
