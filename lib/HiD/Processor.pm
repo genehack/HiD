@@ -30,6 +30,12 @@ use feature     qw/ unicode_strings /;
 ###       it easier to see as something implementing a particular interface,
 ###       for example.
 
+=method process
+
+=cut
+
+sub process { die "override this" }
+
 
 __PACKAGE__->meta->make_immutable;
 1;

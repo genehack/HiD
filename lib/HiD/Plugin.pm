@@ -23,6 +23,10 @@ use warnings   qw/ FATAL utf8 /;
 use charnames  qw/ :full           /;
 use feature    qw/ unicode_strings /;
 
+=method after_publish
+
+=cut
+
 sub after_publish { 1 }
 
 1;

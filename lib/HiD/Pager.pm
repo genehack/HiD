@@ -77,6 +77,12 @@ use feature     qw/ unicode_strings /;
 use Data::Page;
 use String::Errf    qw/ errf /;
 
+=attr entries
+
+Array of L<HiD::Post> objects being worked with
+
+=cut
+
 has entries => (
   is       => 'ro',
   isa      => 'ArrayRef[HiD_Post]' ,
@@ -85,11 +91,23 @@ has entries => (
   required => 1 ,
 );
 
+=attr entries_per_page
+
+Number of entries per page.
+
+=cut
+
 has entries_per_page => (
   is      => 'ro' ,
   isa     => 'HiD_PosInt' ,
   default => 10 ,
 );
+
+=attr hid
+
+All hail the God Object.
+
+=cut
 
 has hid => (
   is       => 'ro' ,
@@ -99,11 +117,23 @@ has hid => (
 );
 with 'HiD::Role::DoesLogging'; # needs to see the get_config delegation
 
+=attr page_pattern
+
+Regex used to generate per-page URLs
+
+=cut
+
 has page_pattern => (
   is      => 'ro',
   isa     => 'Str' ,
   default => 'blog/%{page}' ,
 );
+
+=attr pager
+
+The L<Data::Page> object that does all the work.
+
+=cut
 
 has pager => (
   is      => 'ro' ,
@@ -138,17 +168,22 @@ has _pager_page => (
   default => sub { shift->pager->current_page },
 );
 
+=method current_page_url
+
+Returns the URL for the current page in the set.
+
+=cut
+
 sub current_page_url {
   my $self = shift;
   return $self->_page_url( $self->page_number );
 }
 
-sub prev_page_url {
-  my $self = shift;
-  if ( my $prev = $self->prev_page ){
-    return $self->_page_url( $prev );
-  }
-}
+=method next
+
+Returns the data structure for the pager information.
+
+=cut
 
 sub next {
   my( $self ) = @_;
@@ -172,10 +207,29 @@ sub next {
   };
 }
 
+=method next_page_url
+
+Returns the URL for the next page in the set.
+
+=cut
+
 sub next_page_url {
   my $self = shift;
   if ( my $next = $self->next_page ){
     return $self->_page_url( $next );
+  }
+}
+
+=method prev_page_url
+
+Returns the URL for the previous page in the set.
+
+=cut
+
+sub prev_page_url {
+  my $self = shift;
+  if ( my $prev = $self->prev_page ){
+    return $self->_page_url( $prev );
   }
 }
 

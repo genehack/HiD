@@ -243,6 +243,13 @@ around BUILDARGS => sub {
   return $class->$orig( \%args );
 };
 
+=method is_draft
+
+Returns a boolean value indicating whether this post is coming from the drafts
+folder or not.
+
+=cut
+
 my $drafts_dir;
 sub is_draft {
   my $self = shift;

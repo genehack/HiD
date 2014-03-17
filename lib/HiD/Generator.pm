@@ -29,5 +29,9 @@ use feature    qw/ unicode_strings /;
 
 requires 'generate';
 
+=method generate
+
+=cut
+
 no Moose::Role;
 1;

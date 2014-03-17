@@ -29,6 +29,10 @@ has 'destination' => (
   isa     => 'HiD_DirPath' ,
 );
 
+=method generate
+
+=cut
+
 sub generate {
   my( $self , $site ) = @_;
 
