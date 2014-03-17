@@ -618,7 +618,7 @@ sub _build_posts {
       $self->DEBUG( "* Built post $_" );
       $post;
     }
-    catch { $self->ERROR( "ERROR: Post failed to build: $_" ) };
+    catch { $self->ERROR( "ERROR: Post failed to build: $_" ) ; return 0 };
   } @potential_posts;
 
   @posts = sort { $b->date <=> $a->date } @posts;
