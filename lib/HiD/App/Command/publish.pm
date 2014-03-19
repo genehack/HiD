@@ -50,7 +50,7 @@ has limit_posts => (
 sub _run {
   my( $self , $opts , $args ) = @_;
 
-  my $config = {};
+  my $config = $self->config;
   if ( $self->limit_posts ) {
     $config->{limit_posts} = $self->limit_posts;
   }

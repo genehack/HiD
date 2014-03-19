@@ -78,7 +78,7 @@ sub _build_port {
 sub _run {
   my( $self , $opts , $args ) = @_;
 
-  my $config = {};
+  my $config = $self->config;
   if ( $self->publish_drafts ){
     $config->{publish_drafts} = 1;
   }
