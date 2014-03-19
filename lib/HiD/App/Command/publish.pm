@@ -32,6 +32,19 @@ use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 use feature     qw/ unicode_strings /;
 
+=attr clean
+
+Remove any existing site directory prior to the publication run
+
+=cut
+
+has clean => (
+  is          => 'ro' ,
+  isa         => 'Bool' ,
+  cmd_aliases => 'C' ,
+  traits      => [ 'Getopt' ] ,
+);
+
 =attr limit_posts
 
 Limit the number of blog posts that will be written out. If you have a large
@@ -51,6 +64,10 @@ sub _run {
   my( $self , $opts , $args ) = @_;
 
   my $config = $self->config;
+  if ( $self->clean ) {
+    $config->{clean_destination} = 1;
+  }
+
   if ( $self->limit_posts ) {
     $config->{limit_posts} = $self->limit_posts;
   }

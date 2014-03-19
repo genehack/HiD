@@ -871,6 +871,12 @@ Process files and generate output per the active configuration.
 sub publish {
   my( $self ) = @_;
 
+  if ( -e $self->destination && $self->get_config( 'clean_destination' )){
+    remove( \1 , $self->destination );
+    $self->INFO( "cleaned destination directory" );
+    make_path $self->destination;
+  }
+
   $self->INFO( "publish" );
 
   # bootstrap data structures

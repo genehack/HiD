@@ -79,6 +79,10 @@ sub _run {
   my( $self , $opts , $args ) = @_;
 
   my $config = $self->config;
+  if ( $self->clean ) {
+    $config->{clean_destination} = 1;
+  }
+
   if ( $self->publish_drafts ){
     $config->{publish_drafts} = 1;
   }
