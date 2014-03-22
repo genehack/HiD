@@ -127,6 +127,17 @@ has date => (
   },
 );
 
+=attr description
+
+A one-line synopsis of the post (used, e.g., for metadata information used by Open Graph)
+
+=cut
+
+has description => (
+  is      => 'ro' ,
+  isa     => 'Maybe[Str]' ,
+);
+
 =attr excerpt
 
 It is generally useful to summarize or lead a post with a "read more" tag
@@ -165,6 +176,8 @@ sub _build_excerpt {
 has tags => (
   is      => 'ro' ,
   isa     => 'ArrayRef',
+  traits  => [ qw/ Array / ] ,
+  handles => { join_tags => 'join' } ,
   default => sub {
     my $self = shift;
 
@@ -242,6 +255,14 @@ around BUILDARGS => sub {
 
   return $class->$orig( \%args );
 };
+
+=method all_tags
+
+Returns all tags for this post, joined together with commas
+
+=cut
+
+sub all_tags { shift->join_tags(',') }
 
 =method is_draft
 

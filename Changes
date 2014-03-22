@@ -2,6 +2,11 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        Inject even more metadata into the 'page' data structure in
+        IsConverted.
+
+        Add a 'description' attr and an 'all_tags' method to IsPost.
+
 1.3       2014-03-19 11:33:02-07:00 America/Los_Angeles
 
         Add 'clean' option to 'publish' and 'server' commands
