@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+1.4       2014-03-22 15:44:59-07:00 America/Los_Angeles
+
         Inject even more metadata into the 'page' data structure in
         IsConverted.
 
