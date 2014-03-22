@@ -248,7 +248,7 @@ Process files and generate output per the active configuration.
 
 # VERSION
 
-version 1.3
+version 1.4
 
 # AUTHOR
 
