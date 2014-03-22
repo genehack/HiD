@@ -50,10 +50,10 @@ sub _build_author {
   my $self = shift;
 
   my $author = $self->get_metadata( 'author' );
-
   return $author if defined $author;
 
-  return 'DRAFT AUTHOR -- FIX' if $self->is_draft;
+  my $default_author = $self->get_config( 'default_author' );
+  return $default_author if defined $default_author;
 
   die "Need author for " . $self->basename . "\n"
 }

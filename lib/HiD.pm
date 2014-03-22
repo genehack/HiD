@@ -165,13 +165,14 @@ has default_config => (
   traits   => [ 'Hash' ] ,
   init_arg => undef ,
   default  => sub{{
-    destination => '_site'    ,
-    include_dir => '_includes',
-    layout_dir  => '_layouts' ,
-    plugin_dir  => '_plugins' ,
-    posts_dir   => '_posts' ,
-    drafts_dir  => '_drafts' ,
-    source      => '.' ,
+    default_author => 'your name here!' ,
+    destination    => '_site'    ,
+    include_dir    => '_includes',
+    layout_dir     => '_layouts' ,
+    plugin_dir     => '_plugins' ,
+    posts_dir      => '_posts' ,
+    drafts_dir     => '_drafts' ,
+    source         => '.' ,
   }},
 );
 

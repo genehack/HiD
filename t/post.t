@@ -44,6 +44,7 @@ my %tests = (
       content => <<EOF,
 ---
 layout: post
+author: x
 title: this is a post
 ---
 this is some post content.
@@ -64,6 +65,7 @@ EOF
       content => <<EOF,
 ---
 title: this is a markdown post
+author: x
 category: markdown
 ---
 # this should be h1
@@ -84,6 +86,7 @@ EOF
       content => <<EOF,
 ---
 title: textile post
+author: x
 ---
 h1. this should be h1
 EOF
@@ -103,6 +106,7 @@ EOF
       content => <<EOF,
 ---
 title: this is a markdown post
+author: x
 categories: foo bar
 permalink: pretty
 ---
@@ -124,6 +128,7 @@ EOF
       content => <<EOF,
 ---
 title: this is a markdown post
+author: x
 permalink: permalink/
 ---
 # this should be h1
@@ -144,6 +149,7 @@ EOF
       content => <<EOF,
 ---
 title: this is a markdown post
+author: x
 permalink: '%{year}s-%{month}s-%{day}s-permalink'
 ---
 # this should be h1
@@ -165,6 +171,7 @@ EOF
       content => <<EOF,
 ---
 title: this is a excerpt test
+author: x
 permalink: '%{year}s-%{month}s-%{day}s-excerpt'
 ---
 # this should be h1
@@ -188,6 +195,7 @@ EOF
       content => <<EOF,
 ---
 title: this is a markdown post
+author: x
 permalink: pretty
 date: 2012-12-12 01:02:03
 ---
@@ -209,6 +217,7 @@ EOF
       content => <<EOF,
 ---
 title: this is a markdown post
+author: x
 category: baz
 ---
 # this should be h1
@@ -229,6 +238,7 @@ EOF
       content => <<EOF,
 ---
 title: this is a markdown post
+author: x
 categories:
  - bar
  - foo
