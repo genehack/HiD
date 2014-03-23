@@ -210,6 +210,8 @@ has template_data => (
       site     => $self->hid ,
     };
 
+    $data->{post} = $self if $self->does('HiD::Role::IsPost');
+
     $data->{page}{baseurl} = $self->hid->config->{baseurl};
 
     ## FIXME this sucks, you need a better way to deal with this...
