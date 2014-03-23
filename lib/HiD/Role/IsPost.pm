@@ -136,7 +136,10 @@ A one-line synopsis of the post (used, e.g., for metadata information used by Op
 has description => (
   is      => 'ro' ,
   isa     => 'Maybe[Str]' ,
+  lazy    => 1 ,
+  builder => '_build_description' ,
 );
+sub _build_description { shift->get_metadata( 'description' ) }
 
 =attr excerpt
 
