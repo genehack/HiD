@@ -50,6 +50,19 @@ has auto_refresh => (
   default       => 0,
 );
 
+=attr clean
+
+Remove any existing site directory prior to the publication run
+
+=cut
+
+has clean => (
+  is          => 'ro' ,
+  isa         => 'Bool' ,
+  cmd_aliases => 'C' ,
+  traits      => [ 'Getopt' ] ,
+);
+
 =attr port
 
 Port number to bind. Defaults to 5000.
