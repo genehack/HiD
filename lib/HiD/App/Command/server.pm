@@ -32,6 +32,8 @@ use feature     qw/ unicode_strings /;
 
 use namespace::autoclean;
 
+use Class::Load      qw/ :all /;
+use Plack::Builder;
 use Plack::Runner;
 
 =attr auto_refresh
@@ -60,6 +62,19 @@ has clean => (
   is          => 'ro' ,
   isa         => 'Bool' ,
   cmd_aliases => 'C' ,
+  traits      => [ 'Getopt' ] ,
+);
+
+=attr debug
+
+Emit debug-style logging for requests
+
+=cut
+
+has debug => (
+  is          => 'ro' ,
+  isa         => 'Bool' ,
+  cmd_aliases => 'D' ,
   traits      => [ 'Getopt' ] ,
 );
 
@@ -123,6 +138,19 @@ sub _run {
       $self->publish;
       $original_app;
     };
+  }
+
+  if ( $self->debug ) {
+    if ( try_load_class( 'Plack::Middleware::DebugLogging' )) {
+      $app = builder {
+        enable_if { $ENV{PLACK_ENV} eq 'development' } 'DebugLogging';
+        $app;
+      };
+    }
+    else {
+      print STDERR "*** Plack::Middleware::DebugLogging required for debug logging.\n";
+      print STDERR "*** Continuing with normal logging.\n";
+    }
   }
 
   my $runner = Plack::Runner->new;
