@@ -1,4 +1,9 @@
 .build
 HiD-*
+Makefile
+Makefile.old
+MYMETA.json
+MYMETA.yml
+blib
 !releases/*.tar.gz
 t/jekyll_test_source/_site
