@@ -18,7 +18,7 @@ sub commands.
 
 package HiD::App::Command::server;
 use Moose;
-extends 'HiD::App::Command';
+extends 'HiD::App::Command::publish';
 with 'HiD::Role::PublishesDrafts';
 use namespace::autoclean;
 
