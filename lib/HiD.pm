@@ -695,7 +695,7 @@ has processor_args => (
     if(ref $processor_args eq 'HASH' && !exists $processor_args->{path}) {
         my @path = ( $self->layout_dir );
         push @path , $self->include_dir
-        if defined $self->include_dir;
+          if defined $self->include_dir;
         $processor_args->{path} = \@path;
     }
 
