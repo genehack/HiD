@@ -690,14 +690,16 @@ has processor_args => (
   default => sub {
     my $self = shift;
 
-    return $self->get_config( 'processor_args' ) if
-      defined $self->get_config( 'processor_args' );
+    my $processor_args = defined $self->get_config('processor_args') ? $self->get_config('processor_args') : {};
 
-    my @path = ( $self->layout_dir );
-    push @path , $self->include_dir
-      if defined $self->include_dir;
+    if(ref $processor_args eq 'HASH' && !exists $processor_args->{path}) {
+        my @path = ( $self->layout_dir );
+        push @path , $self->include_dir
+        if defined $self->include_dir;
+        $processor_args->{path} = \@path;
+    }
 
-    return { path => \@path };
+    return $processor_args;
   },
 );
 
