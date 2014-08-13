@@ -19,7 +19,7 @@ use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 use feature     qw/ unicode_strings /;
 
-sub default_command { 'publish' };
+sub default_command { 'help' };
 
 __PACKAGE__->meta->make_immutable;
 1;
