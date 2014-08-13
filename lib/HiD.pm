@@ -122,7 +122,7 @@ sub _build_config {
   }
 
   $config_loaded or $config = {}
-    and warn( 'Could not read configuration. Using defaults (and options).' );
+    and warn( "Could not read configuration. Using defaults (and options).\n" );
 
   return {
     %{ $self->default_config } ,
