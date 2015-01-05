@@ -47,15 +47,11 @@ EOHTML
     qr/Could not read configuration/ ,
     'warning on STDERR';
 }
-{    # running without a command name should do the same
+{    # running without a command name should drop the help text
   my $result = test_app( 'HiD::App' => [ ]);
 
-  is   $result->stdout    , '' , 'expected STDOUT';
-  is   $result->exit_code , 0  , 'exit=success';
-
-  like $result->stderr ,
-    qr/Could not read configuration/ ,
-      'warning on STDERR';
+  like $result->stdout    , qr/Available commands/ , 'expected help text on STDOUT';
+  is   $result->exit_code , 0                      , 'exit=success';
 }
 
 DumpFile( '_config.yml' , {
