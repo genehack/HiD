@@ -68,6 +68,12 @@ sub BUILDARGS {
   return { tt => Template->new( %args ) };
 }
 
+=method error
+
+Display the template error message.
+
+=cut
+
 sub error {
     die $Template::ERROR;
 }
