@@ -101,6 +101,13 @@ sub execute {
   $self->_run( $opts , $args );
 }
 
+=method reset_hid
+
+Clear out the existing L<HiD> object attribute, generate a fresh one with the
+stored configuration information, and return it.
+
+=cut
+
 sub reset_hid {
   my( $self ) = @_;
 

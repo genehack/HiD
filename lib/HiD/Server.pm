@@ -4,6 +4,13 @@ use warnings;
 
 use parent 'Plack::App::File';
 
+=method locate_file
+
+Overrides L<Plack::App::File>'s method of the same name to handle '/' and
+'/index.html' cases
+
+=cut
+
 sub locate_file {
   my ($self, $env) = @_;
 

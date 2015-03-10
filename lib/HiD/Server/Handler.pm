@@ -4,6 +4,12 @@ use warnings;
 
 use parent 'Plack::Handler::Standalone';
 
+=method new
+
+Constructor.
+
+=cut
+
 sub new {
   my( $class , %args ) = @_;
 
@@ -19,6 +25,13 @@ sub new {
   return $self;
 
 }
+
+=method republish
+
+Handles resetting the embedded L<HiD> object and calling the C<publish> method
+on it.
+
+=cut
 
 sub republish {
   my $self = shift;
