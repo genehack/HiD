@@ -44,6 +44,9 @@ use HiD::Server::Loader;
 
 Automatically refresh result when source file/dir changed, just likey jekyll
 
+Note that setting this will also clean out the destination directory whenever
+a watched file changes.
+
 =cut
 
 has auto_refresh => (
