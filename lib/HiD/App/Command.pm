@@ -54,12 +54,15 @@ has config_file => (
 );
 
 has hid => (
-  is       => 'ro' ,
-  isa      => 'HiD' ,
-  traits   => [ qw/ NoGetopt/ ] ,
-  init_arg => undef ,
-  writer   => '_set_hid' ,
-  handles  => [
+  is        => 'ro' ,
+  isa       => 'HiD' ,
+  lazy      => 1 ,
+  traits    => [ qw/ NoGetopt/ ] ,
+  init_arg  => undef ,
+  clearer   => '_clear_hid' ,
+  predicate => '_has_hid' ,
+  builder   => '_build_hid' ,
+  handles   => [
     'all_objects' ,
     'config' ,
     'destination' ,
@@ -67,7 +70,15 @@ has hid => (
   ] ,
 );
 
-sub _build_hid { return HiD->new }
+sub _build_hid { HiD->new( shift->hid_config ) }
+
+has hid_config => (
+  is       => 'ro' ,
+  isa      => 'HashRef' ,
+  traits   => [ qw/ NoGetopt / ] ,
+  init_arg => undef ,
+  writer   => '_set_hid_config' ,
+);
 
 sub execute {
   my( $self , $opts , $args ) = @_;
@@ -85,9 +96,17 @@ sub execute {
     $hid_config->{config_file} = $self->config_file
   }
 
-  $self->_set_hid( HiD->new($hid_config) );
+  $self->_set_hid_config( $hid_config );
 
   $self->_run( $opts , $args );
+}
+
+sub reset_hid {
+  my( $self ) = @_;
+
+  $self->_clear_hid() if $self->_has_hid();
+
+  return $self->hid();
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -36,6 +36,10 @@ use Class::Load      qw/ :all /;
 use Plack::Builder;
 use Plack::Runner;
 
+use HiD::Server;
+use HiD::Server::Handler;
+use HiD::Server::Loader;
+
 =attr auto_refresh
 
 Automatically refresh result when source file/dir changed, just likey jekyll
@@ -115,30 +119,7 @@ sub _run {
     $config->{publish_drafts} = 1;
   }
 
-  $self->publish;
-
   my $app = HiD::Server->new( root => $self->destination )->to_app;
-
-  my %args = ( -p => $self->port );
-
-  # auto refresh
-  if ( $self->auto_refresh ) {
-    my @dirs = map { $self->hid->get_config($_) } qw/ include_dir layout_dir posts_dir /;
-
-    for my $dir (qw/pages regular_files/) {
-      push @dirs, map { $_->input_filename } @{ $self->hid->$dir };
-    }
-
-    $args{'-R'} = join ',', @dirs;
-    $args{'-r'} = 1;
-
-    my $original_app = $app;
-    $app = \sub {
-      say 'Rebuild ... ';
-      $self->publish;
-      $original_app;
-    };
-  }
 
   if ( $self->debug ) {
     if ( try_load_class( 'Plack::Middleware::DebugLogging' )) {
@@ -154,33 +135,31 @@ sub _run {
   }
 
   my $runner = Plack::Runner->new;
+  my %args   = ( '-p' => $self->port );
   $runner->parse_options(%args);
+
+  # auto refresh
+  if ( $self->auto_refresh ) {
+    my @dirs = map { $self->hid->get_config($_) } qw/ include_dir layout_dir posts_dir /;
+
+    for my $dir (qw/pages regular_files/) {
+      push @dirs, map { $_->input_filename } @{ $self->hid->$dir };
+    }
+
+    # FIXME wish there was a better way to override stuff in Plack::Runner. >_<
+    $runner->{server} = '+HiD::Server::Handler';
+    $runner->{loader} = '+HiD::Server::Loader';
+    $runner->loader->watch(@dirs);
+
+    push @{$runner->{options}} , ( hid => $self );
+
+    # no need to explicitly ->publish() here, as that will happen inside
+    # HiD::Server::Loader, in the child, after the fork.
+  }
+  else { $self->publish() }
+
   $runner->run($app);
 }
 
 __PACKAGE__->meta->make_immutable;
-
-package # hide...
-  HiD::Server;
-
-use parent 'Plack::App::File';
-
-sub locate_file  {
-  my ($self, $env) = @_;
-
-  my $path = $env->{PATH_INFO} || '';
-
-  $path =~ s|^/|| unless $path eq '/';
-
-  if ( -e -d $path and $path !~ m|/$| ) {
-    $path .= '/';
-    $env->{PATH_INFO} .= '/';
-  }
-
-  $env->{PATH_INFO} .= 'index.html'
-    if ( $path && $path =~ m|/$| );
-
-  return $self->SUPER::locate_file( $env );
-}
-
 1;
