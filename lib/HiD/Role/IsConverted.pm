@@ -20,6 +20,7 @@ that process.
 =cut
 
 package HiD::Role::IsConverted;
+
 use Moose::Role;
 use namespace::autoclean;
 

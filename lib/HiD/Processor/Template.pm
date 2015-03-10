@@ -11,6 +11,7 @@ Wraps up a L<Template> object and allows it to be used during HiD publication.
 =cut
 
 package HiD::Processor::Template;
+
 use Moose;
 extends 'HiD::Processor';
 use namespace::autoclean;

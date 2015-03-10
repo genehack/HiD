@@ -1,4 +1,5 @@
 package HiD::Server::Handler;
+
 use strict;
 use warnings;
 

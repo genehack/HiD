@@ -18,6 +18,7 @@ $site->posts >> and so on.
 =cut
 
 package HiD::Generator;
+
 use Moose::Role;
 
 use 5.014;

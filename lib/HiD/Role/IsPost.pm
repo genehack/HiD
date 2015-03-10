@@ -18,6 +18,7 @@ post-specific attributes and methods.
 =cut
 
 package HiD::Role::IsPost;
+
 use Moose::Role;
 use namespace::autoclean;
 

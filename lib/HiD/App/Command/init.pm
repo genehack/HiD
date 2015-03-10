@@ -24,6 +24,7 @@ sub commands.
 =cut
 
 package HiD::App::Command::init;
+
 use Moose;
 extends 'HiD::App::Command';
 use namespace::autoclean;

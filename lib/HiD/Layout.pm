@@ -14,6 +14,7 @@ Class representing layout files.
 =cut
 
 package HiD::Layout;
+
 use Moose;
 use namespace::autoclean;
 

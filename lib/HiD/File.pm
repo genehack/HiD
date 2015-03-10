@@ -20,6 +20,7 @@ well if you're trying to figure out how an object from this class works.
 =cut
 
 package HiD::File;
+
 use Moose;
 with 'HiD::Role::IsPublished';
 use namespace::autoclean;

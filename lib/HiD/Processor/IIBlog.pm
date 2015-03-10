@@ -12,6 +12,7 @@ publication.
 =cut
 
 package HiD::Processor::IIBlog;
+
 use Moose;
 extends 'HiD::Processor';
 use namespace::autoclean;

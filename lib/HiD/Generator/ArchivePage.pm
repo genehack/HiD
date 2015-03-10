@@ -12,6 +12,7 @@ published to, or let it default to 'archive/'.
 =cut
 
 package HiD::Generator::ArchivePage;
+
 use Moose;
 with 'HiD::Generator';
 

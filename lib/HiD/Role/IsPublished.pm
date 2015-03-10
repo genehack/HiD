@@ -18,6 +18,7 @@ provides attributes and methods that are needed during that process.
 =cut
 
 package HiD::Role::IsPublished;
+
 use Moose::Role;
 use namespace::autoclean;
 

@@ -14,6 +14,7 @@ implements a 'process' method.
 =cut
 
 package HiD::Processor;
+
 use Moose;
 use namespace::autoclean;
 

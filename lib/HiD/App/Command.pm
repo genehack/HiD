@@ -23,6 +23,7 @@ base it on this class.
 =cut
 
 package HiD::App::Command;
+
 use Moose;
 extends 'MooseX::App::Cmd::Command';
 use namespace::autoclean;

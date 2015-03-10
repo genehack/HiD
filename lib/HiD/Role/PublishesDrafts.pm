@@ -1,6 +1,7 @@
 #ABSTRACT: Role for the 'publishes_drafts' attr
 
 package HiD::Role::PublishesDrafts;
+
 use Moose::Role;
 
 requires '_run';

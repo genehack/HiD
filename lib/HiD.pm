@@ -15,6 +15,7 @@ useful or interesting for people that are trying to modify or extend HiD.
 =cut
 
 package HiD;
+
 use Moose;
 use namespace::autoclean;
 # note: we also do 'with HiD::Role::DoesLogging', just later on because reasons.

@@ -18,6 +18,7 @@ and run through a layout rendering step) during publication.
 =cut
 
 package HiD::Page;
+
 use Moose;
 with 'HiD::Role::IsConverted';
 with 'HiD::Role::IsPublished';

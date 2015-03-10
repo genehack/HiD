@@ -28,6 +28,7 @@ directory and modifying it directly.
 =cut
 
 package HiD::Generator::CategoryPages;
+
 use Moose;
 with 'HiD::Generator';
 

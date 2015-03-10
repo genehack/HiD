@@ -7,6 +7,7 @@ See C<perldoc hid> for usage information.
 =cut
 
 package HiD::App;
+
 use Moose;
 extends 'MooseX::App::Cmd';
 use namespace::autoclean;

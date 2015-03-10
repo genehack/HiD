@@ -1,6 +1,7 @@
 #ABSTRACT: Logging role
 
 package HiD::Role::DoesLogging;
+
 use Moose::Role;
 
 use Log::Log4perl;

@@ -59,6 +59,7 @@ site.
 =cut
 
 package HiD::Pager;
+
 use Moose;
 # note: we also do 'with HiD::Role::DoesLogging', just later on because reasons.
 

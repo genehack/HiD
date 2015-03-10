@@ -19,6 +19,7 @@ sub commands.
 =cut
 
 package HiD::App::Command::publish;
+
 use Moose;
 extends 'HiD::App::Command';
 with 'HiD::Role::PublishesDrafts';

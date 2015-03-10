@@ -11,6 +11,7 @@ Wraps up a L<Text::Handlebars> object and allows it to be used during HiD public
 =cut
 
 package HiD::Processor::Handlebars;
+
 use Moose;
 extends 'HiD::Processor';
 use namespace::autoclean;

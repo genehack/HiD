@@ -14,6 +14,7 @@ feed, respectively.
 =cut
 
 package HiD::Generator::AtomFeed;
+
 use Moose;
 with 'HiD::Generator';
 

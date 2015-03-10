@@ -18,6 +18,7 @@ instantiated. Examples would be Atom and RSS feeds.
 =cut
 
 package HiD::VirtualPage;
+
 use Moose;
 use namespace::autoclean;
 
