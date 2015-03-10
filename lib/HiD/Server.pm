@@ -1,3 +1,11 @@
+# ABSTRACT: Helper for 'hid server'
+
+=head1 DESCRIPTION
+
+Helper for C<hid server>
+
+=cut
+
 package HiD::Server;
 
 use strict;

@@ -1,3 +1,11 @@
+# ABSTRACT: Helper for 'hid publish -A'
+
+=head1
+
+Helper for C<hid publish -A>
+
+=cut
+
 package HiD::Server::Handler;
 
 use strict;
