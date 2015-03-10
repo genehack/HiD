@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+1.8       2015-03-10 00:23:38-07:00 America/Los_Angeles (TRIAL RELEASE)
+
         Fix '--auto' option in 'hid server' so that it actually works.
 
         Switch PWP::Encoding to PWP::SingleEncoding (Сергей Романов)
