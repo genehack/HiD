@@ -8,7 +8,7 @@ Enable it by setting the 'atom_feed' key in your config to the path where the
 feed should be generated.
 
 The 'atom_feed_base' and 'atom_feed_link' keys, if they exist, will be used to
-add the 'rel=altertate' base link and the 'rel=self' feed link to the atom
+add the 'rel=alternate' base link and the 'rel=self' feed link to the atom
 feed, respectively.
 
 =cut
