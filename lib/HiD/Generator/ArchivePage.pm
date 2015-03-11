@@ -7,7 +7,8 @@ This Generator produces an archive page of all your posts.
 Enable it by setting the 'archive_page.generate' key in your config to true
 and the 'archive_page.layout' key to the path with the layout for the archive
 page. You can also set 'archive_page.url' to the URL where the page should be
-published to, or let it default to 'archive/'.
+published to, or let it default to the site-wide destination. Finally,
+'archive_page.destination' can be used to set a destination directory.
 
 =cut
 
@@ -17,11 +18,6 @@ use Moose;
 with 'HiD::Generator';
 
 use HiD::Page;
-
-has 'destination' => (
-  is      => 'ro' ,
-  isa     => 'HiD_DirPath' ,
-);
 
 =method generate
 
@@ -37,8 +33,8 @@ sub generate {
 
   my $url = $site->config->{archive_page}{url} // 'archive/';
 
-  ### FIXME
-  my $destination = $self->destination // $site->destination;
+  my $destination = $site->config->{archive_page}{destination} // $site->destination;
+
 
   my %archive = (
     by_year       => {} ,

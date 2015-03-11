@@ -2,6 +2,7 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        Update ArchivePage plugin.
         Update Tags plugin.
         Update AtomFeed plugin.
 
