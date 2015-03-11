@@ -23,6 +23,7 @@ package HiD::App::Command::publish;
 use Moose;
 extends 'HiD::App::Command';
 with 'HiD::Role::PublishesDrafts';
+with 'HiD::Role::DoesLogging';
 use namespace::autoclean;
 
 use 5.014;
@@ -32,6 +33,10 @@ use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 use feature     qw/ unicode_strings /;
+
+use Class::Load  qw/ :all /;
+use File::Copy   qw/ move /;
+use Path::Tiny;
 
 =attr clean
 
@@ -61,6 +66,56 @@ has limit_posts => (
   traits      => [ 'Getopt' ] ,
 );
 
+=attr to_github_pages
+
+If this option is set, the publishing process will switch to a 'gh-pages'
+branch in the current repository. If such a branch does not exist, a new
+"orphan" branch of that name will be created. Publication will happen in the
+normal destination directory, and then files will be moved into the root level
+of the repo and the destination directory removed. At the end of publication,
+all pending changes will be committed and a push (specifically, 'git push -u')
+will be done. Finally, the repository will be set back to whatever branch had
+been checked out before.
+
+If this option is given and the current working directory is not the root
+level of a Git repository, an error will be thrown.
+
+=cut
+
+has to_github_pages => (
+  is          => 'ro' ,
+  isa         => 'Bool' ,
+  cmd_aliases => 'G' ,
+  traits      => [ 'Getopt' ]
+);
+
+# internal attributes
+
+has gw => (
+  is      => 'ro' ,
+  isa     => 'Git::Wrapper' ,
+  lazy    => 1 ,
+  builder => '_build_gw' ,
+  traits  => [ 'NoGetopt' ] ,
+  handles => [ qw/
+                   add
+                   branch
+                   checkout
+                   commit
+                   push
+                   rev_parse
+  / ] ,
+);
+
+sub _build_gw { Git::Wrapper->new('.') }
+
+has saved_branch => (
+  is     => 'rw' ,
+  isa    => 'Str' ,
+  writer => 'set_saved_branch' ,
+  traits => [ 'NoGetopt' ] ,
+);
+
 sub _run {
   my( $self , $opts , $args ) = @_;
 
@@ -77,8 +132,72 @@ sub _run {
     $config->{publish_drafts} = 1;
   }
 
-  $self->publish;
+  $self->publish();
+
+  if ($self->to_github_pages ) {
+    $self->FATAL( "Not in the root level of a Git repo" )
+      unless -e -d '.git';
+
+    $self->FATAL( "Git::Wrapper is required for the '--to-github-pages' option" )
+      unless try_load_class( 'Git::Wrapper' );
+
+    $self->set_saved_branch( $self->get_current_branch() );
+
+    $self->create_gh_pages_if_needed_and_switch_branch();
+
+    # move stuff out of destination into the current dir and remove the destination
+    my $d = path( $self->config->{destination} );
+    move($_ , './') foreach ( $d->children() );
+    $d->remove_tree();
+
+    # add everything, commit, and push
+    $self->add('.');
+    ### FIXME include the date or something.
+    $self->commit( "-m" => "Published to GitHub pages by HiD!" );
+    $self->push( '-u' );
+
+    # and go back to the starting branch
+    $self->checkout( $self->saved_branch );
+  }
 }
+
+sub create_gh_pages_if_needed_and_switch_branch {
+  my $self = shift;
+
+  # do we already have 'gh-pages' ?
+  ## 'branch' output is either '* NAME' or '  NAME', so strip that
+  if ( grep { $_ eq 'gh-pages' } map { s/\*?  ?// ; $_ } $self->branch() ) {
+    $self->checkout( 'gh-pages' ) unless $self->get_current_branch eq 'gh-pages';
+
+    return 1;
+  }
+
+  # otherwise, let's set it up
+
+  # make the orphan branch
+  $self->checkout( '--orphan' => 'gh-pages' );
+
+  my $dest = $self->config->{destination};
+
+  # clean out all files already there
+  foreach ( path('.')->children() ) {
+    # skip over .git*
+    next if /^.git/;
+    # and skip the destination directory since we just published into it and
+    # need those files.
+    next if $dest eq $_;
+
+    $_->is_dir() ? $_->remove_tree() : $_->remove()
+  }
+
+  # and we're good to go
+  return 1;
+}
+
+
+sub get_config { {} }
+
+sub get_current_branch { shift->rev_parse( '--abbrev-ref' => 'HEAD' ) }
 
 __PACKAGE__->meta->make_immutable;
 1;
