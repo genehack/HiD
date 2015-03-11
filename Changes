@@ -2,7 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
-        Update Tags plugin
+        Update Tags plugin.
+        Update AtomFeed plugin.
 
 1.9       2015-03-10 20:22:18-07:00 America/Los_Angeles
 
