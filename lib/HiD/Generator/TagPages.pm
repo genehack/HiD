@@ -40,6 +40,8 @@ sub generate {
 
   my $destination = $site->config->{tags}{destination} // $site->destination;
 
+  $self->_create_destination_directory_if_needed( $destination );
+
   foreach my $tag ( keys %{ $site->tags } ) {
     my $page = HiD::Page->new({
       dest_dir       => $destination ,

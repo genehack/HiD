@@ -53,6 +53,8 @@ sub generate {
 
   my $destination = $self->destination // $site->destination;
 
+  $self->_create_destination_directory_if_needed( $destination );
+
   foreach my $category ( keys %{ $site->categories } ) {
     my $page = HiD::Page->new({
       dest_dir => $destination ,

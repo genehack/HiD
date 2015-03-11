@@ -35,6 +35,7 @@ sub generate {
 
   my $destination = $site->config->{archive_page}{destination} // $site->destination;
 
+  $self->_create_destination_directory_if_needed( $destination );
 
   my %archive = (
     by_year       => {} ,

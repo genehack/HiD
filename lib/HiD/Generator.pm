@@ -34,5 +34,17 @@ requires 'generate';
 
 =cut
 
+sub _create_destination_directory_if_needed {
+  my( $self , $dest ) = @_;
+
+  if ( -e $dest ) {
+    $self->FATAL( "'$dest' exists and is not a directory!" )
+      unless -d $dest;
+  }
+  else { mkdir $dest }
+
+  return 1;
+}
+
 no Moose::Role;
 1;
