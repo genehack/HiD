@@ -140,8 +140,7 @@ sub _run {
       unless try_load_class( 'Git::Wrapper' );
 
     # publish into a tempdir...
-    my $tmp = Path::Tiny->tempdir();
-    $config->{destination} = "$tmp";
+    $config->{destination} = Path::Tiny->tempdir->stringify();
   }
 
   $self->publish();
