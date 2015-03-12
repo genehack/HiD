@@ -89,6 +89,20 @@ has to_github_pages => (
   traits      => [ 'Getopt' ]
 );
 
+=attr verbose
+
+Be noisy. Primarily useful for debugging issues publishing to GitHub.
+
+=cut
+
+has verbose => (
+  is          => 'ro' ,
+  isa         => 'Bool' ,
+  cmd_aliases => 'v' ,
+  traits      => [ 'Getopt' ] ,
+  default     => 0 ,
+);
+
 # internal attributes
 
 has gw => (
@@ -133,6 +147,8 @@ sub _run {
   }
 
   if ( $self->to_github_pages ) {
+    say( "PUBLISHING TO gh-pages BRANCH" ) if $self->verbose;
+
     $self->FATAL( "Not in the root level of a Git repo" )
       unless -e -d '.git';
 
@@ -141,18 +157,22 @@ sub _run {
 
     # publish into a tempdir...
     $config->{destination} = Path::Tiny->tempdir->stringify();
+    say( "*** destination set to $config->{destination}" ) if $self->verbose;
   }
 
   $self->publish();
 
   if ( $self->to_github_pages ) {
 
+    say( "Storing current branch" ) if $self->verbose;
     $self->set_saved_branch( $self->get_current_branch() );
 
+    say( "Switching to gh_pages branch (creating if needed)" ) if $self->verbose;
     $self->create_gh_pages_if_needed_and_switch_branch();
 
     # move stuff out of destination (which is a tempdir at this point,
     # remember) into the current dir
+    say( "Moving published files to current directory" ) if $self->verbose;
     my $d = path( $self->config->{destination} );
     move($_ , './') foreach ( $d->children() );
 
@@ -163,6 +183,7 @@ sub _run {
     $self->push( '-u' );
 
     # and go back to the starting branch
+    say( "Restoring previous branch" ) if $self->verbose;
     $self->checkout( $self->saved_branch );
   }
 }
@@ -173,12 +194,14 @@ sub create_gh_pages_if_needed_and_switch_branch {
   # do we already have 'gh-pages' ?
   ## 'branch' output is either '* NAME' or '  NAME', so strip that
   if ( grep { $_ eq 'gh-pages' } map { s/\*?  ?// ; $_ } $self->branch() ) {
+    say( "* Checking out existing gh-pages branch" ) if $self->verbose;
     $self->checkout( 'gh-pages' ) unless $self->get_current_branch eq 'gh-pages';
 
     return 1;
   }
 
   # otherwise, let's set it up
+  say( "* Creating gh-pages branch" ) if $self->verbose;
 
   # make the orphan branch
   $self->checkout( '--orphan' => 'gh-pages' );
@@ -186,6 +209,7 @@ sub create_gh_pages_if_needed_and_switch_branch {
   my $dest = $self->config->{destination};
 
   # clean out all files already there
+  say( "* Cleaning out existing files" ) if $self->verbose;
   foreach ( path('.')->children() ) {
     # skip over .git*
     next if /^.git/;
