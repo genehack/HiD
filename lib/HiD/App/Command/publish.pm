@@ -118,6 +118,7 @@ has gw => (
                    commit
                    push
                    rev_parse
+                   status
   / ] ,
 );
 
@@ -177,10 +178,17 @@ sub _run {
     move($_ , './') foreach ( $d->children() );
 
     # add everything, commit, and push
-    $self->add('.');
-    ### FIXME include the date or something.
-    $self->commit( "-m" => "Published to GitHub pages by HiD!" );
-    $self->push( '-u' );
+    if ( $self->status->is_dirty() ) {
+      say( "Committing files and pushing" ) if $self->verbose;
+
+      $self->add('.');
+      ### FIXME include the date or something.$
+      $self->commit( "-m" => "Published to GitHub pages by HiD!" );
+      $self->push( '-u' );
+    }
+    else {
+      say( "No changes to commit.") if $self->verbose;
+    }
 
     # and go back to the starting branch
     say( "Restoring previous branch" ) if $self->verbose;
