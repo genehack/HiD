@@ -132,23 +132,30 @@ sub _run {
     $config->{publish_drafts} = 1;
   }
 
-  $self->publish();
-
-  if ($self->to_github_pages ) {
+  if ( $self->to_github_pages ) {
     $self->FATAL( "Not in the root level of a Git repo" )
       unless -e -d '.git';
 
     $self->FATAL( "Git::Wrapper is required for the '--to-github-pages' option" )
       unless try_load_class( 'Git::Wrapper' );
 
+    # publish into a tempdir...
+    my $tmp = Path::Tiny->tempdir();
+    $config->{destination} = "$tmp";
+  }
+
+  $self->publish();
+
+  if ( $self->to_github_pages ) {
+
     $self->set_saved_branch( $self->get_current_branch() );
 
     $self->create_gh_pages_if_needed_and_switch_branch();
 
-    # move stuff out of destination into the current dir and remove the destination
+    # move stuff out of destination (which is a tempdir at this point,
+    # remember) into the current dir
     my $d = path( $self->config->{destination} );
     move($_ , './') foreach ( $d->children() );
-    $d->remove_tree();
 
     # add everything, commit, and push
     $self->add('.');
@@ -183,9 +190,6 @@ sub create_gh_pages_if_needed_and_switch_branch {
   foreach ( path('.')->children() ) {
     # skip over .git*
     next if /^.git/;
-    # and skip the destination directory since we just published into it and
-    # need those files.
-    next if $dest eq $_;
 
     $_->is_dir() ? $_->remove_tree() : $_->remove()
   }
