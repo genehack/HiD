@@ -206,8 +206,6 @@ sub create_gh_pages_if_needed_and_switch_branch {
   # make the orphan branch
   $self->checkout( '--orphan' => 'gh-pages' );
 
-  my $dest = $self->config->{destination};
-
   # clean out all files already there
   say( "* Cleaning out existing files" ) if $self->verbose;
   foreach ( path('.')->children() ) {
