@@ -6,6 +6,10 @@
 
     $ hid  # 'publish' is the default command...
 
+    # publish directly to GitHub Pages
+    $ hid publish --to_github_pages
+    $ hid publist -G
+
 =head1 DESCRIPTION
 
 Processes files according to the active configuration and writes output files
