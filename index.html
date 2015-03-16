@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>HiD by genehack</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>HiD</h1>
+        <h2>cool site, bro. </h2>
+
+        <section id="downloads">
+          <a href="https://github.com/genehack/HiD/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/genehack/HiD/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/genehack/HiD" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a id="name" class="anchor" href="#name" aria-hidden="true"><span class="octicon octicon-link"></span></a>NAME</h1>
+
+<p>HiD - Static website publishing framework</p>
+
+<h1>
+<a id="synopsis" class="anchor" href="#synopsis" aria-hidden="true"><span class="octicon octicon-link"></span></a>SYNOPSIS</h1>
+
+<p>HīD is a blog-aware, GitHub-friendly, static website generation system
+inspired by Jekyll.</p>
+
+<h1>
+<a id="description" class="anchor" href="#description" aria-hidden="true"><span class="octicon octicon-link"></span></a>DESCRIPTION</h1>
+
+<p>HiD users probably want to look at the documentation for the <a href="https://metacpan.org/pod/hid">hid</a> command.</p>
+
+<p>Subsequent documentation in this file describes internal details that are only
+useful or interesting for people that are trying to modify or extend HiD.</p>
+
+<h1>
+<a id="attributes" class="anchor" href="#attributes" aria-hidden="true"><span class="octicon octicon-link"></span></a>ATTRIBUTES</h1>
+
+<h2>
+<a id="categories" class="anchor" href="#categories" aria-hidden="true"><span class="octicon octicon-link"></span></a>categories</h2>
+
+<p>Categories hash, contains (category, post) pairs</p>
+
+<h2>
+<a id="cli_opts" class="anchor" href="#cli_opts" aria-hidden="true"><span class="octicon octicon-link"></span></a>cli_opts</h2>
+
+<p>Hashref of command line options to integrate into the config.</p>
+
+<p>(<a href="https://metacpan.org/pod/HiD::App::Command">HiD::App::Command</a>s should pass in the <code>$opt</code> variable to this.)</p>
+
+<h2>
+<a id="config" class="anchor" href="#config" aria-hidden="true"><span class="octicon octicon-link"></span></a>config</h2>
+
+<p>Hashref of configuration information.</p>
+
+<h2>
+<a id="config_file" class="anchor" href="#config_file" aria-hidden="true"><span class="octicon octicon-link"></span></a>config_file</h2>
+
+<p>Path to a configuration file.</p>
+
+<h2>
+<a id="default_config" class="anchor" href="#default_config" aria-hidden="true"><span class="octicon octicon-link"></span></a>default_config</h2>
+
+<p>Hashref of standard configuration options. The default config is:</p>
+
+<pre><code>destination =&gt; '_site'    ,
+include_dir =&gt; '_includes',
+layout_dir  =&gt; '_layouts' ,
+plugin_dir  =&gt; '_plugins' ,
+posts_dir   =&gt; '_posts' ,
+drafts_dir  =&gt; '_drafts' ,
+source      =&gt; '.' ,
+</code></pre>
+
+<h2>
+<a id="destination" class="anchor" href="#destination" aria-hidden="true"><span class="octicon octicon-link"></span></a>destination</h2>
+
+<p>Directory to write output files into.</p>
+
+<p><strong>N.B.:</strong> If it doesn't exist and is needed, it will be created.</p>
+
+<h2>
+<a id="draft_post_file_regex" class="anchor" href="#draft_post_file_regex" aria-hidden="true"><span class="octicon octicon-link"></span></a>draft_post_file_regex</h2>
+
+<p>Regular expression for which files will be recognized as draft blog posts.</p>
+
+<p>FIXME should this be configurable?</p>
+
+<p>FIXME this and post_file_regex should probably be built based on a common
+underlying "post_extensions_regex" attr...</p>
+
+<h2>
+<a id="excerpt_separator" class="anchor" href="#excerpt_separator" aria-hidden="true"><span class="octicon octicon-link"></span></a>excerpt_separator</h2>
+
+<p>String that distinguishes initial excerpt from "below the fold" content</p>
+
+<p>Defaults to "\n\n"</p>
+
+<h2>
+<a id="include_dir" class="anchor" href="#include_dir" aria-hidden="true"><span class="octicon octicon-link"></span></a>include_dir</h2>
+
+<p>Directory for template "include" files</p>
+
+<h2>
+<a id="inputs" class="anchor" href="#inputs" aria-hidden="true"><span class="octicon octicon-link"></span></a>inputs</h2>
+
+<p>Hashref of input files. Keys are file paths; values are what type of file the
+system has classified that path as.</p>
+
+<h2>
+<a id="layout_dir" class="anchor" href="#layout_dir" aria-hidden="true"><span class="octicon octicon-link"></span></a>layout_dir</h2>
+
+<p>Directory where template files are located.</p>
+
+<h2>
+<a id="layouts" class="anchor" href="#layouts" aria-hidden="true"><span class="octicon octicon-link"></span></a>layouts</h2>
+
+<p>Hashref of <a href="https://metacpan.org/pod/HiD::Layout">HiD::Layout</a> objects, keyed by layout name.</p>
+
+<h2>
+<a id="limit_posts" class="anchor" href="#limit_posts" aria-hidden="true"><span class="octicon octicon-link"></span></a>limit_posts</h2>
+
+<p>If set, only this many blog post files will be processed during publishing.</p>
+
+<p>Setting this can significantly speed up publishing for sites with many blog posts.</p>
+
+<h2>
+<a id="objects" class="anchor" href="#objects" aria-hidden="true"><span class="octicon octicon-link"></span></a>objects</h2>
+
+<p>Array of objects (pages, posts, files) created during site processing.</p>
+
+<h2>
+<a id="page_file_regex" class="anchor" href="#page_file_regex" aria-hidden="true"><span class="octicon octicon-link"></span></a>page_file_regex</h2>
+
+<p>Regular expression for identifying "page" files.</p>
+
+<p># FIXME should it be possible to set this from the config?</p>
+
+<h2>
+<a id="pages" class="anchor" href="#pages" aria-hidden="true"><span class="octicon octicon-link"></span></a>pages</h2>
+
+<p>Arrayref of <a href="https://metacpan.org/pod/HiD::Page">HiD::Page</a> objects, populated during processing.</p>
+
+<h2>
+<a id="plugin_dir" class="anchor" href="#plugin_dir" aria-hidden="true"><span class="octicon octicon-link"></span></a>plugin_dir</h2>
+
+<p>Directory for plugins, which will be called after publish.</p>
+
+<h2>
+<a id="plugins" class="anchor" href="#plugins" aria-hidden="true"><span class="octicon octicon-link"></span></a>plugins</h2>
+
+<p>Plugins, which consume either of the <a href="https://metacpan.org/pod/HiD::Plugin">HiD::Plugin</a> or <a href="https://metacpan.org/pod/HiD::Generator">HiD::Generator</a> roles.</p>
+
+<p>Plugins used to subclass <a href="https://metacpan.org/pod/HiD::Plugin">HiD::Plugin</a>, but that behavior is deprecated and
+will be removed on or after 13 Nov 2014.</p>
+
+<h2>
+<a id="post_file_regex" class="anchor" href="#post_file_regex" aria-hidden="true"><span class="octicon octicon-link"></span></a>post_file_regex</h2>
+
+<p>Regular expression for which files will be recognized as blog posts.</p>
+
+<p>FIXME should this be configurable?</p>
+
+<h2>
+<a id="posts_dir" class="anchor" href="#posts_dir" aria-hidden="true"><span class="octicon octicon-link"></span></a>posts_dir</h2>
+
+<p>Directory where blog posts are located.</p>
+
+<h2>
+<a id="posts" class="anchor" href="#posts" aria-hidden="true"><span class="octicon octicon-link"></span></a>posts</h2>
+
+<p>Arrayref of <a href="https://metacpan.org/pod/HiD::Post">HiD::Post</a> objects, populated during processing.</p>
+
+<h2>
+<a id="processor" class="anchor" href="#processor" aria-hidden="true"><span class="octicon octicon-link"></span></a>processor</h2>
+
+<p>Slot to hold the <a href="https://metacpan.org/pod/HiD::Processor">HiD::Processor</a> object that will be used during the
+publication process.</p>
+
+<h2>
+<a id="processor_args" class="anchor" href="#processor_args" aria-hidden="true"><span class="octicon octicon-link"></span></a>processor_args</h2>
+
+<p>Arguments to use when instantiating the <a href="https://metacpan.org/pod/processor">processor</a> attribute.</p>
+
+<p>Can be an arrayref or a hashref.</p>
+
+<p>Defaults to appropriate Template Toolkit arguments.</p>
+
+<h2>
+<a id="regular_files" class="anchor" href="#regular_files" aria-hidden="true"><span class="octicon octicon-link"></span></a>regular_files</h2>
+
+<p>ArrayRef of <a href="https://metacpan.org/pod/HiD::File">HiD::File</a> objects, populated during processing.</p>
+
+<h2>
+<a id="remove_unwritten_files--boolean-" class="anchor" href="#remove_unwritten_files--boolean-" aria-hidden="true"><span class="octicon octicon-link"></span></a>remove_unwritten_files ( Boolean )</h2>
+
+<p>Boolean value controlling whether files found in the <code>dest_dir</code> that weren't
+produced by HiD should be removed. In other words, when this is true, after a
+<code>hid publish</code> run, only files produced by HiD will be found in the
+<code>dest_dir</code>.</p>
+
+<p>Defaults to true.</p>
+
+<h2>
+<a id="source" class="anchor" href="#source" aria-hidden="true"><span class="octicon octicon-link"></span></a>source</h2>
+
+<p>Base directory that all other paths are calculated relative to.</p>
+
+<h2>
+<a id="tags" class="anchor" href="#tags" aria-hidden="true"><span class="octicon octicon-link"></span></a>tags</h2>
+
+<p>Tags hash, contains (tag, posts) pairs</p>
+
+<h2>
+<a id="time" class="anchor" href="#time" aria-hidden="true"><span class="octicon octicon-link"></span></a>time</h2>
+
+<p>DateTime object from the start of the latest run of the system.</p>
+
+<p>Cannot be set via argument.</p>
+
+<h2>
+<a id="written_files" class="anchor" href="#written_files" aria-hidden="true"><span class="octicon octicon-link"></span></a>written_files</h2>
+
+<p>Hashref of files written out during the publishing process.</p>
+
+<h1>
+<a id="methods" class="anchor" href="#methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>METHODS</h1>
+
+<h2>
+<a id="get_config" class="anchor" href="#get_config" aria-hidden="true"><span class="octicon octicon-link"></span></a>get_config</h2>
+
+<pre><code>my $config_key_value = $self-&gt;get_config( $config_key_name );
+</code></pre>
+
+<p>Given a config key name, returns a config key value.</p>
+
+<h2>
+<a id="add_input" class="anchor" href="#add_input" aria-hidden="true"><span class="octicon octicon-link"></span></a>add_input</h2>
+
+<pre><code>$self-&gt;add_input( $input_file =&gt; $input_type );
+</code></pre>
+
+<p>Record what input type a particular input file is.</p>
+
+<h2>
+<a id="seen_input" class="anchor" href="#seen_input" aria-hidden="true"><span class="octicon octicon-link"></span></a>seen_input</h2>
+
+<pre><code>if( $self-&gt;seen_input( $input_file )) { ... }
+</code></pre>
+
+<p>Check to see if a particular input file has been seen.</p>
+
+<h2>
+<a id="get_layout_by_name" class="anchor" href="#get_layout_by_name" aria-hidden="true"><span class="octicon octicon-link"></span></a>get_layout_by_name</h2>
+
+<pre><code>my $hid_layout_obj = $self-&gt;get_layout_by_name( $name );
+</code></pre>
+
+<p>Given a layout name (e.g., 'default') returns the corresponding <a href="https://metacpan.org/pod/HiD::Layout">HiD::Layout</a> object.</p>
+
+<h2>
+<a id="add_object" class="anchor" href="#add_object" aria-hidden="true"><span class="octicon octicon-link"></span></a>add_object</h2>
+
+<pre><code>$self-&gt;add_object( $generated_object );
+</code></pre>
+
+<p>Add an object to the set of objects generated during site processing.</p>
+
+<h2>
+<a id="all_objects" class="anchor" href="#all_objects" aria-hidden="true"><span class="octicon octicon-link"></span></a>all_objects</h2>
+
+<pre><code>my @objects = $self-&gt;all_objects;
+</code></pre>
+
+<p>Returns the list of all objects that have been generated.</p>
+
+<h2>
+<a id="add_written_file" class="anchor" href="#add_written_file" aria-hidden="true"><span class="octicon octicon-link"></span></a>add_written_file</h2>
+
+<pre><code>$self-&gt;add_written_file( $file =&gt; 1 );
+</code></pre>
+
+<p>Record that a file was written.</p>
+
+<h2>
+<a id="all_written_files" class="anchor" href="#all_written_files" aria-hidden="true"><span class="octicon octicon-link"></span></a>all_written_files</h2>
+
+<pre><code>my @files = $self-&gt;all_written_files;
+</code></pre>
+
+<p>Return the list of all files that were written out.</p>
+
+<h2>
+<a id="wrote_file" class="anchor" href="#wrote_file" aria-hidden="true"><span class="octicon octicon-link"></span></a>wrote_file</h2>
+
+<pre><code>if( $self-&gt;wrote_file( $file )) { ... }
+</code></pre>
+
+<p>Check to see if a particular file has been written out.</p>
+
+<h2>
+<a id="publish" class="anchor" href="#publish" aria-hidden="true"><span class="octicon octicon-link"></span></a>publish</h2>
+
+<pre><code>$self-&gt;publish;
+</code></pre>
+
+<p>Process files and generate output per the active configuration.</p>
+
+<h1>
+<a id="contributors" class="anchor" href="#contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>CONTRIBUTORS</h1>
+
+<ul>
+<li>ChinaXing</li>
+<li>reyjrar</li>
+</ul>
+
+<h1>
+<a id="see-also" class="anchor" href="#see-also" aria-hidden="true"><span class="octicon octicon-link"></span></a>SEE ALSO</h1>
+
+<ul>
+<li><a href="http://jekyllrb.com/">jekyll</a></li>
+<li><a href="https://metacpan.org/pod/Papery">Papery</a></li>
+<li><a href="https://metacpan.org/pod/StaticVolt">StaticVolt</a></li>
+</ul>
+
+<h1>
+<a id="version" class="anchor" href="#version" aria-hidden="true"><span class="octicon octicon-link"></span></a>VERSION</h1>
+
+<p>version 1.4</p>
+
+<h1>
+<a id="author" class="anchor" href="#author" aria-hidden="true"><span class="octicon octicon-link"></span></a>AUTHOR</h1>
+
+<p>John SJ Anderson <a href="mailto:genehack@genehack.org">genehack@genehack.org</a></p>
+
+<h1>
+<a id="copyright-and-license" class="anchor" href="#copyright-and-license" aria-hidden="true"><span class="octicon octicon-link"></span></a>COPYRIGHT AND LICENSE</h1>
+
+<p>This software is copyright (c) 2014 by John SJ Anderson.</p>
+
+<p>This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
