@@ -24,7 +24,7 @@ sub new {
 
   my $hid = delete $args{hid};
 
-  die "I must be passed a HiD not a $hid!"
+  die "I must be passed something that can('publish') not a '$hid'!\n"
     unless defined $hid and $hid->can('publish');
 
   my $self = $class->SUPER::new(%args);
