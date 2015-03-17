@@ -36,14 +36,14 @@ use Path::Tiny;
 =cut
 
 has output_filename => (
-  is => 'ro' ,
-  isa => 'Str' ,
+  is       => 'ro' ,
+  isa      => 'Str' ,
   required => 1 ,
 );
 
 has content => (
-  is => 'ro' ,
-  isa => 'Str' ,
+  is       => 'ro' ,
+  isa      => 'Str' ,
   required => 1 ,
 );
 
