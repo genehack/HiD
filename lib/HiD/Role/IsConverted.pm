@@ -32,7 +32,7 @@ use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 
 use Carp;
-use Class::Load  qw/ :all /;
+use Class::Load  qw/ load_class /;
 use Encode;
 use File::Slurp  qw/ read_file /;
 use HiD::Types;

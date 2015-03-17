@@ -37,7 +37,7 @@ use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 
-use Class::Load  qw/ :all /;
+use Class::Load  qw/ try_load_class /;
 use File::Copy   qw/ move /;
 use Path::Tiny;
 

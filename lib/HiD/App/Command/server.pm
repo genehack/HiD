@@ -31,7 +31,7 @@ use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 use feature     qw/ unicode_strings /;
 
-use Class::Load      qw/ :all /;
+use Class::Load      qw/ try_load_class /;
 use Plack::Builder;
 use Plack::Runner;
 
