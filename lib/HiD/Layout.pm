@@ -27,8 +27,9 @@ use charnames   qw/ :full           /;
 
 use Encode;
 use File::Slurp qw/ read_file / ;
-use HiD::Types;
 use YAML::XS;
+
+use HiD::Types;
 
 =attr content
 

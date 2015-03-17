@@ -32,8 +32,9 @@ use charnames   qw/ :full           /;
 use DateTime;
 use Date::Parse    qw/ str2time  /;
 use File::Basename qw/ fileparse /;
-use HiD::Types;
 use YAML::XS;
+
+use HiD::Types;
 
 =attr author
 

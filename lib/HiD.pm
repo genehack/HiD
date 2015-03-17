@@ -34,6 +34,8 @@ use File::Basename;
 use File::Find::Rule;
 use File::Path         qw/ make_path /;
 use File::Remove       qw/ remove /;
+use Try::Tiny;
+use YAML::XS           qw/ LoadFile /;
 use HiD::File;
 use HiD::Layout;
 use HiD::Page;
@@ -42,8 +44,6 @@ use HiD::Post;
 use HiD::Types;
 use Module::Find;
 use Path::Class        qw/ file /;
-use Try::Tiny;
-use YAML::XS           qw/ LoadFile /;
 
 =attr categories
 

@@ -35,8 +35,9 @@ use Carp;
 use Class::Load  qw/ load_class /;
 use Encode;
 use File::Slurp  qw/ read_file /;
-use HiD::Types;
 use YAML::XS     qw/ Load /;
+
+use HiD::Types;
 
 requires 'get_default_layout';
 
