@@ -23,7 +23,7 @@ extends 'HiD::App::Command';
 with 'HiD::Role::PublishesDrafts';
 use namespace::autoclean;
 
-use 5.014;
+use 5.014;  # strict, unicode_strings
 use utf8;
 use autodie;
 use warnings    qw/ FATAL  utf8     /;

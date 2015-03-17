@@ -42,6 +42,8 @@ package HiD::Generator::AtomFeed;
 use Moose;
 with 'HiD::Generator';
 
+use 5.014; # strict, unicode_strings
+
 use DateTime;
 use HiD::VirtualPage;
 use XML::Atom::Entry;

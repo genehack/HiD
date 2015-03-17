@@ -8,7 +8,7 @@ Helper for C<hid server>
 
 package HiD::Server;
 
-use strict;
+use 5.014; # strict, unicode_strings
 use warnings;
 
 use parent 'Plack::App::File';

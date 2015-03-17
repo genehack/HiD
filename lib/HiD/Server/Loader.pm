@@ -8,7 +8,7 @@ Another helper for C<hid publish -A>
 
 package HiD::Server::Loader;
 
-use strict;
+use 5.014;  # strict, unicode_strings
 use warnings;
 
 use parent 'Plack::Loader::Restarter';

@@ -27,13 +27,12 @@ with 'HiD::Role::DoesLogging'; # this one last b/c it needs method delegated
 
 use namespace::autoclean;
 
-use 5.014;
+use 5.014;  # strict, unicode_strings
 use utf8;
 use autodie;
 use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
-use feature     qw/ unicode_strings /;
 
 use File::Basename  qw/ fileparse /;
 use File::Path      qw/ make_path /;

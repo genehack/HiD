@@ -65,15 +65,13 @@ use Moose;
 
 use namespace::autoclean;
 
-use 5.014;
+use 5.014;  # strict, unicode_strings
 use utf8;
-use strict;
 use autodie;
 use warnings;
 use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
-use feature     qw/ unicode_strings /;
 
 use Data::Page;
 use String::Errf    qw/ errf /;

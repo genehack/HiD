@@ -4,6 +4,8 @@ package HiD::Role::DoesLogging;
 
 use Moose::Role;
 
+use 5.014;  # strict, unicode_strings
+
 use Log::Log4perl;
 
 requires 'get_config';
