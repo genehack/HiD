@@ -30,20 +30,17 @@ use charnames   qw/ :full           /;
 
 use Class::Load        qw/ try_load_class /;
 use DateTime;
-use File::Basename;
 use File::Find::Rule;
-use File::Path         qw/ make_path /;
-use File::Remove       qw/ remove /;
+use Path::Tiny;
 use Try::Tiny;
 use YAML::XS           qw/ LoadFile /;
+
 use HiD::File;
 use HiD::Layout;
 use HiD::Page;
 use HiD::Pager;
 use HiD::Post;
 use HiD::Types;
-use Module::Find;
-use Path::Class        qw/ file /;
 
 =attr categories
 
@@ -189,7 +186,7 @@ has destination => (
   lazy    => 1 ,
   default => sub {
     my $dest = shift->get_config( 'destination' );
-    make_path $dest unless -e -d $dest;
+    path( $dest )->mkpath() unless -e -d $dest;
     return $dest;
   },
 );
@@ -874,9 +871,10 @@ sub publish {
   my( $self ) = @_;
 
   if ( -e $self->destination && $self->get_config( 'clean_destination' )){
-    remove( \1 , $self->destination );
+    my $path = path( $self->destination );
+    $path->remove_tree();
     $self->INFO( "cleaned destination directory" );
-    make_path $self->destination;
+    $path->mkpath();
   }
 
   $self->INFO( "publish" );
@@ -935,16 +933,19 @@ sub publish {
 
     $self->INFO( sprintf "* Published %s" , $file->output_filename );
 
-    my $path;
-    foreach my $part ( split '/' , $file->output_filename ) {
-      $path = file( $path , $part )->stringify;
-      $self->add_written_file( $path => 1 );
+    my $path = path( $file->output_filename );
+    while ( $path ne '.' ) {
+      $self->add_written_file( $path->stringify => 1 );
+      $path = $path->parent;
     }
   }
 
   if ( $self->remove_unwritten_files ) {
     foreach ( File::Find::Rule->in( $self->destination )) {
-      $self->wrote_file($_) or remove \1 , $_;
+      next if $self->wrote_file($_);
+
+      my $path = path( $_ );
+      $path->is_dir ? $path->remove_tree : $path->remove;
     }
   }
 

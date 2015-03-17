@@ -26,7 +26,7 @@ use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 
 use Encode;
-use File::Slurp qw/ read_file / ;
+use Path::Tiny;
 use YAML::XS;
 
 use HiD::Types;
@@ -130,7 +130,7 @@ sub BUILDARGS {
     ( $args{name} , $args{ext} ) = $args{filename}
       =~ m|^.*/(.+)\.([^.]+)$|;
 
-    my $content  = read_file( $args{filename}, binmode => ':utf8' );
+    my $content  = path( $args{filename} )->slurp_utf8;
     my $metadata = {};
 
     if ( $content =~ /^---\n/s ) {

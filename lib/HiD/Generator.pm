@@ -27,6 +27,8 @@ use autodie;
 use warnings   qw/ FATAL utf8 /;
 use charnames  qw/ :full           /;
 
+use Path::Tiny;
+
 requires 'generate';
 
 =method generate
@@ -36,11 +38,12 @@ requires 'generate';
 sub _create_destination_directory_if_needed {
   my( $self , $dest ) = @_;
 
-  if ( -e $dest ) {
-    $self->FATAL( "'$dest' exists and is not a directory!" )
-      unless -d $dest;
-  }
-  else { mkdir $dest }
+  $dest = path( $dest );
+
+  $self->FATAL( "'$dest' exists and is not a directory!" )
+    if $dest->is_file;
+
+  $dest->mkpath
 
   return 1;
 }

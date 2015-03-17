@@ -34,7 +34,7 @@ use charnames   qw/ :full           /;
 use Carp;
 use Class::Load  qw/ load_class /;
 use Encode;
-use File::Slurp  qw/ read_file /;
+use Path::Tiny;
 use YAML::XS     qw/ Load /;
 
 use HiD::Types;
@@ -226,7 +226,7 @@ around BUILDARGS => sub {
   my %args = ( ref $_[0] and ref $_[0] eq 'HASH' ) ? %{ $_[0] } : @_;
 
   unless ( $args{content} and $args{metadata} ) {
-    my $file_content = read_file( $args{input_filename}, binmode => ':utf8' );
+    my $file_content = path( $args{input_filename} )->slurp_utf8;
 
     my( $metadata , $content );
     if ( $file_content =~ /^---/ ) {
