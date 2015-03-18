@@ -5,6 +5,7 @@ HiD - Static website publishing framework
 # VERSION
 
 [![CPAN version](https://badge.fury.io/pl/HiD.svg)](http://badge.fury.io/pl/HiD)
+[![Build Status](https://travis-ci.org/genehack/HiD.svg?branch=master)](https://travis-ci.org/genehack/HiD)
 
 # SYNOPSIS
 
