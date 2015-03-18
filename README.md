@@ -6,7 +6,7 @@ HiD - Static website publishing framework
 
 [![CPAN version](https://badge.fury.io/pl/HiD.svg)](http://badge.fury.io/pl/HiD)
 [![Build Status](https://travis-ci.org/genehack/HiD.svg?branch=master)](https://travis-ci.org/genehack/HiD)
-
+[![Coverage Status](https://coveralls.io/repos/genehack/HiD/badge.svg?branch=master)](https://coveralls.io/r/genehack/HiD?branch=master)
 # SYNOPSIS
 
 HīD is a blog-aware, GitHub-friendly, static website generation system
