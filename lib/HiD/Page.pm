@@ -24,17 +24,14 @@ with 'HiD::Role::IsConverted';
 with 'HiD::Role::IsPublished';
 use namespace::autoclean;
 
-use 5.014;
+use 5.014;  # strict, unicode_strings
 use utf8;
 use autodie;
 use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
-use feature     qw/ unicode_strings /;
 
-use File::Basename  qw/ fileparse /;
-use File::Path      qw/ make_path /;
-use Path::Class     qw/ file / ;
+use Path::Tiny;
 
 =head1 NOTE
 
@@ -60,13 +57,12 @@ disk -- this data from this object.
 sub publish {
   my $self = shift;
 
-  my( undef , $dir ) = fileparse( $self->output_filename );
+  my $out = path( $self->output_filename );
+  my $dir = $out->parent;
 
-  make_path $dir unless -d $dir;
+  $dir->mkpath unless $dir->is_dir;
 
-  open( my $out , '>:utf8' , $self->output_filename ) or die $!;
-  print $out $self->rendered_content;
-  close( $out );
+  $out->spew_utf8( $self->rendered_content );
 }
 
 # used to populate the 'url' attr in Role::IsPublished

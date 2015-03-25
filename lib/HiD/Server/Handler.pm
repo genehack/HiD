@@ -8,7 +8,7 @@ Helper for C<hid publish -A>
 
 package HiD::Server::Handler;
 
-use strict;
+use 5.014;  # strict, unicode_strings
 use warnings;
 
 use parent 'Plack::Handler::Standalone';
@@ -24,7 +24,7 @@ sub new {
 
   my $hid = delete $args{hid};
 
-  die "I must be passed a HiD not a $hid!"
+  die "I must be passed something that can('publish') not a '$hid'!\n"
     unless defined $hid and $hid->can('publish');
 
   my $self = $class->SUPER::new(%args);

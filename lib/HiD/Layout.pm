@@ -18,18 +18,18 @@ package HiD::Layout;
 use Moose;
 use namespace::autoclean;
 
-use 5.014;
+use 5.014;  # strict, unicode_strings
 use utf8;
 use autodie;
 use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
-use feature     qw/ unicode_strings /;
 
 use Encode;
-use File::Slurp qw/ read_file / ;
-use HiD::Types;
+use Path::Tiny;
 use YAML::XS;
+
+use HiD::Types;
 
 =attr content
 
@@ -130,7 +130,7 @@ sub BUILDARGS {
     ( $args{name} , $args{ext} ) = $args{filename}
       =~ m|^.*/(.+)\.([^.]+)$|;
 
-    my $content  = read_file( $args{filename}, binmode => ':utf8' );
+    my $content  = path( $args{filename} )->slurp_utf8;
     my $metadata = {};
 
     if ( $content =~ /^---\n/s ) {

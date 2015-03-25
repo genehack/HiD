@@ -25,18 +25,14 @@ use Moose;
 with 'HiD::Role::IsPublished';
 use namespace::autoclean;
 
-use 5.014;
+use 5.014;  # strict, unicode_strings
 use utf8;
 use autodie;
 use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
-use feature     qw/ unicode_strings /;
 
-use File::Basename         qw/ fileparse /;
-use File::Copy::Recursive  qw/ fcopy /;
-use File::Path             qw/ make_path /;
-use Path::Class            qw/ file / ;
+use Path::Tiny;
 
 =method publish
 
@@ -47,11 +43,12 @@ Publishes (in this case, copies) the input file to the output file.
 sub publish {
   my $self = shift;
 
-  my( undef , $dir ) = fileparse( $self->output_filename );
+  my $out = path( $self->output_filename );
+  my $dir = $out->parent;
 
-  make_path $dir unless -d $dir;
+  $dir->mkpath unless $dir->is_dir;
 
-  fcopy( $self->input_filename , $self->output_filename )
+  path( $self->input_filename )->copy( $out )
     or die $!;
 }
 

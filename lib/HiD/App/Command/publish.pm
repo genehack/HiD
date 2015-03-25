@@ -30,15 +30,14 @@ with 'HiD::Role::PublishesDrafts';
 with 'HiD::Role::DoesLogging';
 use namespace::autoclean;
 
-use 5.014;
+use 5.014; # strict, unicode_strings
 use utf8;
 use autodie;
 use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
-use feature     qw/ unicode_strings /;
 
-use Class::Load  qw/ :all /;
+use Class::Load  qw/ try_load_class /;
 use File::Copy   qw/ move /;
 use Path::Tiny;
 
@@ -179,19 +178,21 @@ sub _run {
     # remember) into the current dir
     say( "Moving published files to current directory" ) if $self->verbose;
     my $d = path( $self->config->{destination} );
-    move($_ , './') foreach ( $d->children() );
+    ## use File::Copy::move b/c Path::Tiny::move is mud spelled backwards
+    move( $_ , './' ) foreach ( $d->children() );
 
     # add everything, commit, and push
     if ( $self->status->is_dirty() ) {
       say( "Committing files and pushing" ) if $self->verbose;
 
-      $self->add('.');
-      ### FIXME include the date or something.$
+      $self->add( '.' );
+      ### FIXME include the date or something.
+      ### or have a '--message/-m' option and some sensible default
       $self->commit( "-m" => "Published to GitHub pages by HiD!" );
       $self->push( '-u' );
     }
     else {
-      say( "No changes to commit.") if $self->verbose;
+      say( "No changes to commit." ) if $self->verbose;
     }
 
     # and go back to the starting branch
@@ -205,21 +206,23 @@ sub create_gh_pages_if_needed_and_switch_branch {
 
   # do we already have 'gh-pages' ?
   ## 'branch' output is either '* NAME' or '  NAME', so strip that
+  ### FIXME can we require 5.20 and then switch to s///r ?
   if ( grep { $_ eq 'gh-pages' } map { s/\*?  ?// ; $_ } $self->branch() ) {
     say( "* Checking out existing gh-pages branch" ) if $self->verbose;
-    $self->checkout( 'gh-pages' ) unless $self->get_current_branch eq 'gh-pages';
+    $self->checkout( 'gh-pages' )
+      unless $self->get_current_branch eq 'gh-pages';
 
     return 1;
   }
 
   # otherwise, let's set it up
-  say( "* Creating gh-pages branch" ) if $self->verbose;
+  say( '* Creating gh-pages branch' ) if $self->verbose;
 
   # make the orphan branch
   $self->checkout( '--orphan' => 'gh-pages' );
 
   # clean out all files already there
-  say( "* Cleaning out existing files" ) if $self->verbose;
+  say( '* Cleaning out existing files' ) if $self->verbose;
   foreach ( path('.')->children() ) {
     # skip over .git*
     next if /^.git/;
@@ -230,7 +233,6 @@ sub create_gh_pages_if_needed_and_switch_branch {
   # and we're good to go
   return 1;
 }
-
 
 sub get_config { {} }
 

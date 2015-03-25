@@ -22,9 +22,9 @@ test "parsing input filename into parts" => sub {
   if ( $base =~ m|[0-9]{4}-[0-9]{2}-[0-9]{2}-| ) {
     $base =~ s|[0-9]{4}-[0-9]{2}-[0-9]{2}-||;
   }
-  is( $subject->basename   , $base   , 'expected basename');
-  is( $subject->ext        , $ext    , 'expected ext');
-  is( $subject->input_path , "$dir/" , 'expected dir');
+  is( $subject->basename   , $base , 'expected basename');
+  is( $subject->ext        , $ext  , 'expected ext');
+  is( $subject->input_path , $dir  , 'expected dir');
 };
 
 test "has url" => sub {

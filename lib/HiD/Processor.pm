@@ -18,14 +18,12 @@ package HiD::Processor;
 use Moose;
 use namespace::autoclean;
 
-use 5.014;
+use 5.014; # strict, unicode_strings
 use utf8;
 use autodie;
 use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
-use feature     qw/ unicode_strings /;
-
 
 ### FIXME figure out whether this makes more sense as a role that would make
 ###       it easier to see as something implementing a particular interface,

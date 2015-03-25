@@ -27,16 +27,14 @@ with 'HiD::Role::DoesLogging'; # this one last b/c it needs method delegated
 
 use namespace::autoclean;
 
-use 5.014;
+use 5.014;  # strict, unicode_strings
 use utf8;
 use autodie;
 use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
-use feature     qw/ unicode_strings /;
 
-use File::Basename  qw/ fileparse /;
-use File::Path      qw/ make_path /;
+use Path::Tiny;
 use String::Errf    qw/ errf /;
 
 =for Pod::Coverage BUILD
@@ -73,13 +71,12 @@ disk -- this data from this object.
 sub publish {
   my $self = shift;
 
-  my( undef , $dir ) = fileparse( $self->output_filename );
+  my $out = path( $self->output_filename );
 
-  make_path $dir unless -d $dir;
+  my $dir = $out->parent;
+  $dir->mkpath unless $dir->is_dir;
 
-  open( my $out , '>:utf8' , $self->output_filename ) or die $!;
-  print $out $self->rendered_content;
-  close( $out );
+  $out->spew_utf8( $self->rendered_content );
 }
 
 # override
@@ -88,7 +85,7 @@ my $date_regex = qr|([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})|;
 sub _build_basename {
   my $self = shift;
   my $ext = '.' . $self->ext;
-  my $basename = fileparse( $self->input_filename , $ext );
+  my $basename = path( $self->input_filename )->basename( $ext );
 
   if( $self->get_config( 'publish_drafts' )) {
     if ( $self->is_draft ) {

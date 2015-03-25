@@ -22,17 +22,16 @@ package HiD::Role::IsPublished;
 use Moose::Role;
 use namespace::autoclean;
 
-use 5.014;
+use 5.014; # strict, unicode_strings
 use utf8;
 use autodie;
 use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
-use feature     qw/ unicode_strings /;
 
-use File::Basename  qw/ fileparse /;
+use Path::Tiny;
+
 use HiD::Types;
-use Path::Class     qw/ file /;
 
 requires 'publish';
 
@@ -53,7 +52,7 @@ has basename => (
 sub _build_basename {
   my $self = shift;
   my $ext = '.' . $self->ext;
-  return fileparse( $self->input_filename , $ext );
+  return path( $self->input_filename )->basename( $ext );
 }
 
 =attr baseurl
@@ -130,11 +129,7 @@ has input_path => (
   is      => 'ro' ,
   isa     => 'HiD_DirPath' ,
   lazy    => 1 ,
-  default => sub {
-    my $self = shift;
-    my( undef , $path ) = fileparse( $self->input_filename );
-    return $path;
-  },
+  default => sub { path( shift->input_filename )->parent->stringify },
 );
 
 =attr output_filename
@@ -153,7 +148,7 @@ has output_filename => (
     my $url = $self->url;
     $url .= 'index.html' if $url =~ m|/$|;
 
-    return file( $self->dest_dir , $url )->stringify;
+    return path( $self->dest_dir , $url )->stringify;
   },
 );
 

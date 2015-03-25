@@ -24,20 +24,20 @@ package HiD::Role::IsConverted;
 use Moose::Role;
 use namespace::autoclean;
 
-use 5.014;
+use 5.014; # strict, unicode_strings
 use utf8;
 use autodie;
 use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
-use feature     qw/ unicode_strings /;
 
 use Carp;
-use Class::Load  qw/ :all /;
+use Class::Load  qw/ load_class /;
 use Encode;
-use File::Slurp  qw/ read_file /;
-use HiD::Types;
+use Path::Tiny;
 use YAML::XS     qw/ Load /;
+
+use HiD::Types;
 
 requires 'get_default_layout';
 
@@ -226,7 +226,7 @@ around BUILDARGS => sub {
   my %args = ( ref $_[0] and ref $_[0] eq 'HASH' ) ? %{ $_[0] } : @_;
 
   unless ( $args{content} and $args{metadata} ) {
-    my $file_content = read_file( $args{input_filename}, binmode => ':utf8' );
+    my $file_content = path( $args{input_filename} )->slurp_utf8;
 
     my( $metadata , $content );
     if ( $file_content =~ /^---/ ) {
