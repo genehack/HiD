@@ -3,14 +3,14 @@ use warnings;
 
 package Test::HiD::Util;
 
-use File::Basename  qw/ fileparse /;
-use File::Path      qw/ make_path /;
 use File::Temp      qw/ tempfile tempdir /;
+use Path::Tiny;
+use Template;
+
 use HiD;
 use HiD::Layout;
 use HiD::Page;
 use HiD::Post;
-use Template;
 
 use Exporter 'import';
 our @EXPORT_OK = qw/ make_layout make_page make_post /;
@@ -67,8 +67,8 @@ sub make_post {
 
   my $file = join '/' , @path_parts , $arg{file};
 
-  my( undef , $dir ) = fileparse( $file );
-  make_path $dir unless -d $dir;
+  my $dir = path( $file )->parent;
+  $dir->mkpath() unless $dir->is_dir();
 
   open( my $OUT , '>' , $file ) or die $!;
   print $OUT $arg{content};

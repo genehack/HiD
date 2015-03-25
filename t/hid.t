@@ -3,9 +3,8 @@
 use strict;
 use warnings;
 
-use File::Basename;
 use File::Find::Rule;
-use File::Path  qw/ remove_tree /;
+use Path::Tiny;
 use HiD;
 
 use Test::File;
@@ -15,7 +14,8 @@ use Test::Warn;
 
 chdir 't/jekyll_test_source' or die $!;
 
-remove_tree '_site' if -e -d '_site';
+my $site = path('_site');
+$site->remove_tree if $site->exists && $site->is_dir;
 
 my $hid;
 warning_like { $hid = HiD->new; $hid->config }
@@ -49,7 +49,7 @@ file_contains_like(
 
 my @files = File::Find::Rule->file->name('*.html')->in('_site/publish_test/2008/02/02');
 is( scalar @files , 1 , 'only published one file from publis_test');
-is( (basename $files[0]) , 'published.html' , 'and it is named published.html' );
+is( (path($files[0])->basename) , 'published.html' , 'and it is named published.html' );
 
 my @post_dirs = File::Find::Rule->name('_posts')->in('_site');
 is( scalar @post_dirs , 0 , 'no _posts in _site' );
