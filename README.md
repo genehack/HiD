@@ -251,17 +251,13 @@ Process files and generate output per the active configuration.
 - [Papery](https://metacpan.org/pod/Papery)
 - [StaticVolt](https://metacpan.org/pod/StaticVolt)
 
-# VERSION
-
-version 1.4
-
 # AUTHOR
 
 John SJ Anderson <genehack@genehack.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2014 by John SJ Anderson.
+This software is copyright (c) 2015 by John SJ Anderson.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
