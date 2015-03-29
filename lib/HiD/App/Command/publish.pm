@@ -172,7 +172,7 @@ sub _run {
     $self->set_saved_branch( $self->get_current_branch() );
 
     say( "Switching to gh_pages branch (creating if needed)" ) if $self->verbose;
-    $self->create_gh_pages_if_needed_and_switch_branch();
+    $self->_create_gh_pages_if_needed_and_switch_branch();
 
     # move stuff out of destination (which is a tempdir at this point,
     # remember) into the current dir
@@ -201,7 +201,7 @@ sub _run {
   }
 }
 
-sub create_gh_pages_if_needed_and_switch_branch {
+sub _create_gh_pages_if_needed_and_switch_branch {
   my $self = shift;
 
   # do we already have 'gh-pages' ?
@@ -210,7 +210,7 @@ sub create_gh_pages_if_needed_and_switch_branch {
   if ( grep { $_ eq 'gh-pages' } map { s/\*?  ?// ; $_ } $self->branch() ) {
     say( "* Checking out existing gh-pages branch" ) if $self->verbose;
     $self->checkout( 'gh-pages' )
-      unless $self->get_current_branch eq 'gh-pages';
+      unless $self->_get_current_branch eq 'gh-pages';
 
     return 1;
   }
@@ -234,9 +234,17 @@ sub create_gh_pages_if_needed_and_switch_branch {
   return 1;
 }
 
+=method get_config
+
+Required for logging output, can be ignored by end users.
+
+=cut
+
+# this is required by DoesLogging -- but having an empty hash for it works
+# just as well.
 sub get_config { {} }
 
-sub get_current_branch { shift->rev_parse( '--abbrev-ref' => 'HEAD' ) }
+sub _get_current_branch { shift->rev_parse( '--abbrev-ref' => 'HEAD' ) }
 
 __PACKAGE__->meta->make_immutable;
 1;
