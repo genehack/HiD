@@ -2,6 +2,24 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        Use Path::Tiny instead of alternatives everywhere possible [#26]
+
+        Tweaks and whitesace changes
+
+        Clarify error message
+
+        Be consistent in library usage order
+
+        Be explicit about Class::Load imports
+
+        'use 5.014' in all files
+
+        Tweak prereqs
+
+        Setup coveralls.io and travis.yml
+
+        Add support for publishing site to GitHub pages (via gh-pages branch)
+
 1.91      2015-03-11 14:56:09-07:00 America/Los_Angeles
 
         Update plugins to create destination directories as needed.
