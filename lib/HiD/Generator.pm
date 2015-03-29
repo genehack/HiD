@@ -43,7 +43,7 @@ sub _create_destination_directory_if_needed {
   $self->FATAL( "'$dest' exists and is not a directory!" )
     if $dest->is_file;
 
-  $dest->mkpath
+  $dest->mkpath;
 
   return 1;
 }
