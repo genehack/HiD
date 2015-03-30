@@ -4,6 +4,9 @@ Revision history for {{$dist->name}}
 
         Set minimum version of Path::Tiny
 
+        Add compile tests
+
+
 1.92      2015-03-28 20:50:45-07:00 America/Los_Angeles (TRIAL RELEASE)
 
         Use Path::Tiny instead of alternatives everywhere possible [#26]
