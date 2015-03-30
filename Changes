@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        Set minimum version of Path::Tiny
+
 1.92      2015-03-28 20:50:45-07:00 America/Los_Angeles (TRIAL RELEASE)
 
         Use Path::Tiny instead of alternatives everywhere possible [#26]
