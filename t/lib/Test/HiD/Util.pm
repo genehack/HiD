@@ -36,7 +36,7 @@ sub make_layout {
 sub make_page {
   my( %arg ) = @_;
 
-  state $input_dir = tempdir();
+  my $input_dir    = $arg{dir} // tempdir();
   state $dest_dir  = tempdir();
 
   my $file = join '/' , $input_dir , $arg{file};
@@ -57,13 +57,13 @@ sub make_page {
 sub make_post {
   my( %arg ) = @_;
 
-  state $posts_dir = tempdir();
+  my $posts_dir    = $arg{dir} // tempdir();
   state $dest_dir  = tempdir();
 
   my @path_parts = ( $posts_dir );
 
   push @path_parts , '_posts'
-    unless ( $arg{file} =~ m|/_posts/| );
+    unless ( $arg{file} =~ m|/_posts/| or $arg{dir} =~ m|/_posts| );
 
   my $file = join '/' , @path_parts , $arg{file};
 
