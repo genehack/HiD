@@ -25,7 +25,6 @@ use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 
-use Encode;
 use Path::Tiny;
 use YAML::Tiny  qw/ Load /;
 

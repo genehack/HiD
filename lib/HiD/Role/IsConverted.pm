@@ -33,7 +33,6 @@ use charnames   qw/ :full           /;
 
 use Carp;
 use Class::Load  qw/ load_class /;
-use Encode;
 use Path::Tiny;
 use YAML::XS     qw/ Load /; # YAML::Tiny doesn't support 'bool' types which we need 8^/
 
