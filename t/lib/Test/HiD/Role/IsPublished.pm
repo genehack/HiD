@@ -6,6 +6,24 @@ use Test::Routine;
 use Test::More;
 use namespace::autoclean;
 
+has expected_basename => (
+  is       => 'ro' ,
+  isa      => 'Str' ,
+  required => 1 ,
+);
+
+has expected_dir => (
+  is       => 'ro' ,
+  isa      => 'Str' ,
+  required => 1 ,
+);
+
+has expected_suffix => (
+  is       => 'ro' ,
+  isa      => 'Str' ,
+  required => 1 ,
+);
+
 has expected_url => (
   is       => 'ro' ,
   isa      => 'Str' ,
@@ -13,18 +31,12 @@ has expected_url => (
 );
 
 test "parsing input filename into parts" => sub {
-  my $test = shift;
+  my $test    = shift;
   my $subject = $test->subject;
-  my @parts = split '/' , $subject->input_filename;
-  my $file = pop @parts;
-  my $dir  = join '/' , @parts;
-  my( $base , $ext ) = $file =~ /^(.*?)\.([^.]+)$/;
-  if ( $base =~ m|[0-9]{4}-[0-9]{2}-[0-9]{2}-| ) {
-    $base =~ s|[0-9]{4}-[0-9]{2}-[0-9]{2}-||;
-  }
-  is( $subject->basename   , $base , 'expected basename');
-  is( $subject->ext        , $ext  , 'expected ext');
-  is( $subject->input_path , $dir  , 'expected dir');
+
+  is( $subject->basename   , $test->expected_basename , 'expected basename');
+  is( $subject->ext        , $test->expected_suffix   , 'expected ext');
+  is( $subject->input_path , $test->expected_dir      , 'expected dir');
 };
 
 test "has url" => sub {
