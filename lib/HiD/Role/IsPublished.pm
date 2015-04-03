@@ -129,7 +129,7 @@ has input_path => (
   is      => 'ro' ,
   isa     => 'HiD_DirPath' ,
   lazy    => 1 ,
-  default => sub { path( shift->input_filename )->parent->stringify },
+  default => sub { path( shift->input_filename )->parent->stringify() },
 );
 
 =attr output_filename

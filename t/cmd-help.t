@@ -11,9 +11,9 @@ use HiD::App;
 {
   my $result = test_app( 'HiD::App' => [ 'help' ]);
 
-  like $result->stdout , qr/^Available commands:/m , 'expected STDOUT';
-  is   $result->stderr , '' , 'empty STDERR';
-  is   $result->exit_code , 0 , 'success';
+  like $result->stdout    , qr/^Available commands:/m , 'expected STDOUT';
+  is   $result->stderr    , ''                        , 'empty STDERR';
+  is   $result->exit_code , 0                         , 'success';
 }
 
-done_testing;
+done_testing();

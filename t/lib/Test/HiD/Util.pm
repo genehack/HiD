@@ -1,11 +1,10 @@
+package Test::HiD::Util;
 use 5.014;
 use warnings;
 
-package Test::HiD::Util;
-
-use File::Temp      qw/ tempfile tempdir /;
-use Path::Tiny;
+use Path::Tiny   qw/ path tempdir /;
 use Template;
+use YAML::Tiny;
 
 use HiD;
 use HiD::Layout;
@@ -13,19 +12,18 @@ use HiD::Page;
 use HiD::Post;
 
 use Exporter 'import';
-our @EXPORT_OK = qw/ make_layout make_page make_post /;
+our @EXPORT_OK = qw/ make_layout make_page make_post write_bad_config write_config write_fixture_file /;
 
 sub make_layout {
   my( %arg ) = @_;
 
   state $template = Template->new( ABSOLUTE => 1 );
 
-  my( $fh , $file) = tempfile( SUFFIX => '.html' );
-  print $fh $arg{content};
-  close( $fh );
+  my $file = Path::Tiny->tempfile( SUFFIX => '.html' );
+  $file->spew_utf8( $arg{content} );
 
   my $layout_args = {
-    filename  => $file ,
+    filename  => $file->stringify() ,
     processor => $template ,
   };
   $layout_args->{layout} = $arg{layout} if $arg{layout};
@@ -39,16 +37,15 @@ sub make_page {
   my $input_dir    = $arg{dir} // tempdir();
   state $dest_dir  = tempdir();
 
-  my $file = join '/' , $input_dir , $arg{file};
+  path( $input_dir )->mkpath;
 
-  open( my $OUT , '>' , $file ) or die $!;
-  print $OUT $arg{content};
-  close( $OUT );
+  my $file = path( $input_dir , $arg{file} );
+  $file->spew_utf8($arg{content});
 
   return HiD::Page->new({
-    dest_dir       => $dest_dir,
+    dest_dir       => $dest_dir->stringify(),
     hid            => HiD->new({config => {}}),
-    input_filename => $file ,
+    input_filename => $file->stringify() ,
     layouts        => $arg{layouts} ,
     source         => $input_dir,
   });
@@ -65,23 +62,36 @@ sub make_post {
   push @path_parts , '_posts'
     unless ( $arg{file} =~ m|/_posts/| or $arg{dir} =~ m|/_posts| );
 
-  my $file = join '/' , @path_parts , $arg{file};
+  my $file = path( @path_parts , $arg{file} );
 
-  my $dir = path( $file )->parent;
+  my $dir = $file->parent;
   $dir->mkpath() unless $dir->is_dir();
 
-  open( my $OUT , '>' , $file ) or die $!;
-  print $OUT $arg{content};
-  close( $OUT );
+  $file->spew_utf8( $arg{content} );
 
   return HiD::Post->new({
-    dest_dir       => $dest_dir,
+    dest_dir       => $dest_dir->stringify(),
     hid            => HiD->new({config => {}}) ,
-    input_filename => $file ,
+    input_filename => $file->stringify() ,
     layouts        => $arg{layouts} ,
     source         => $posts_dir,
   });
 }
 
+sub write_bad_config {
+  my $data = shift;
+  my $fh   = path('_config.yml')->spew_utf8( $data );
+}
+
+sub write_config {
+  my $data = shift;
+  my $yaml = YAML::Tiny->new($data);
+  $yaml->write('_config.yml');
+}
+
+sub write_fixture_file {
+  my( $file , $content ) = @_;
+  path( $file )->spew_utf8( $content );
+}
 
 1;

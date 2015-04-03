@@ -1,13 +1,12 @@
+package Test::HiD::Post;
 use strict;
 use warnings;
 
-package Test::HiD::Post;
 use Test::Routine;
 use Test::More;
 use Test::File;
 use namespace::autoclean;
 
-use File::Temp qw/ tempfile tempdir /;
 use HiD::Post;
 
 has converted_excerpt_regexp => (

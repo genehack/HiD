@@ -6,16 +6,21 @@ use feature 'state';
 
 use lib 't/lib';
 
-use File::Temp  qw/ tempdir tempfile /;
-use HiD::Layout;
-use Template;
-
 use Test::More;
 use Test::Routine::Util;
+use Test::HiD::Util      qw/ write_fixture_file /;
+
+use Path::Tiny;
+use Template;
+
+use HiD::Layout;
 
 my $template = Template->new();
 
-my $layout_file = _write_layout( default => '[% content %]');
+my $fixture_dir = Path::Tiny->tempdir();
+
+my $layout_file = $fixture_dir->child('default.html')->stringify();
+write_fixture_file( $layout_file => '[% content %]' );
 
 run_tests(
   "basic layout test" ,
@@ -30,30 +35,32 @@ run_tests(
   },
 );
 
-my $outer_file = _write_layout( outer => 'OUTER: [% content %]' );
-my $inner_file = _write_layout( inner => <<EOL );
+my $outer_file = $fixture_dir->child('outer.html')->stringify();
+write_fixture_file( $outer_file => 'OUTER: [% content %]' );
+my $outer   = HiD::Layout->new({
+  filename  => $outer_file ,
+  processor => $template ,
+});
+
+my $inner_file = $fixture_dir->child('inner.html')->stringify();
+write_fixture_file( $inner_file => << 'EOL' );
 ---
 layout: outer
 ---
 INNER: [% content %]
 EOL
-
-my $subject = HiD::Layout->new({
+my $inner = HiD::Layout->new({
   filename  => $inner_file ,
   processor => $template ,
 });
-my $outer   = HiD::Layout->new({
-  filename  => $outer_file ,
-  processor => $template ,
-});
-$subject->set_layout( $outer );
+$inner->set_layout( $outer );
 
 run_tests(
   "recursive layout test" ,
   [ 'Test::HiD::Layout' ] ,
   {
     expected_output_regex => qr/OUTER.*INNER.*test content/m ,
-    subject               => $subject,
+    subject               => $inner,
     test_content          => 'test content'
   }
 );
@@ -87,18 +94,4 @@ run_tests(
   },
 );
 
-done_testing;
-
-sub _write_layout {
-  my( $name , $content ) = @_;
-
-  state $layout_dir = tempdir();
-
-  my $filename = "$layout_dir/$name.html";
-
-  open( my $fh , '>' , $filename ) or die $!;
-  print $fh $content;
-  close( $fh );
-
-  return $filename;
-}
+done_testing();

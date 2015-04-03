@@ -1,7 +1,7 @@
+package Test::HiD::Layout;
 use strict;
 use warnings;
 
-package Test::HiD::Layout;
 use Test::Routine;
 use Test::More;
 use Test::File;

@@ -935,7 +935,7 @@ sub publish {
 
     my $path = path( $file->output_filename );
     while ( $path ne '.' ) {
-      $self->add_written_file( $path->stringify => 1 );
+      $self->add_written_file( $path->stringify() => 1 );
       $path = $path->parent;
     }
   }

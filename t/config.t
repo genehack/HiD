@@ -3,19 +3,17 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+
 use Test::More;
 use Test::Warn;
+use Test::HiD::Util qw/ write_bad_config write_config /;
 
-use autodie;
-use Cwd;
-use File::Temp  qw/ tempfile tempdir /;
-use YAML::XS    qw/ DumpFile /;
+use Path::Tiny;
 
 use HiD;
 
-my $start_dir = cwd;
-my $test_dir  = tempdir( CLEANUP => 1 );
-
+my $test_dir = Path::Tiny->tempdir();
 chdir $test_dir or BAIL_OUT "Couldn't change to test dir";
 
 {
@@ -25,8 +23,10 @@ chdir $test_dir or BAIL_OUT "Couldn't change to test dir";
   warning_like { $config = $hid->config }
     qr|Could not read configuration\. Using defaults \(and options\)\.| ,
       'fire warning with no config file';
+
   is_deeply( $config , $hid->default_config , 'default config' );
 }
+
 {
   my $hid = HiD->new({ config_file => 'nosuchfile' });
 
@@ -34,37 +34,38 @@ chdir $test_dir or BAIL_OUT "Couldn't change to test dir";
   warning_like { $config = $hid->config }
     qr|Could not read configuration\. Using defaults \(and options\)\.| ,
     'fire warning with nonexistant config file';
+
   is_deeply( $config , $hid->default_config , 'default config' );
 }
 
-# write out empty config file
-DumpFile( '_config.yml' , {} );
-
 {
+  write_config( {} );
+
   my $hid = HiD->new({ config_file => '_config.yml' });
 
   my $config;
   warning_is { $config = $hid->config } undef ,
     'no warning with config file';
+
   is_deeply( $config , $hid->default_config , 'default config' );
 }
 
-# write out config file with option
-DumpFile( '_config.yml' , { destination => '_new_site' } );
-
 {
+  write_config( { destination => '_new_site' } );
+
   my $hid = HiD->new({ config_file => '_config.yml' });
 
   my $config;
   warning_is { $config = $hid->config } undef ,
     'no warning with config file';
+
   my $expected_config = $hid->default_config;
   $expected_config->{destination} = '_new_site';
+
   is_deeply( $config , $expected_config , 'expected config' );
 }
 
-# override config file from CLI
-{
+{ # override config file from CLI
   my $hid = HiD->new({
     cli_opts    => { destination => 'override' } ,
     config_file => '_config.yml' ,
@@ -73,17 +74,16 @@ DumpFile( '_config.yml' , { destination => '_new_site' } );
   my $config;
   warning_is { $config = $hid->config } undef ,
     'no warning with config file'; # b/c previous file still there
+
   my $expected_config = $hid->default_config;
   $expected_config->{destination} = 'override';
+
   is_deeply( $config , $expected_config , 'expected config' );
 }
 
-# write out a bad config file
-open( my $fh , '>' , '_config.yml' );
-print $fh '--dusted';
-close( $fh );
-
 {
+  write_bad_config( '--dusted' );
+
   # and now we get the warning again.
   my $hid = HiD->new({ config_file => '_config.yml' });
 
@@ -91,10 +91,9 @@ close( $fh );
   warning_like { $config = $hid->config }
     qr|Could not read configuration\. Using defaults \(and options\)\.| ,
       'fire warning with bad config file';
+
   is_deeply( $config , $hid->default_config , 'default config' );
 }
 
-# there's no place like home.
-unlink '_config.yml';
-chdir $start_dir;
-done_testing;
+chdir('/');
+done_testing();

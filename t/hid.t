@@ -3,14 +3,13 @@
 use strict;
 use warnings;
 
+use Test::More;
+use Test::File;
+use Test::Warn;
+
 use File::Find::Rule;
 use Path::Tiny;
 use HiD;
-
-use Test::File;
-use Test::More;
-use Test::Warn;
-
 
 chdir 't/jekyll_test_source' or die $!;
 
@@ -29,8 +28,6 @@ warnings_like { $posts = $hid->posts }
 
 my $post_count = scalar @$posts;
 is( $post_count , 28 , 'expected number of posts' );
-# warning_is { $hid->publish } [] ,
-#   'publish works and does not warn' ;
 $hid->publish;
 
 file_exists_ok( '_site/index.html' , 'see index file' );

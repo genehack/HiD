@@ -3,19 +3,17 @@
 use strict;
 use warnings;
 
-use Test::More;
+use lib 't/lib';
 
-use autodie;
-use Cwd;
-use File::Temp  qw/ tempfile tempdir /;
-use YAML::XS    qw/ DumpFile /;
+use Test::More;
+use Test::HiD::Util qw/ write_bad_config write_config /;
+
+use Path::Tiny;
 
 use App::Cmd::Tester;
 use HiD::App;
 
-my $start_dir = cwd;
-my $test_dir  = tempdir( CLEANUP => 1 );
-
+my $test_dir = Path::Tiny->tempdir();
 chdir $test_dir or BAIL_OUT "Couldn't change to test dir";
 
 {
@@ -23,8 +21,8 @@ chdir $test_dir or BAIL_OUT "Couldn't change to test dir";
   my $result = test_app( 'HiD::App' => [ 'config' , '--help' ]);
 
   like $result->stdout    , qr/^(\S+) config/ , 'expected STDOUT';
-  is   $result->stderr    , ''              , 'empty STDERR';
-  is   $result->exit_code , 0               , 'success';
+  is   $result->stderr    , ''                , 'empty STDERR';
+  is   $result->exit_code , 0                 , 'success';
 }
 {
   # fire warning with no _config.yml
@@ -32,34 +30,29 @@ chdir $test_dir or BAIL_OUT "Couldn't change to test dir";
 
   like $result->stdout    , qr/destination.*?"/              , 'expected STDOUT';
   like $result->stderr    , qr/Could not read configuration/ , 'warning on STDERR';
-
-  is   $result->exit_code , 0           , 'success';
+  is   $result->exit_code , 0                                , 'success';
 }
 
-# write out empty config file
-DumpFile( '_config.yml' , {} );
+write_config({});
 
 {
   # and now we don't get the warning
   my $result = test_app( 'HiD::App' => [ 'config' ]);
 
   like $result->stdout    , qr/destination.*?"/ , 'expected STDOUT';
-  is   $result->stderr    , ''          , 'empty STDERR';
-  is   $result->exit_code , 0           , 'success';
+  is   $result->stderr    , ''                  , 'empty STDERR';
+  is   $result->exit_code , 0                   , 'success';
 }
 {
   # dump a subsection of the config
   my $result = test_app( 'HiD::App' => [ 'config' , 'config' ]);
 
   like $result->stdout    , qr/destination.*?"/ , 'expected STDOUT';
-  is   $result->stderr    , ''          , 'empty STDERR';
-  is   $result->exit_code , 0           , 'success';
+  is   $result->stderr    , ''                  , 'empty STDERR';
+  is   $result->exit_code , 0                   , 'success';
 }
 
-# write out a bad config file
-open( my $fh , '>' , '_config.yml' );
-print $fh 'BUSTED!';
-close( $fh );
+write_bad_config('BUSTED');
 
 {
   # and now we get the warning again.
@@ -67,10 +60,8 @@ close( $fh );
 
   like $result->stdout    , qr/destination.*?"/              , 'expected STDOUT';
   like $result->stderr    , qr/Could not read configuration/ , 'warning on STDERR';
-  is   $result->exit_code , 0           , 'success';
+  is   $result->exit_code , 0                                , 'success';
 }
 
-# there's no place like home.
-unlink '_config.yml';
-chdir $start_dir;
-done_testing;
+chdir('/');
+done_testing();

@@ -5,18 +5,18 @@ use warnings;
 
 use lib 't/lib';
 
-use File::Temp  qw/ tempdir tempfile /;
-use HiD::Layout;
-use HiD::Page;
-use Template;
-
-use Test::HiD::Util      qw/ make_layout make_page /;
 use Test::More;
 use Test::Routine::Util;
+use Test::HiD::Util      qw/ make_layout make_page /;
 
-my $tmp = tempdir();
+use Path::Tiny;
+use Template;
 
-# make layout
+use HiD::Layout;
+use HiD::Page;
+
+my $tmp = Path::Tiny->tempdir->stringify();
+
 my $layouts = {
   default => make_layout( content => 'PAGE: [% content %]' ),
 };
@@ -135,4 +135,4 @@ my $test_files = [
 # and run tests
 map { run_tests( $_ , $test_files , $tests{$_} ) } keys %tests;
 
-done_testing;
+done_testing();

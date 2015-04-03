@@ -1,13 +1,12 @@
+package Test::HiD::File;
 use strict;
 use warnings;
 
-package Test::HiD::File;
 use Test::Routine;
 use Test::More;
 use Test::File;
 use namespace::autoclean;
 
-use File::Temp qw/ tempfile tempdir /;
 use HiD::File;
 
 has subject => (
@@ -16,7 +15,7 @@ has subject => (
 );
 
 test "output filename" => sub {
-  my $test = shift;
+  my $test    = shift;
   my $subject = $test->subject;
 
   my $input  = $subject->input_filename;
@@ -25,7 +24,7 @@ test "output filename" => sub {
 };
 
 test "publish" => sub {
-  my $test = shift;
+  my $test    = shift;
   my $subject = $test->subject;
 
   my $output = $subject->output_filename;

@@ -5,18 +5,18 @@ use warnings;
 
 use lib 't/lib';
 
-use HiD::Layout;
-use HiD::Post;
+use Test::More;
+use Test::Routine::Util;
+use Test::HiD::Util      qw/ make_layout make_post /;
 
 use Path::Tiny;
 use Template;
 
-use Test::HiD::Util      qw/ make_layout make_post /;
-use Test::More;
-use Test::Routine::Util;
+use HiD::Layout;
+use HiD::Post;
 
 # set up base stuff
-my $dir     = Path::Tiny->tempdir()->child( '_posts' )->stringify;
+my $dir     = Path::Tiny->tempdir->child( '_posts' )->stringify();
 my $default = make_layout( content => 'PAGE: [% content %]' );
 my $layouts = {
   default => $default ,
@@ -301,4 +301,4 @@ my $test_files = [
 # and run tests
 map { run_tests( $_ , $test_files , $tests{$_} ) } keys %tests;
 
-done_testing;
+done_testing();

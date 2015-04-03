@@ -1,13 +1,12 @@
+package Test::HiD::Page;
 use strict;
 use warnings;
 
-package Test::HiD::Page;
 use Test::Routine;
 use Test::More;
 use Test::File;
 use namespace::autoclean;
 
-use File::Temp qw/ tempfile tempdir /;
 use HiD::Page;
 
 has output_regexp => (
@@ -37,7 +36,7 @@ test "output filename" => sub {
 };
 
 test "publish" => sub {
-  my $test = shift;
+  my $test    = shift;
   my $subject = $test->subject;
 
   my $output = $subject->output_filename;
