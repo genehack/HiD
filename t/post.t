@@ -5,16 +5,18 @@ use warnings;
 
 use lib 't/lib';
 
-use File::Temp  qw/ tempdir tempfile /;
 use HiD::Layout;
 use HiD::Post;
+
+use Path::Tiny;
 use Template;
 
 use Test::HiD::Util      qw/ make_layout make_post /;
 use Test::More;
 use Test::Routine::Util;
 
-# make layouts
+# set up base stuff
+my $dir     = Path::Tiny->tempdir()->child( '_posts' )->stringify;
 my $default = make_layout( content => 'PAGE: [% content %]' );
 my $layouts = {
   default => $default ,
@@ -32,13 +34,17 @@ EOF
 my %tests = (
   "basic post test" =>   {
     converted_content_regexp => qr/this is some post content./,
+    expected_basename        => 'test' ,
     expected_categories      => [],
     expected_date            => '2010-01-01',
+    expected_dir             => $dir ,
+    expected_suffix          => 'html' ,
     expected_title           => 'this is a post' ,
     expected_url             => '/2010/01/01/test.html',
     output_regexp            => qr/PAGE: POST: this is some post content/ ,
     rendered_content_regexp  => qr/PAGE: POST: this is some post content/ ,
     subject                  => make_post(
+      dir     => $dir ,
       file    => '2010-01-01-test.html' ,
       layouts => $layouts ,
       content => <<EOF,
@@ -53,13 +59,17 @@ EOF
   },
   "markdown post test" => {
     converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_basename        => 'markdown' ,
     expected_categories      => [ qw/ markdown / ] ,
     expected_date            => '2010-10-10' ,
+    expected_dir             => $dir ,
+    expected_suffix          => 'markdown' ,
     expected_title           => 'this is a markdown post',
     expected_url             => '/markdown/2010/10/10/markdown.html',
     output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     subject                  => make_post(
+      dir     => $dir ,
       file    => '2010-10-10-markdown.markdown',
       layouts => $layouts ,
       content => <<EOF,
@@ -74,13 +84,17 @@ EOF
   },
   "textile conversion test" => {
     converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_basename        => 'textile' ,
     expected_categories      => [] ,
     expected_date            => '2011-11-11',
+    expected_dir             => $dir ,
+    expected_suffix          => 'textile' ,
     expected_title           => 'textile post',
     expected_url             => '/2011/11/11/textile.html',
     output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     subject                  => make_post(
+      dir     => $dir ,
       file    => '2011-11-11-textile.textile',
       layouts => $layouts ,
       content => <<EOF,
@@ -94,13 +108,17 @@ EOF
   },
   "permalink = pretty" => {
     converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_basename        => 'markdown2' ,
     expected_categories      => [ qw/ foo bar / ] ,
     expected_date            => '2010-10-10' ,
+    expected_dir             => $dir ,
+    expected_suffix          => 'markdown' ,
     expected_title           => 'this is a markdown post',
     expected_url             => '/foo/bar/2010/10/10/markdown2/',
     output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     subject                  => make_post(
+      dir     => $dir ,
       file    => '2010-10-10-markdown2.markdown',
       layouts => $layouts ,
       content => <<EOF,
@@ -116,13 +134,17 @@ EOF
   },
   "permalink = string" => {
     converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_basename        => 'permalink-string' ,
     expected_categories      => [ ] ,
     expected_date            => '2010-10-10' ,
+    expected_dir             => $dir ,
+    expected_suffix          => 'markdown' ,
     expected_title           => 'this is a markdown post',
     expected_url             => 'permalink/',
     output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     subject                  => make_post(
+      dir     => $dir ,
       file    => '2010-10-10-permalink-string.markdown',
       layouts => $layouts ,
       content => <<EOF,
@@ -137,13 +159,17 @@ EOF
   },
   "permalink = format string" => {
     converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_basename        => 'permalink-format-string' ,
     expected_categories      => [ ] ,
     expected_date            => '2010-10-10' ,
+    expected_dir             => $dir ,
+    expected_suffix          => 'markdown' ,
     expected_title           => 'this is a markdown post',
     expected_url             => '2010-10-10-permalink',
     output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     subject                  => make_post(
+      dir     => $dir ,
       file    => '2010-10-10-permalink-format-string.markdown',
       layouts => $layouts ,
       content => <<EOF,
@@ -159,13 +185,17 @@ EOF
   "excerpt" => {
     converted_content_regexp => qr|<h1>this should be h1</h1>\s*<p>content</p>|,
     converted_excerpt_regexp => qr|<h1>this should be h1</h1>.+read more|s,
+    expected_basename        => 'excerpt' ,
     expected_categories      => [ ] ,
     expected_date            => '2010-10-10' ,
+    expected_dir             => $dir ,
+    expected_suffix          => 'markdown' ,
     expected_title           => 'this is a excerpt test',
     expected_url             => '2010-10-10-excerpt',
     output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     subject                  => make_post(
+      dir     => $dir ,
       file    => '2010-10-10-excerpt.markdown',
       layouts => $layouts ,
       content => <<EOF,
@@ -183,13 +213,17 @@ EOF
   },
   "metadata:date" => {
     converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_basename        => 'metadata-date' ,
     expected_categories      => [ ] ,
     expected_date            => '2012-12-12 01:02:03' ,
+    expected_dir             => $dir ,
+    expected_suffix          => 'markdown' ,
     expected_title           => 'this is a markdown post',
     expected_url             => '/2012/12/12/metadata-date/',
     output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     subject                  => make_post(
+      dir     => $dir ,
       file    => '2010-10-10-metadata-date.markdown',
       layouts => $layouts ,
       content => <<EOF,
@@ -205,13 +239,17 @@ EOF
   },
   "category post test" => {
     converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_basename        => 'markdown' ,
     expected_categories      => [ qw/ foo bar / ] ,
     expected_date            => '2010-10-10' ,
+    expected_dir             => "$dir/foo/bar/_posts" ,
+    expected_suffix          => 'markdown' ,
     expected_title           => 'this is a markdown post',
     expected_url             => '/foo/bar/2010/10/10/markdown.html',
     output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     subject                  => make_post(
+      dir     => $dir ,
       file    => 'foo/bar/_posts/2010-10-10-markdown.markdown',
       layouts => $layouts ,
       content => <<EOF,
@@ -226,13 +264,17 @@ EOF
   },
   "yaml category post test" => {
     converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_basename        => 'markdown' ,
     expected_categories      => [ qw/ bar foo / ] ,
     expected_date            => '2010-10-10' ,
+    expected_dir             => $dir ,
+    expected_suffix          => 'markdown' ,
     expected_title           => 'this is a markdown post',
     expected_url             => '/bar/foo/2010/10/10/markdown.html',
     output_regexp            => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: POST: <h1>this should be h1</h1>| ,
     subject                  => make_post(
+      dir     => $dir ,
       file    => '2010-10-10-markdown.markdown',
       layouts => $layouts ,
       content => <<EOF,

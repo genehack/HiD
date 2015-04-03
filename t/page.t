@@ -14,6 +14,8 @@ use Test::HiD::Util      qw/ make_layout make_page /;
 use Test::More;
 use Test::Routine::Util;
 
+my $tmp = tempdir();
+
 # make layout
 my $layouts = {
   default => make_layout( content => 'PAGE: [% content %]' ),
@@ -22,10 +24,14 @@ my $layouts = {
 my %tests = (
   "basic page test" => {
     converted_content_regexp => qr/this is some page content./,
+    expected_basename        => 'input' ,
+    expected_dir             => $tmp ,
+    expected_suffix          => 'html' ,
     expected_url             => '/input.html' ,
     output_regexp            => qr/PAGE: this is some page content/ ,
     rendered_content_regexp  => qr/PAGE: this is some page content/ ,
     subject                  => make_page(
+      dir     => $tmp ,
       file    => 'input.html',
       layouts => $layouts ,
       content => <<EOF,
@@ -38,10 +44,14 @@ EOF
   },
   "markdown conversion test" => {
     converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_basename        => 'markdown' ,
+    expected_dir             => $tmp ,
+    expected_suffix          => 'mkdn' ,
     expected_url             => '/markdown.html',
     output_regexp            => qr|PAGE: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: <h1>this should be h1</h1>| ,
     subject                  => make_page(
+      dir     => $tmp ,
       file    => 'markdown.mkdn' ,
       layouts => $layouts ,
       content => <<EOF,
@@ -54,10 +64,14 @@ EOF
   },
   "textile conversion test" => {
     converted_content_regexp => qr|<h1>this should be h1</h1>|,
+    expected_basename        => 'textile' ,
+    expected_dir             => $tmp ,
+    expected_suffix          => 'textile' ,
     expected_url             => '/textile.html' ,
     output_regexp            => qr|PAGE: <h1>this should be h1</h1>| ,
     rendered_content_regexp  => qr|PAGE: <h1>this should be h1</h1>| ,
     subject                  => make_page(
+      dir     => $tmp ,
       file    => 'textile.textile',
       layouts => $layouts ,
       content => <<EOF,
@@ -70,10 +84,14 @@ EOF
   },
   "permalink = pretty" => {
     converted_content_regexp => qr/this is some pretty page content./,
+    expected_basename        => 'pretty' ,
+    expected_dir             => $tmp ,
+    expected_suffix          => 'html' ,
     expected_url             => '/pretty/' ,
     output_regexp            => qr/PAGE: this is some pretty page content/ ,
     rendered_content_regexp  => qr/PAGE: this is some pretty page content/ ,
     subject                  => make_page(
+      dir     => $tmp ,
       file    => 'pretty.html',
       layouts => $layouts ,
       content => <<EOF,
@@ -87,10 +105,14 @@ EOF
   },
   "permalink = constant" => {
     converted_content_regexp => qr/this is some page content./,
+    expected_basename        => 'perma' ,
+    expected_dir             => $tmp ,
+    expected_suffix          => 'html' ,
     expected_url             => '/permalink',
     output_regexp            => qr/PAGE: this is some page content/ ,
     rendered_content_regexp  => qr/PAGE: this is some page content/ ,
     subject                  => make_page(
+      dir     => $tmp ,
       file    => 'perma.html' ,
       layouts => $layouts ,
       content => <<EOF,
