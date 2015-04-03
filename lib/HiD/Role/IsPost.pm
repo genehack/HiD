@@ -31,7 +31,6 @@ use charnames   qw/ :full           /;
 
 use DateTime;
 use Date::Parse    qw/ str2time  /;
-use YAML::XS;
 
 use HiD::Types;
 

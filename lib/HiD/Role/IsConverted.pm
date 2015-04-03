@@ -35,7 +35,7 @@ use Carp;
 use Class::Load  qw/ load_class /;
 use Encode;
 use Path::Tiny;
-use YAML::XS     qw/ Load /;
+use YAML::XS     qw/ Load /; # YAML::Tiny doesn't support 'bool' types which we need 8^/
 
 use HiD::Types;
 
@@ -242,7 +242,7 @@ around BUILDARGS => sub {
     }
 
     $args{content}  = $content;
-    $args{metadata} = Load( encode('utf8',$metadata) ) // {};
+    $args{metadata} = Load( $metadata ) // {};
   }
 
   return $class->$orig( \%args );

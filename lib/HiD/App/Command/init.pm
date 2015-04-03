@@ -36,7 +36,7 @@ use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 
-use YAML::XS qw/ DumpFile /;
+use YAML::Tiny;
 
 =attr blog
 
@@ -102,9 +102,8 @@ EOF
 
   $self->_init_blog if $self->blog;
 
-  DumpFile( '_config.yml' , {
-    title => $self->title ,
-  });
+  my $yaml = YAML::Tiny->new({ title => $self->title });
+  $yaml->write( '_config.yml' );
 
   say "Enjoy your new site!";
 }

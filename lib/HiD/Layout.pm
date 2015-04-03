@@ -27,7 +27,7 @@ use charnames   qw/ :full           /;
 
 use Encode;
 use Path::Tiny;
-use YAML::XS;
+use YAML::Tiny  qw/ Load /;
 
 use HiD::Types;
 
@@ -137,7 +137,7 @@ sub BUILDARGS {
       my $meta;
       ( $meta , $content ) = ( $content )
         =~ m|^---\n(.*?)---\n(.*)$|s;
-      $metadata = Load( encode('utf8', $meta) ) if $meta;
+      $metadata = Load( $meta ) if $meta;
     }
 
     $args{metadata} = $metadata;

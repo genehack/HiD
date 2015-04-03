@@ -33,7 +33,7 @@ use DateTime;
 use File::Find::Rule;
 use Path::Tiny;
 use Try::Tiny;
-use YAML::XS           qw/ LoadFile /;
+use YAML::Tiny;
 
 use HiD::File;
 use HiD::Layout;
@@ -111,7 +111,7 @@ sub _build_config {
 
   if ( my $file = $self->config_file ) {
     try {
-      $config = LoadFile( $file ) // {};
+      $config = YAML::Tiny->read( $file )->[0] // {};
       ref $config eq 'HASH' or die $!;
       $config_loaded++;
     };
