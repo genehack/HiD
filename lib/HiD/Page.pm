@@ -72,10 +72,12 @@ sub _build_url {
   my $format = $self->get_metadata( 'permalink' ) // 'none';
 
   my $source = $self->source;
+
   my $path_frag = $self->input_path;
   $path_frag =~ s/^$source//;
+  $path_frag ||= Path::Tiny->rootdir();
 
-  my $naive = join '/' , $path_frag , $self->basename;
+  my $naive = path( $path_frag , $self->basename() );
 
   my %_valid_exts = map { $_=>1 } qw(rss xml html htm xhtml xhtm shtml shtm);
   my $ext = exists $_valid_exts{$self->ext} ? $self->ext : 'html';

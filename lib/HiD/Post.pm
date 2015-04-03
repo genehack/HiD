@@ -102,6 +102,7 @@ sub _build_basename {
 sub _build_url {
   my $self = shift;
 
+  ### FIXME this is all horribly bigoted towards unix-ish file paths
   my %formats = (
     simple => '/posts/%{year}/%{month}/%{title}.html',
     date   => '/%{categories}s/%{year}s/%{month}s/%{day}s/%{title}s.html' ,
