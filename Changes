@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        Mainly test cleanups
+
 1.93      2015-03-30 00:08:49-04:00 America/New_York (TRIAL RELEASE)
 
         Set minimum version of Path::Tiny
