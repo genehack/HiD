@@ -20,7 +20,7 @@ test "output filename" => sub {
 
   my $input  = $subject->input_filename;
   my $output = $subject->output_filename;
-  like( $output , qr/$input$/ , 'output ends like input');
+  like( $output , qr/\Q$input\E$/ , 'output ends like input');
 };
 
 test "publish" => sub {
