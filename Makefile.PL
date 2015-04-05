@@ -80,7 +80,7 @@ my %WriteMakefileArgs = (
     "Test::Routine::Util" => 0,
     "Test::Warn" => 0
   },
-  "VERSION" => "1.93",
+  "VERSION" => "1.94",
   "test" => {
     "TESTS" => "t/*.t"
   }
