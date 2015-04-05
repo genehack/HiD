@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+1.94      2015-04-04 22:49:37-07:00 America/Los_Angeles (TRIAL RELEASE)
+
         Mainly test cleanups
 
 1.93      2015-03-30 00:08:49-04:00 America/New_York (TRIAL RELEASE)
