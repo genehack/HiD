@@ -80,9 +80,14 @@ sub generate {
     last POST if $post_count > $post_limit;
   }
 
+  # XML::Atom plays silly buggers with the UTF-8 flag...
+  my $xml_feed = $feed->as_xml;
+  utf8::decode($xml_feed)  # in place
+      or die "Unable to properly decode feed";
+
   my $feed_page = HiD::VirtualPage->new({
     output_filename => $site->destination . $destination ,
-    content         => $feed->as_xml ,
+    content         => $xml_feed ,
   });
 
   $site->add_input( "ATOM FEED" => 'page' );
