@@ -71,11 +71,8 @@ has baseurl => (
 sub _build_baseurl {
   my $self = shift;
 
-  my $base_url = $self->config->{baseurl};
-  if( defined $base_url ) {
-    return $base_url;
-  }
-  return '/';
+  my $base_url = $self->get_config('baseurl');
+  return defined $base_url ? $base_url : '/';
 }
 
 =attr dest_dir ( ro / isa = HiD_DirPath / required )

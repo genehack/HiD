@@ -2,6 +2,10 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        Fix encoding issues with AtomFeed plugin
+
+        Add RSSFeed plugin
+
 1.94      2015-04-04 22:49:37-07:00 America/Los_Angeles (TRIAL RELEASE)
 
         Mainly test cleanups
