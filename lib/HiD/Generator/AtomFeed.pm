@@ -102,7 +102,7 @@ sub _new_entry {
   $entry->title($post->title);
   $entry->author($post->author);
   $entry->link($post->url);
-  $entry->id($post->get_config('baseurl') . $post->url);
+  $entry->id($post->baseurl . $post->url);
   $entry->updated($post->date);
   $entry->summary($post->description) if $post->description;
   $entry->content($post->converted_content);
