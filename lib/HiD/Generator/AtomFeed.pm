@@ -45,10 +45,8 @@ with 'HiD::Generator';
 use 5.014; # strict, unicode_strings
 
 use DateTime;
-use XML::Atom::Entry;
-use XML::Atom::Feed;
-use XML::Atom::Link;
-use XML::Atom::Person;
+use XML::Feed;
+use XML::Feed::Entry;
 
 use HiD::VirtualPage;
 
@@ -99,18 +97,13 @@ sub generate {
 sub _new_entry {
   my( $self , $post ) = @_;
 
-  my $author = XML::Atom::Person->new();
-  $author->name($post->author);
-
-  my $link = XML::Atom::Link->new();
-  $link->type('text/html');
-  $link->rel('alternate');
-  $link->href($post->url);
-
-  my $entry = XML::Atom::Entry->new();
+  my $entry = XML::Feed::Entry->new('Atom');
   $entry->title($post->title);
-  $entry->author($author);
-  $entry->add_link($link);
+  $entry->author($post->author);
+  $entry->link($post->url);
+  $entry->id($post->get_config('baseurl') . $post->url);
+  $entry->updated($post->date);
+  $entry->summary($post->description) if $post->description;
   $entry->content($post->converted_content);
 
   return $entry;
@@ -119,31 +112,19 @@ sub _new_entry {
 sub _new_feed {
   my( $self , $site ) = @_;
 
-  my $feed  = XML::Atom::Feed->new();
+  my $feed  = XML::Feed->new('Atom');
   my $title = $site->config->{atom_feed}{title} // $site->config->{title};
   $feed->title( $title );
 
-  if ( my $base_url = $site->config->{atom_feed}{base} ) {
-    my $base_link = XML::Atom::Link->new();
-    $base_link->type('text/html');
-    $base_link->rel('alternate');
-    $base_link->href($base_url);
+  $feed->base( $site->config->{atom_feed}{base} )
+    if $site->config->{atom_feed}{base};
 
-    $feed->add_link( $base_link );
+  if( $site->config->{atom_feed}{link}) {
+    $feed->link( $site->config->{atom_feed}{link} );
+    $feed->id( $site->config->{atom_feed}{link} );
   }
 
-  if ( my $feed_url = $site->config->{atom_feed}{link} ) {
-    my $feed_link = XML::Atom::Link->new();
-    $feed_link->type('application/atom+xml');
-    $feed_link->rel('self');
-    $feed_link->href( $feed_url );
-
-    $feed->add_link( $feed_link );
-
-    $feed->id( $feed_link );
-  }
-
-  $feed->updated(DateTime->now());
+  $feed->modified(DateTime->now());
 
   return $feed;
 }
