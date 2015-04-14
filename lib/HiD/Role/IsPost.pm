@@ -118,9 +118,10 @@ has date => (
       ( $year , $month , $day ) = $self->input_filename
         =~ m|^.*?/([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})-|;
       return DateTime->new(
-        year  => $year ,
-        month => $month ,
-        day   => $day
+        year      => $year ,
+        month     => $month ,
+        day       => $day ,
+        time_zone => 'UTC' ,
       );
     }
   },
