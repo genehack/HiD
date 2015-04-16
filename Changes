@@ -4,6 +4,8 @@ Revision history for {{$dist->name}}
 
         Fix AtomFeed date generation
 
+        Tweak Win32 deps to deal with issue
+
 1.95      2015-04-09 11:47:19-07:00 America/Los_Angeles
 
         Fix encoding issues with AtomFeed plugin
