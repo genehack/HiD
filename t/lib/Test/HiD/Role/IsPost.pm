@@ -43,7 +43,7 @@ test "correct date" => sub {
     time_zone => 'local',
   );
 
-  is( 0 , DateTime->compare( $subject->date , $dt ));
+  is( $subject->date->ymd() , $dt->ymd() , 'YMD dates match');
 };
 
 test "tags" => sub {
