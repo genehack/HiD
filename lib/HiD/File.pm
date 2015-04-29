@@ -53,7 +53,17 @@ sub publish {
 }
 
 # used to populate the 'url' attr in Role::IsPublished
-sub _build_url { return shift->input_filename }
+sub _build_url {
+  my $self = shift;
+
+  my $source = $self->source;
+
+  my $path_frag = $self->input_filename;
+  $path_frag =~ s/^$source//;
+
+  return path( $path_frag )->stringify;
+}
+
 
 __PACKAGE__->meta->make_immutable;
 1;

@@ -7,6 +7,8 @@ use Test::More;
 use Test::File;
 use namespace::autoclean;
 
+use Path::Tiny;
+
 use HiD::File;
 
 has subject => (
@@ -18,8 +20,11 @@ test "output filename" => sub {
   my $test    = shift;
   my $subject = $test->subject;
 
-  my $input  = $subject->input_filename;
-  my $output = $subject->output_filename;
+  # FIXME really, this should be masking the input directory off input
+  # filename and the output directory off output file name...
+  my $input  = path($subject->input_filename)->basename;
+  my $output = path($subject->output_filename)->basename;
+
   like( $output , qr/\Q$input\E$/ , 'output ends like input');
 };
 
