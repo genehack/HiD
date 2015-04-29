@@ -28,7 +28,6 @@ my %WriteMakefileArgs = (
     "DateTime" => 0,
     "File::Copy" => 0,
     "File::Find::Rule" => 0,
-    "FindBin" => 0,
     "Log::Log4perl" => 0,
     "Moose" => 0,
     "Moose::Role" => 0,
@@ -57,7 +56,6 @@ my %WriteMakefileArgs = (
     "autodie" => 0,
     "charnames" => 0,
     "feature" => 0,
-    "lib" => 0,
     "namespace::autoclean" => 0,
     "open" => 0,
     "parent" => 0,
@@ -76,9 +74,10 @@ my %WriteMakefileArgs = (
     "Test::More" => "0.94",
     "Test::Routine" => 0,
     "Test::Routine::Util" => 0,
-    "Test::Warn" => 0
+    "Test::Warn" => 0,
+    "lib" => 0
   },
-  "VERSION" => "1.95",
+  "VERSION" => "1.95_90",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -98,7 +97,6 @@ my %FallbackPrereqs = (
   "File::Copy" => 0,
   "File::Find::Rule" => 0,
   "File::Spec" => 0,
-  "FindBin" => 0,
   "IO::Handle" => 0,
   "IPC::Open3" => 0,
   "Log::Log4perl" => 0,
@@ -153,5 +151,9 @@ unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
 
 delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
   unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
+
+if ( $^O eq 'MSWin32' ) {
+	$WriteMakefileArgs{PREREQ_PM}{'DateTime::TimeZone::Local::Win32'} = '1.82';
+}
 
 WriteMakefile(%WriteMakefileArgs);
