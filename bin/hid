@@ -6,10 +6,5 @@ use strict;
 use warnings;
 use 5.014;
 
-use FindBin;
-
-# only mangle @INC if in the dev environment
-use if -f "$FindBin::RealBin/../dist.ini", lib => "$FindBin::RealBin/../lib";
-
 use HiD::App;
 HiD::App->run;
