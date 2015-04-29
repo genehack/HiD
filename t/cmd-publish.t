@@ -78,7 +78,7 @@ write_config({
 { # publish with a file in _site that doesn't correspond to an input file
   # means that file gets removed
 
-  open( my $fh , '>' , '_site/dummy_file' );
+  path( '_site' , 'dummy_file' )->touch();
 
   _assert_good_run();
 
