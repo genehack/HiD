@@ -6,6 +6,11 @@ Revision history for {{$dist->name}}
 
         Tweak Win32 deps to deal with issue
 
+        Tests now pass on Win32! Biggest user visible change was
+        fixing URL building for HiD::File objects.
+
+        Remove FindBin bits from C<bin/hid> (Yanick Champoux)
+
 1.95      2015-04-09 11:47:19-07:00 America/Los_Angeles
 
         Fix encoding issues with AtomFeed plugin
