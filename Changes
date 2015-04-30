@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+        s/DDP/Data::Printer/ & set minimum version
+
+
 1.95_90   2015-04-29 16:00:49-07:00 America/Los_Angeles
 
         Fix AtomFeed date generation

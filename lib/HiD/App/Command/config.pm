@@ -41,12 +41,13 @@ use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 
+use Data::Printer;
+
 sub _run {
   my( $self , $opts , $args ) = @_;
 
   $args = [ 'config' ] unless $args->[0];
 
-  use DDP;
   my $out;
   $out .= p $self->hid->$_ foreach @$args;
 
