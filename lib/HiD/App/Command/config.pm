@@ -41,7 +41,7 @@ use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 
-use Data::Printer;
+use Data::Printer return_value => 'dump';
 
 sub _run {
   my( $self , $opts , $args ) = @_;
