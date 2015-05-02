@@ -71,13 +71,13 @@ my %WriteMakefileArgs = (
     "IPC::Open3" => 0,
     "Test::File" => 0,
     "Test::File::Contents" => 0,
-    "Test::More" => "0.94",
+    "Test::More" => 0,
     "Test::Routine" => 0,
     "Test::Routine::Util" => 0,
     "Test::Warn" => 0,
     "lib" => 0
   },
-  "VERSION" => "1.95_92",
+  "VERSION" => "1.95_93",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -116,7 +116,7 @@ my %FallbackPrereqs = (
   "Template" => 0,
   "Test::File" => 0,
   "Test::File::Contents" => 0,
-  "Test::More" => "0.94",
+  "Test::More" => 0,
   "Test::Routine" => 0,
   "Test::Routine::Util" => 0,
   "Test::Warn" => 0,
