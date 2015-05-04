@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+1.95_93   2015-05-03 21:21:39-07:00 America/Los_Angeles (TRIAL RELEASE)
+
         Switch dist.ini to @GENEHACK bundle
 
         Fix whitespace issues in test files
