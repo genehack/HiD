@@ -2,7 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
-        Switch dist.ini to @GENEHACK bundle 
+        Switch dist.ini to @GENEHACK bundle
+
+        Fix whitespace issues in test files
 
 1.95_92   2015-05-01 06:46:48-07:00 America/Los_Angeles
 
@@ -11,7 +13,6 @@ Revision history for {{$dist->name}}
 1.95_91   2015-04-30 11:50:40-07:00 America/Los_Angeles
 
         s/DDP/Data::Printer/ & set minimum version
-
 
 1.95_90   2015-04-29 16:00:49-07:00 America/Los_Angeles
 
