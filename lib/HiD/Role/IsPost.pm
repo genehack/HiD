@@ -221,24 +221,52 @@ sub _build_title {
   return ( ref $title ) ? $$title : $title;
 }
 
-=attr twitter
+=attr twitter_handles
+
+Returns an arrayref of the twitter handles passed via
+the C<twitter> parameter.
+
+=method has_twitter_handles
+
+Returns c<true> if the post has any twitter handles associated with it, C<false>
+otherwise.
+
+=method all_twitter_handles
+
+Returns the list of the twitter handles associated with the post.
 
 =cut
 
-has twitter => (
-  is => 'ro' ,
-  isa => 'Maybe[Str]' ,
-  lazy => 1 ,
-  builder => '_build_twitter' ,
+has twitter_handles => (
+  is      => 'ro' ,
+  isa     => 'ArrayRef[Str]' ,
+  lazy    => 1 ,
+  builder => '_build_twitter_handles' ,
+  traits  => [ 'Array' ],
+  handles => {
+      has_twitter_handles => 'count',
+      all_twitter_handles => 'elements',
+  },
 );
 
-sub _build_twitter {
+sub _build_twitter_handles {
   my $self = shift;
 
-  my $twitter = $self->get_metadata( 'twitter' );
+  my $t = $self->get_metadata('twitter');
 
-  return defined $twitter ? $twitter : undef;
+  return ref $t ? $t : [ $t ? $t : () ];
 }
+
+=method twitter
+
+DEPRECATED: use <twitter_handles> instead.
+
+Returns the first twitter handle given to C<twitter>.
+
+=cut
+
+sub twitter { ($_[0]->all_twitter_handles)[0] }
+
 
 around BUILDARGS => sub {
   my $orig  = shift;
@@ -281,7 +309,6 @@ sub is_draft {
   $drafts_dir //= $self->get_config( 'drafts_dir' );
   return ( $self->input_filename =~ /^$drafts_dir/ ) ? 1 : 0;
 }
-
 
 no Moose::Role;
 1;
