@@ -129,7 +129,8 @@ has date => (
 
 =attr description
 
-A one-line synopsis of the post (used, e.g., for metadata information used by Open Graph)
+A one-line synopsis of the post (used, e.g., for metadata information used by
+Open Graph)
 
 =cut
 
