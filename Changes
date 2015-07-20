@@ -2,6 +2,10 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+1.97      2015-07-20 12:07:09-07:00 America/Los_Angeles
+
+  Correcting bad minimum Perl version in Makefile.PL (ducks++ for the report)
+
 1.96      2015-06-30 15:28:04-07:00 America/Los_Angeles
 
   Changes relative to previous stable release:
