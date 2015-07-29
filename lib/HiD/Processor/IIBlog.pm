@@ -50,7 +50,12 @@ sub BUILDARGS {
         lc          => sub { lc( shift ) } ,
         pretty_date => sub { shift->strftime( "%d %b %Y" ) },
       } ,
-      path => $path ,
+      path => $path,
+      warn_handler => sub {
+        my $self = shift;
+        say($self);
+        die;
+      }
     ),
   };
 }
