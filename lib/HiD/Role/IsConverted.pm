@@ -205,10 +205,11 @@ has template_data => (
     my $self = shift;
 
     my $data = {
-      baseurl  => $self->hid->config->{baseurl} ,
-      content  => $self->converted_content ,
-      page     => $self->metadata ,
-      site     => $self->hid ,
+      baseurl   => $self->hid->config->{baseurl} ,
+      content   => $self->converted_content ,
+      page      => $self->metadata ,
+      site      => $self->hid ,
+      timestamp => DateTime->now(),
     };
     $data->{post} = $self if $self->does('HiD::Role::IsPost');
 
