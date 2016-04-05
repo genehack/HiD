@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+1.98      2016-04-04 21:21:43-07:00 America/Los_Angeles
+
   Add 'timestamp' (key pointing to DateTime object for current time) to 'template_data' 
 
 1.97      2015-07-20 12:07:09-07:00 America/Los_Angeles
