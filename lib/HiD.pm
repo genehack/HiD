@@ -969,6 +969,8 @@ sub publish {
 =for :list
 * ChinaXing
 * reyjrar
+* Yanick Champoux
+* Jake Goldsborough
 
 =cut
 
