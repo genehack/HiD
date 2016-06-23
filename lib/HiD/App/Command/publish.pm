@@ -4,8 +4,6 @@
 
     $ hid publish
 
-    $ hid  # 'publish' is the default command...
-
     # publish directly to GitHub Pages
     $ hid publish --to_github_pages
     $ hid publist -G
