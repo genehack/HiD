@@ -80,7 +80,7 @@ Emit debug-style logging for requests
 has debug => (
   is          => 'ro' ,
   isa         => 'Bool' ,
-  cmd_aliases => 'D' ,
+  cmd_aliases => 'd' ,
   traits      => [ 'Getopt' ] ,
 );
 
