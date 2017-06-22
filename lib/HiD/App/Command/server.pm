@@ -121,7 +121,10 @@ sub _run {
     $config->{publish_drafts} = 1;
   }
 
-  my $app = HiD::Server->new( root => $self->destination )->to_app;
+  my $app = HiD::Server->new(
+    root => $self->destination,
+    error_pages => ($config->{error_pages} || {} )
+  )->to_app;
 
   if ( $self->debug ) {
     if ( try_load_class( 'Plack::Middleware::DebugLogging' )) {
