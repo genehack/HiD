@@ -13,6 +13,11 @@ If you are installing into a system-wide directory, you may need to pass the
 
     % cpanm -S HiD
 
+If you are seeing an error message that complains about libxml2 and zlib linking, make sure you have those installed by running:
+
+    %sudo apt-get install libxml2-dev zlib1g-dev
+
+
 ## Installing with the CPAN shell
 
 Alternatively, if your CPAN shell is set up, you should just be able to do:
