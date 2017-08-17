@@ -11,7 +11,7 @@ publication.
 
 =head2 Custom Xslate functions
 
-The L<Text::Xslate> object created by this processor provides a 
+The L<Text::Xslate> object created by this processor provides a
 few custom utility functions.
 
 =over
