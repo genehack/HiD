@@ -18,7 +18,8 @@ few custom utility functions.
 
 =item commafy( \@list )
 
-Joins the items of the list with commas. Oxford comma not included.
+Joins the items of the list with commas. Neither an Oxford comma nor
+conjunction for the terminal element is included.
 
 =item lc( $string )
 
@@ -26,14 +27,14 @@ Lowercases the string.
 
 =item lightbox( img => $img, alt => $alt, width => $width )
 
-Creates a ligthbox. Both C<img> and C<alt> are mandatory. C<width>,
-if not provided, defaults to C<300>.
+Creates a ligthbox. Both C<img> and C<alt> are mandatory. C<width>, if not
+provided, defaults to C<300>. Requires installation of Magnific Popup elements
+for full functioning; see L<http://dimsemenov.com/plugins/magnific-popup>.
 
 =item pretty_date( $datetime )
 
 Takes in a L<DateTime> object and returns a string of the format
 C<17 Aug 2017>.
-
 
 =back
 
