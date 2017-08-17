@@ -24,7 +24,7 @@ use warnings    qw/ FATAL  utf8     /;
 use open        qw/ :std  :utf8     /;
 use charnames   qw/ :full           /;
 
-use Text::Xslate;
+use Text::Xslate qw/ mark_raw /;
 
 has 'txs' => (
   is       => 'ro' ,
@@ -48,6 +48,7 @@ sub BUILDARGS {
       function => {
         commafy     => sub { my $a = shift; join ',' , @$a },
         lc          => sub { lc( shift ) } ,
+        lightbox    => \&lightbox,
         pretty_date => sub { shift->strftime( "%d %b %Y" ) },
       } ,
       path => $path,
@@ -66,6 +67,20 @@ sub process {
   $$output_ref = $self->txs->render_string( $$input_ref , $args );
 
   return 1;
+}
+
+sub _lightbox {
+  my %args = @_;
+
+  my $img   = $args{img}   // die "lightbox needs img arg";
+  my $width = $args{width} //= 300;
+  my $alt   = $args{alt}   // die "lightbox needs alt arg";
+
+  return mark_raw(<<EOHTML);
+<a href="$img" class="lightbox">
+  <img src="$img" width="$width" alt="$alt" />
+</a>
+EOHTML
 }
 
 __PACKAGE__->meta->make_immutable;
