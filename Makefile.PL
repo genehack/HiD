@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use 5.021008;
+use 5.014;
 
 use ExtUtils::MakeMaker;
 
@@ -17,7 +17,7 @@ my %WriteMakefileArgs = (
     "bin/hid"
   ],
   "LICENSE" => "perl",
-  "MIN_PERL_VERSION" => "5.021008",
+  "MIN_PERL_VERSION" => "5.014",
   "NAME" => "HiD",
   "PREREQ_PM" => {
     "Carp" => 0,
