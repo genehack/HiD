@@ -971,6 +971,7 @@ sub publish {
 * reyjrar
 * Yanick Champoux
 * Jake Goldsborough
+* Trey Bianchini
 
 =cut
 

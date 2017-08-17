@@ -2,6 +2,7 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+  Add 400, 403, 404 error pages (Trey Bianchini)
   Make XSlate throw error and exit on warnings [#35] (Jake Goldsborough)
 
 1.98      2016-04-04 21:21:43-07:00 America/Los_Angeles
