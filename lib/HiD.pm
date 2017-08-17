@@ -652,10 +652,11 @@ publication process.
 =cut
 
 has processor => (
-  is      => 'ro' ,
-  isa     => 'HiD::Processor' ,
-  lazy    => 1 ,
-  default => sub {
+  is        => 'ro' ,
+  isa       => 'HiD::Processor' ,
+  lazy      => 1 ,
+  predicate => 'has_processor',
+  default   => sub {
     my $self = shift;
 
     my $processor_name  = $self->get_config( 'processor_name' ) // 'Handlebars';
