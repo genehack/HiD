@@ -9,6 +9,34 @@
 Wraps up a L<Text::Xslate> object and allows it to be used during HiD
 publication.
 
+=head2 Custom Xslate functions
+
+The L<Text::Xslate> object created by this processor provides a 
+few custom utility functions.
+
+=over
+
+=item commafy( \@list )
+
+Joins the items of the list with commas. Oxford comma not included.
+
+=item lc( $string )
+
+Lowercases the string.
+
+=item lightbox( img => $img, alt => $alt, width => $width )
+
+Creates a ligthbox. Both C<img> and C<alt> are mandatory. C<width>,
+if not provided, defaults to C<300>.
+
+=item pretty_date( $datetime )
+
+Takes in a L<DateTime> object and returns a string of the format
+C<17 Aug 2017>.
+
+
+=back
+
 =cut
 
 package HiD::Processor::IIBlog;
