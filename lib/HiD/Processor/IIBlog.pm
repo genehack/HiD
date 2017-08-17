@@ -77,7 +77,7 @@ sub BUILDARGS {
       function => {
         commafy     => sub { my $a = shift; join ',' , @$a },
         lc          => sub { lc( shift ) } ,
-        lightbox    => \&lightbox,
+        lightbox    => \&_lightbox,
         pretty_date => sub { shift->strftime( "%d %b %Y" ) },
       } ,
       path => $path,

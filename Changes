@@ -2,6 +2,10 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+1.991     2017-08-17 15:16:19-07:00 America/Los_Angeles
+
+  Fix an *incredibly* stupid bug
+
 1.99      2017-08-17 14:46:51-07:00 America/Los_Angeles
 
   Add lightbox helper macro to IIBlog.pm
