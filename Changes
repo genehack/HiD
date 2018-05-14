@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+  Make it possible to configure extension-specific processors (Yanick)
+
 1.991     2017-08-17 15:16:19-07:00 America/Los_Angeles
 
   Fix an *incredibly* stupid bug
