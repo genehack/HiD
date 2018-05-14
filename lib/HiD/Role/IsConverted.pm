@@ -76,7 +76,7 @@ has converted_content => (
       );
     }
 
-    return _convert_by_extension( $content , $self->ext );
+    return $self->convert_by_extension($content);
   }
 );
 
@@ -93,7 +93,8 @@ has converted_excerpt => (
   default => sub {
     my $self = shift;
 
-    my $converted_excerpt = _convert_by_extension( $self->excerpt , $self->ext );
+    my $converted_excerpt = $self->convert_by_extension( 
+        $self->excerpt );
 
     if ( $self->excerpt ne $self->content ) {
       # Add the "read more" link
@@ -251,6 +252,39 @@ has template_data_without_content => (
   },
 );
 
+=attr extension_processors
+
+An hash mapping file extensions to the module/method pair to use to
+convert the entry into HTML. Can be set via the C<extension_processors> key in
+the configuration file. If not provided, the default is:
+
+    {
+        markdown => [ 'Text::Markdown'      , 'markdown' ] ,
+        mkdn     => [ 'Text::Markdown'      , 'markdown' ] ,
+        mk       => [ 'Text::Markdown'      , 'markdown' ] ,
+        md       => [ 'Text::Markdown'      , 'markdown' ] ,
+        mmd      => [ 'Text::MultiMarkdown' , 'markdown' ] ,
+        textile  => [ 'Text::Textile'       , 'process'  ] ,
+    }
+
+=cut
+
+has extension_processors => (
+    is => 'ro',
+    isa => 'HashRef',
+    lazy => 1,
+    default => sub {
+        return $_[0]->get_config('extension_processors') || {
+            markdown => [ 'Text::Markdown'      , 'markdown' ] ,
+            mkdn     => [ 'Text::Markdown'      , 'markdown' ] ,
+            mk       => [ 'Text::Markdown'      , 'markdown' ] ,
+            md       => [ 'Text::Markdown'      , 'markdown' ] ,
+            mmd      => [ 'Text::MultiMarkdown' , 'markdown' ] ,
+            textile  => [ 'Text::Textile'       , 'process'  ] ,
+        }
+    }
+);
+
 around BUILDARGS => sub {
   my $orig  = shift;
   my $class = shift;
@@ -280,30 +314,18 @@ around BUILDARGS => sub {
   return $class->$orig( \%args );
 };
 
-{ # hide the map
 
-  ### FIXME make this extensible
-  my %conversion_extension_map = (
-    markdown => [ 'Text::Markdown'      , 'markdown' ] ,
-    mkdn     => [ 'Text::Markdown'      , 'markdown' ] ,
-    mk       => [ 'Text::Markdown'      , 'markdown' ] ,
-    md       => [ 'Text::Markdown'      , 'markdown' ] ,
-    mmd      => [ 'Text::MultiMarkdown' , 'markdown' ] ,
-    textile  => [ 'Text::Textile'       , 'process'  ] ,
-  );
+sub convert_by_extension {
+    my ( $self, $content ) = @_;
 
-  sub _convert_by_extension {
-    my( $content , $extension ) = @_;
 
-    return $content
-      unless exists $conversion_extension_map{ $extension };
+    my $converter = $self->extension_processors->{ $self->ext }
+        or return $content;
 
-    my( $module , $method ) = @{ $conversion_extension_map{ $extension }};
+    my( $module , $method ) = @$converter;
     load_class( $module );
 
-    my $converted = $module->new->$method( $content );
-    return $converted;
-  }
+    return $module->new->$method( $content );
 }
 
 no Moose::Role;
