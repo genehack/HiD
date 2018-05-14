@@ -321,10 +321,10 @@ sub convert_by_extension {
     my $converter = $self->extension_processors->{ $self->ext }
         or return $content;
 
-    my( $module , $method, @args ) = @$converter;
+    my( $module , $method  = @$converter;
     load_class( $module );
 
-    return $module->new(@args)->$method( $content );
+    return $module->new->$method( $content );
 }
 
 no Moose::Role;
