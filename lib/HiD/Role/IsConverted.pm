@@ -93,7 +93,7 @@ has converted_excerpt => (
   default => sub {
     my $self = shift;
 
-    my $converted_excerpt = $self->convert_by_extension( 
+    my $converted_excerpt = $self->convert_by_extension(
         $self->excerpt );
 
     if ( $self->excerpt ne $self->content ) {
@@ -313,6 +313,16 @@ around BUILDARGS => sub {
 
   return $class->$orig( \%args );
 };
+
+=method convert_by_extension
+
+    $self->convert_by_extension( $content );
+
+Converts the provided content according to `$self->extension`, using
+the mappings in the `extension_processors` attribute.
+
+=cut
+
 
 
 sub convert_by_extension {
