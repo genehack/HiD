@@ -67,15 +67,16 @@ has converted_content => (
   default => sub {
     my $self = shift;
 
+    my $content = $self->content;
+
     # process template directives in posts
     if( $self->isa('HiD::Post' ) and $self->hid->has_processor() ) {
-      my $content = $self->content;
       $self->hid->processor->process(
         \$self->content , $self->template_data_without_content , \$content
       );
     }
 
-    return $self->convert_by_extension;
+    return $self->convert_by_extension($content);
   }
 );
 
@@ -92,7 +93,8 @@ has converted_excerpt => (
   default => sub {
     my $self = shift;
 
-    my $converted_excerpt = $self->convert_by_extension;
+    my $converted_excerpt = $self->convert_by_extension( 
+        $self->excerpt );
 
     if ( $self->excerpt ne $self->content ) {
       # Add the "read more" link
@@ -314,14 +316,13 @@ around BUILDARGS => sub {
 
 
 sub convert_by_extension {
-    my $self = shift;
+    my ( $self, $content ) = @_;
 
-    my $content = $self->content;
 
     my $converter = $self->extension_processors->{ $self->ext }
         or return $content;
 
-    my( $module , $method  = @$converter;
+    my( $module , $method ) = @$converter;
     load_class( $module );
 
     return $module->new->$method( $content );
